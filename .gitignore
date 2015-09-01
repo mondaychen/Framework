@@ -2,3 +2,6 @@ GLDiag.txt
 /bin/
 
 *.obj
+.idea/
+Framework.iml
+out/
