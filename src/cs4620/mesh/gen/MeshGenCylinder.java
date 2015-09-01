@@ -12,6 +12,7 @@ public class MeshGenCylinder extends MeshGenerator {
 	@Override
 	public void generate(MeshData outData, MeshGenOptions opt) {
 		// TODO#A1 SOLUTION START
+	   int a=1;
 
 		// #SOLUTION END
 	}
