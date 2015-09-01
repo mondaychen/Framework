@@ -14,6 +14,7 @@ public class MeshGenCylinder extends MeshGenerator {
 		// TODO#A1 SOLUTION START
         // mengdi's edit
          int a=5;
+         int a =6
 
 		// #SOLUTION END
 	}
