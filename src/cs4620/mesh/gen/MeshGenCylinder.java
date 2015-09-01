@@ -13,8 +13,7 @@ public class MeshGenCylinder extends MeshGenerator {
 	public void generate(MeshData outData, MeshGenOptions opt) {
 		// TODO#A1 SOLUTION START
         // mengdi's edit
-		 int r=3;
-		 
+         int a=5;
 
 		// #SOLUTION END
 	}
