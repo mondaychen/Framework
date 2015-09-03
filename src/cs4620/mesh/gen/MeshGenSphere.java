@@ -21,7 +21,7 @@ public class MeshGenSphere extends MeshGenerator {
 		int m = opt.divisionsLatitude;
 		int n = opt.divisionsLongitude;
 		outData.vertexCount = n * (m + 1);
-		outData.indexCount = 6 * 2 * 3;
+		outData.indexCount = (m - 1) * n * 2 + 2 * n;
 
 		// Create Storage Spaces
 		outData.positions = NativeMem.createFloatBuffer(outData.vertexCount * 3);
