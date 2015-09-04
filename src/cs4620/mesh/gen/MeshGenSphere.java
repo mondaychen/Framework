@@ -40,7 +40,7 @@ public class MeshGenSphere extends MeshGenerator {
 		}
 
 		// Create The Vertices
-		float uvx, uvy = 0;
+		float uvx, uvy = 1;
 		float uvxStep = 1.0f / n, uvyStep = 1.0f / m;
 		// fixed y, using radius=z to calculate x and z; each size = n + 1
 		for (Vector3 vector: meridianGW) {
@@ -66,7 +66,7 @@ public class MeshGenSphere extends MeshGenerator {
 			outData.normals.put(-position2d.get(0).y);
 			outData.uvs.put(uvx);
 			outData.uvs.put(uvy);
-			uvy += uvyStep;
+			uvy -= uvyStep;
 		}
 		
 		// Create The Indices
