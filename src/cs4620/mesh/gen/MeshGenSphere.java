@@ -63,6 +63,8 @@ public class MeshGenSphere extends MeshGenerator {
 			outData.normals.put(position2d.get(0).x);
 			outData.normals.put(vector.y);
 			outData.normals.put(-position2d.get(0).y);
+			outData.uvs.put(uvx);
+			outData.uvs.put(uvy);
 			uvy += uvyStep;
 		}
 		
