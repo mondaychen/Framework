@@ -44,7 +44,7 @@ public class MeshGenSphere extends MeshGenerator {
 		float uvxStep = 1.0f / n, uvyStep = 1.0f / m;
 		// fixed y, using radius=z to calculate x and z; each size = n + 1
 		for (Vector3 vector: meridianGW) {
-			uvx = 0;
+			uvx = 1;
 			ArrayList<Vector2> position2d = generatePointsInCircle(n, vector.z);
 			for (Vector2 v2: position2d) {
 				outData.positions.put(v2.x);
@@ -55,7 +55,7 @@ public class MeshGenSphere extends MeshGenerator {
 				outData.normals.put(-v2.y);
 				outData.uvs.put(uvx);
 				outData.uvs.put(uvy);
-				uvx += uvxStep;
+				uvx -= uvxStep;
 			}
 			// one duplicate
 			outData.positions.put(position2d.get(0).x);
