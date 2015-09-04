@@ -18,10 +18,10 @@ public class MeshGenSphere extends MeshGenerator {
 	public void generate(MeshData outData, MeshGenOptions opt) {
 		// SOLUTION START
 		// Calculate Vertex And Index Count
-		int m = opt.divisionsLatitude;
-		int n = opt.divisionsLongitude;
-		outData.vertexCount = n * (m + 1);
-		outData.indexCount = (m - 1) * n * 2 + 2 * n;
+		int m = 2;//opt.divisionsLatitude;
+		int n = 3;//opt.divisionsLongitude;
+		outData.vertexCount = (n + 1) * (m + 1);
+		outData.indexCount = m * n * 2;
 
 		// Create Storage Spaces
 		outData.positions = NativeMem.createFloatBuffer(outData.vertexCount * 3);
@@ -40,8 +40,7 @@ public class MeshGenSphere extends MeshGenerator {
 		}
 
 		// Create The Vertices
-		// fixed y, using radius=z to calculate x and z; each size = n
-		// old use the first half
+		// fixed y, using radius=z to calculate x and z; each size = n + 1
 		for (Vector3 vector: meridianGW) {
 			ArrayList<Vector2> position2d = generatePointsInCircle(n, vector.z);
 			for (Vector2 v2: position2d) {
@@ -49,6 +48,10 @@ public class MeshGenSphere extends MeshGenerator {
 				outData.positions.put(vector.y);
 				outData.positions.put(-v2.y);
 			}
+			// one duplicate
+			outData.positions.put(position2d.get(0).x);
+			outData.positions.put(vector.y);
+			outData.positions.put(-position2d.get(0).y);
 		}
 		
 		// Create The Indices
