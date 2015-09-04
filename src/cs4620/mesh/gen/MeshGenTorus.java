@@ -16,7 +16,7 @@ public class MeshGenTorus extends MeshGenerator {
 		// TODO#A1 SOLUTION START
 		// Calculate Vertex And Index Count
 		
-		   int n=32,r=8;
+		   int n=12,r=8;
 		   outData.vertexCount = n * r+n+1+r;
 		   outData.indexCount = (r * n* 2)* 3;
 
@@ -49,15 +49,15 @@ public class MeshGenTorus extends MeshGenerator {
 		//
 		for(int i=0;i<n;i++)
 		{
-			outData.positions.put(new float[]{0.25f*(float)Math.sin(angle*i),0,-0.25f*(float)Math.cos(angle*i)});
+			outData.positions.put(new float[]{d*(float)Math.sin(angle*i),y,-d*(float)Math.cos(angle*i)});
 
 		}
-		outData.positions.put(new float[]{0,0,-0.25f});
+		outData.positions.put(new float[]{0,y,-d});
 		
 		//
 		for(int i=0;i<r;i++)
 		{
-			outData.positions.put(new float[]{0,d-y*(float)Math.sin(angleofr*i),y*(float)Math.cos(angleofr*i)});
+			outData.positions.put(new float[]{0,y*(float)Math.cos(angleofr*i),-d+y*(float)Math.sin(angleofr*i)});
 
 		}
 	
@@ -91,27 +91,60 @@ public class MeshGenTorus extends MeshGenerator {
 			outData.normals.put(0);
 	
 		}
+	
+		
 		//
-		for(int i=0;i<r;i++)
+		for(int k=0;k<r;k++)
 		{
-			outData.normals.put(1);
-			outData.normals.put(0);
-			outData.normals.put(0);
+			float radius=(float) (d-y*Math.sin(angleofr*k));
+			
+			float z0=-d;
+				
+				outData.normals.put(0);
+				outData.normals.put(y*(float)Math.cos(angleofr*k));
+				outData.normals.put(-radius-z0);
+
 		}
 
-	    
-	 
 		
 		// Add UV Coordinates
+		for(int k=0;k<r;k++)
+		{
+			for(int i = 0; i < n; i++)
+			{
+				float[] uvs = {i*1.0f/n,1-k*1.0f/r};
+				 outData.uvs.put(uvs);
+			}
+		}
+		
+		
+		
+		
+		for(int i = 0; i < n; i++)
+		{
+			float[] uvs2 = {i*1.0f/n,0};
+			 outData.uvs.put(uvs2);
+		}
 		
 		
 		
 		
 		
+		//
+		
+		float[] uvs3 = {1,0};
+		 outData.uvs.put(uvs3);
+		
+		 
+		 
+		//seam
+		for(int i = 0; i < r; i++)
+		{
+			float[] uvs4 = {1.0f,1.0f-1.0f*i/r};
+			 outData.uvs.put(uvs4);
+		}
 		
 		
-		
-	
 	
 
 		// Add Indices
@@ -119,7 +152,7 @@ public class MeshGenTorus extends MeshGenerator {
 		
         for(int k=0;k<r-1;k++)
         {
-        	for(int i=0;i<n;i++)
+        	for(int i=0;i<n-1;i++)
         	{
         		outData.indices.put(n*k+i);
 				outData.indices.put(n*(k+1)+i);
@@ -130,7 +163,21 @@ public class MeshGenTorus extends MeshGenerator {
         	}
         }
         
-        for(int i=0;i<n;i++)
+        for(int k=0;k<r-1;k++)
+        {
+        	outData.indices.put((k+1)*n-1);
+			outData.indices.put((k+2)*n-1);
+			outData.indices.put(n*r+n+1+1+k);
+			outData.indices.put((k+1)*n-1);
+			outData.indices.put(n*r+n+1+1+k);
+			outData.indices.put(n*r+n+1+k);
+        }
+        
+        
+        
+        
+        
+        for(int i=0;i<n-1;i++)
         {
         	outData.indices.put(i);
 			outData.indices.put(i+1);
@@ -141,24 +188,18 @@ public class MeshGenTorus extends MeshGenerator {
         	
         }
         
-        /*
+        outData.indices.put(n-1);
+        outData.indices.put(r*n+n+1);
+    	outData.indices.put(n-1+n*(r-1));
+    	
+    	outData.indices.put(r*n+n+1);
+		outData.indices.put(r*n+n+r);
+		outData.indices.put(n-1+n*(r-1));
+	
 
-        for(int k=0;k<r/2-1;k++)
-        {
-        	for(int i=0;i<n;i++)
-        	{
-        		outData.indices.put(n*(r-1-k)+i);
-				outData.indices.put(n*(r-1-k)+i+1);
-				outData.indices.put(n*(r-1-k)+n*(n/2+1)+1+i);
-				outData.indices.put(n*(r-1-k)+i);
-				outData.indices.put(n*(r-1-k)+n*(n/2+1)+1+i);
-				outData.indices.put(n*(r-1-k)+n*(n/2+1)+i);
-        	}
-        }
-        */
         
         
-        
+
 		
 		
 		// #SOLUTION END
