@@ -107,6 +107,7 @@ public class MeshGenTorus extends MeshGenerator {
 		}
 
 		
+		
 		// Add UV Coordinates
 		for(int k=0;k<r;k++)
 		{
@@ -119,12 +120,13 @@ public class MeshGenTorus extends MeshGenerator {
 		
 		
 		
-		
+	
 		for(int i = 0; i < n; i++)
 		{
 			float[] uvs2 = {i*1.0f/n,0};
 			 outData.uvs.put(uvs2);
 		}
+		
 		
 		
 		
@@ -147,6 +149,19 @@ public class MeshGenTorus extends MeshGenerator {
 		
 	
 
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		// Add Indices
 		
 		
@@ -179,22 +194,27 @@ public class MeshGenTorus extends MeshGenerator {
         
         for(int i=0;i<n-1;i++)
         {
-        	outData.indices.put(i);
-			outData.indices.put(i+1);
-			outData.indices.put(n*(r-1)+i+1);
-			outData.indices.put(i);
+        	outData.indices.put(i+n*r);
+			outData.indices.put(i+1+n*r);
+			outData.indices.put(n*(r-1)+i);
+			outData.indices.put(i+1+n*r);
 			outData.indices.put(n*(r-1)+i+1);
 			outData.indices.put(n*(r-1)+i);
         	
         }
         
-        outData.indices.put(n-1);
-        outData.indices.put(r*n+n+1);
-    	outData.indices.put(n-1+n*(r-1));
+        
+        
+       
+        
+        
+        outData.indices.put(n*r+n);
+        outData.indices.put(r*n-1);
+    	outData.indices.put(n*r+n-1);
     	
-    	outData.indices.put(r*n+n+1);
-		outData.indices.put(r*n+n+r);
-		outData.indices.put(n-1+n*(r-1));
+    	outData.indices.put(n*r+n);
+		outData.indices.put(n*r+n+r);
+		outData.indices.put(r*n-1);
 	
 
         
