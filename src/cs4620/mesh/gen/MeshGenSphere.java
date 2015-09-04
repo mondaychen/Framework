@@ -27,7 +27,7 @@ public class MeshGenSphere extends MeshGenerator {
 		outData.positions = NativeMem.createFloatBuffer(outData.vertexCount * 3);
 		outData.uvs = NativeMem.createFloatBuffer(outData.vertexCount * 2);
 		outData.normals = NativeMem.createFloatBuffer(outData.vertexCount * 3);
-		outData.indices = NativeMem.createIntBuffer(outData.indexCount * 3);
+		outData.indices = NativeMem.createIntBuffer(outData.indexCount);
 
 		// getting points on the Greenwich meridian (0,y,z); size = m + 1
 		ArrayList<Vector3> meridianGW = new ArrayList<>();
