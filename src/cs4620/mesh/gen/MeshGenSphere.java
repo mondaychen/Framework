@@ -18,8 +18,8 @@ public class MeshGenSphere extends MeshGenerator {
 	public void generate(MeshData outData, MeshGenOptions opt) {
 		// SOLUTION START
 		// Calculate Vertex And Index Count
-		int m = 2;//opt.divisionsLatitude;
-		int n = 3;//opt.divisionsLongitude;
+		int m = opt.divisionsLatitude;
+		int n = opt.divisionsLongitude;
 		outData.vertexCount = (n + 1) * (m + 1);
 		outData.indexCount = m * n * 2 * 3;
 
@@ -74,8 +74,8 @@ public class MeshGenSphere extends MeshGenerator {
 			for (int j = 0; j < n; j++) {
 				int index = i * (n + 1) + j;
 				outData.indices.put(index);
-				outData.indices.put(index + n + 1);
 				outData.indices.put(index + n + 2);
+				outData.indices.put(index + n + 1);
 				outData.indices.put(index);
 				outData.indices.put(index + 1);
 				outData.indices.put(index + n + 2);
