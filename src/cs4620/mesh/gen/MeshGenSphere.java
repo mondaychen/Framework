@@ -21,13 +21,13 @@ public class MeshGenSphere extends MeshGenerator {
 		int m = 2;//opt.divisionsLatitude;
 		int n = 3;//opt.divisionsLongitude;
 		outData.vertexCount = (n + 1) * (m + 1);
-		outData.indexCount = m * n * 2;
+		outData.indexCount = m * n * 2 * 3;
 
 		// Create Storage Spaces
 		outData.positions = NativeMem.createFloatBuffer(outData.vertexCount * 3);
 		outData.uvs = NativeMem.createFloatBuffer(outData.vertexCount * 2);
 		outData.normals = NativeMem.createFloatBuffer(outData.vertexCount * 3);
-		outData.indices = NativeMem.createIntBuffer(outData.indexCount);
+		outData.indices = NativeMem.createIntBuffer(outData.indexCount * 3);
 
 		// getting points on the Greenwich meridian (0,y,z); size = m + 1
 		ArrayList<Vector3> meridianGW = new ArrayList<>();
@@ -40,10 +40,11 @@ public class MeshGenSphere extends MeshGenerator {
 		}
 
 		// Create The Vertices
-		float uvx = 0, uvy = 0;
+		float uvx, uvy = 0;
 		float uvxStep = 1.0f / n, uvyStep = 1.0f / m;
 		// fixed y, using radius=z to calculate x and z; each size = n + 1
 		for (Vector3 vector: meridianGW) {
+			uvx = 0;
 			ArrayList<Vector2> position2d = generatePointsInCircle(n, vector.z);
 			for (Vector2 v2: position2d) {
 				outData.positions.put(v2.x);
@@ -69,6 +70,17 @@ public class MeshGenSphere extends MeshGenerator {
 		}
 		
 		// Create The Indices
+		for (int i = 0; i < m; i++) {
+			for (int j = 0; j < n; j++) {
+				int index = i * (n + 1) + j;
+				outData.indices.put(index);
+				outData.indices.put(index + n + 1);
+				outData.indices.put(index + n + 2);
+				outData.indices.put(index);
+				outData.indices.put(index + 1);
+				outData.indices.put(index + n + 2);
+			}
+		}
 				
 		// #SOLUTION END
 	}
