@@ -15,28 +15,29 @@ public class MeshGenTorus extends MeshGenerator {
 	public void generate(MeshData outData, MeshGenOptions opt) {
 		// TODO#A1 SOLUTION START
 		// Calculate Vertex And Index Count
-		
-		   int n=12,r=8;
-		   outData.vertexCount = n * r+n+1+r;
-		   outData.indexCount = (r * n* 2)* 3;
+
+		int m = opt.divisionsLatitude;
+		int n = opt.divisionsLongitude;
+		float r = opt.innerRadius;
+		outData.vertexCount = n * m + n + 1 + m;
+		outData.indexCount = (m * n * 2) * 3;
 
 		// Create Storage Spaces
 		outData.positions = NativeMem.createFloatBuffer(outData.vertexCount * 3);
 		outData.uvs = NativeMem.createFloatBuffer(outData.vertexCount * 2);
 		outData.normals = NativeMem.createFloatBuffer(outData.vertexCount * 3);
 		outData.indices = NativeMem.createIntBuffer(outData.indexCount);
-		
-		// Add Positions For 6 Faces
+
 		double pi=Math.PI;
 		double angle=2*pi/n;
-		double angleofr=2*pi/r;
+		double angleofr=2*pi/m;
         
-		float y=0.375f;
-		float d=0.625f;
+		float y = (1.0f - r) / 2;
+		float d = (1.0f + r) / 2;
 		
-		// layer of r
+		// layer of m
 
-		for(int k=0;k<r;k++)
+		for(int k=0;k<m;k++)
 		{
 			float radius=(float) (d-y*Math.sin(angleofr*k));
 			for(int i=0;i<n;i++)
@@ -55,7 +56,7 @@ public class MeshGenTorus extends MeshGenerator {
 		outData.positions.put(new float[]{0,y,-d});
 		
 		//
-		for(int i=0;i<r;i++)
+		for(int i=0;i<m;i++)
 		{
 			outData.positions.put(new float[]{0,y*(float)Math.cos(angleofr*i),-d+y*(float)Math.sin(angleofr*i)});
 
@@ -65,9 +66,9 @@ public class MeshGenTorus extends MeshGenerator {
 		
 		// Add Normals For 2nr Faces
 		
-		//for layer of r
+		//for layer of m
 		
-		for(int k=0;k<r;k++)
+		for(int k=0;k<m;k++)
 		{
 			float radius=(float) (d-y*Math.sin(angleofr*k));
 			for(int i=0;i<n;i++)
@@ -94,7 +95,7 @@ public class MeshGenTorus extends MeshGenerator {
 	
 		
 		//
-		for(int k=0;k<r;k++)
+		for(int k=0;k<m;k++)
 		{
 			float radius=(float) (d-y*Math.sin(angleofr*k));
 			
@@ -109,11 +110,11 @@ public class MeshGenTorus extends MeshGenerator {
 		
 		
 		// Add UV Coordinates
-		for(int k=0;k<r;k++)
+		for(int k=0;k<m;k++)
 		{
 			for(int i = 0; i < n; i++)
 			{
-				float[] uvs = {i*1.0f/n,1-k*1.0f/r};
+				float[] uvs = {i*1.0f/n,1-k*1.0f/m};
 				 outData.uvs.put(uvs);
 			}
 		}
@@ -140,32 +141,17 @@ public class MeshGenTorus extends MeshGenerator {
 		 
 		 
 		//seam
-		for(int i = 0; i < r; i++)
+		for(int i = 0; i < m; i++)
 		{
-			float[] uvs4 = {1.0f,1.0f-1.0f*i/r};
+			float[] uvs4 = {1.0f,1.0f-1.0f*i/m};
 			 outData.uvs.put(uvs4);
 		}
-		
-		
-	
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		
 		// Add Indices
 		
 		
-        for(int k=0;k<r-1;k++)
+        for(int k=0;k<m-1;k++)
         {
         	for(int i=0;i<n-1;i++)
         	{
@@ -178,14 +164,14 @@ public class MeshGenTorus extends MeshGenerator {
         	}
         }
         
-        for(int k=0;k<r-1;k++)
+        for(int k=0;k<m-1;k++)
         {
         	outData.indices.put((k+1)*n-1);
 			outData.indices.put((k+2)*n-1);
-			outData.indices.put(n*r+n+1+1+k);
+			outData.indices.put(n*m+n+1+1+k);
 			outData.indices.put((k+1)*n-1);
-			outData.indices.put(n*r+n+1+1+k);
-			outData.indices.put(n*r+n+1+k);
+			outData.indices.put(n*m+n+1+1+k);
+			outData.indices.put(n*m+n+1+k);
         }
         
         
@@ -194,12 +180,12 @@ public class MeshGenTorus extends MeshGenerator {
         
         for(int i=0;i<n-1;i++)
         {
-        	outData.indices.put(i+n*r);
-			outData.indices.put(i+1+n*r);
-			outData.indices.put(n*(r-1)+i);
-			outData.indices.put(i+1+n*r);
-			outData.indices.put(n*(r-1)+i+1);
-			outData.indices.put(n*(r-1)+i);
+        	outData.indices.put(i+n*m);
+			outData.indices.put(i+1+n*m);
+			outData.indices.put(n*(m-1)+i);
+			outData.indices.put(i+1+n*m);
+			outData.indices.put(n*(m-1)+i+1);
+			outData.indices.put(n*(m-1)+i);
         	
         }
         
@@ -208,13 +194,13 @@ public class MeshGenTorus extends MeshGenerator {
        
         
         
-        outData.indices.put(n*r+n);
-        outData.indices.put(r*n-1);
-    	outData.indices.put(n*r+n-1);
+        outData.indices.put(n*m+n);
+        outData.indices.put(m*n-1);
+    	outData.indices.put(n*m+n-1);
     	
-    	outData.indices.put(n*r+n);
-		outData.indices.put(n*r+n+r);
-		outData.indices.put(r*n-1);
+    	outData.indices.put(n*m+n);
+		outData.indices.put(n*m+n+m);
+		outData.indices.put(m*n-1);
 	
 
         
