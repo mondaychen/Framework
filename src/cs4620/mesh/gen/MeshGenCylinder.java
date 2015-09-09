@@ -14,8 +14,8 @@ public class MeshGenCylinder extends MeshGenerator {
 	
 	public void generate(MeshData outData, MeshGenOptions opt) {
 		// Calculate Vertex And Index Count
-		
-	    int n=12;
+
+		int n = opt.divisionsLongitude;
 		outData.vertexCount = n * 4+2;
 		outData.indexCount = (n * 2 + (n-2) * 2)* 3;
 
