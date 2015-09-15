@@ -24,6 +24,9 @@ public class OrthographicCamera extends Camera {
         // TODO#A2: Fill in this function.
         // 1) Set basisU, basisV, basisW to be the 3 basis vectors, 
         //    based on viewDir and viewUp
+        basisV.set(viewUp);
+        basisW.set(viewDir.clone().negate());
+        basisU.set(basisV.clone().cross(basisW.clone())).normalize();
       
         initialized = true;
     }
@@ -45,6 +48,9 @@ public class OrthographicCamera extends Camera {
         //    In an orthographic camera, the origin should depend on your transformed
         //    inU and inV and basisU and basisV.
         // 4) Set the direction field of outRay for an orthographic camera.
+        if (!initialized) {
+            initView();
+        }
     }
 
 }
