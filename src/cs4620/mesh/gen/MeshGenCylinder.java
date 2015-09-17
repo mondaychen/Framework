@@ -25,7 +25,7 @@ public class MeshGenCylinder extends MeshGenerator {
 		outData.normals = NativeMem.createFloatBuffer(outData.vertexCount * 3);
 		outData.indices = NativeMem.createIntBuffer(outData.indexCount);
 		
-		// Add Positions For 6 Faces
+		// Add Positions For 3 Faces
 		double pi=Math.PI;
 		double angle=2*pi/n;
 		
@@ -55,7 +55,8 @@ public class MeshGenCylinder extends MeshGenerator {
 	
 			outData.positions.put(new float[]{(float)Math.sin(angle*i),-y,-(float)Math.cos(angle*i)});
 		}
-	
+	    
+		//Add positions for the seam
 		outData.positions.put(new float[]{0,y,-1});
 		outData.positions.put(new float[]{0,-y,-1});
 		
@@ -69,7 +70,7 @@ public class MeshGenCylinder extends MeshGenerator {
 		
 		// Add UV Coordinates
      
-		//upper半圈的坐标
+		//the coordinates of upper face
 	
 		for(int i = 0; i < n; i++)
 		{
@@ -77,14 +78,14 @@ public class MeshGenCylinder extends MeshGenerator {
 			 outData.uvs.put(uvs);
 		}
 		
-		//down
+		//the coordinates of down face
 		for(int i = 0; i < n; i++) 
 		{
 			float[] uvs1 = { 0.25f+0.25f*(float)Math.sin(angle*i),0.75f+0.25f*(float)Math.cos(angle*i)};
 			outData.uvs.put(uvs1);
 		}
 		
-		//perimeter
+		//the coordinates of the perimeter
 		
 		for(int i = 0; i < n; i++) 
 		{
@@ -99,14 +100,14 @@ public class MeshGenCylinder extends MeshGenerator {
 			outData.uvs.put(uvs3);
 		}
 	
+		//the coordinates of the seam
 		float[] uvs4 = { 0,0.5f};
 	    outData.uvs.put(uvs4);
 	    float[] uvs5 = { 0,0};
 	    outData.uvs.put(uvs5);
 	    
 		// Add Indices
-	    
-	    //up
+	    // Add Indices to the upper face
 	    for(int f = 0;f < n-2;f++) {
 
 			outData.indices.put(0);
@@ -114,7 +115,8 @@ public class MeshGenCylinder extends MeshGenerator {
 			outData.indices.put(f+ 1);
 			
 		}
-       //down
+	    
+       //Add Indices to the down face
 		 for(int f = 0;f < n-2;f++) {
 
 				outData.indices.put(n);
@@ -123,7 +125,7 @@ public class MeshGenCylinder extends MeshGenerator {
 				
 			}
 		
-		 //peri
+		 //Add Indices to the perimeter
 		   for(int f = 0;f < n-1;f++) {
 
 				outData.indices.put(f+2*n+1);
@@ -135,6 +137,7 @@ public class MeshGenCylinder extends MeshGenerator {
 				
 			}
 		   
+		   //Add Indices to the seam
 		   outData.indices.put(4*n);
 		   outData.indices.put(4*n-1);
 			outData.indices.put(3*n-1);

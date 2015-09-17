@@ -32,11 +32,11 @@ public class MeshGenTorus extends MeshGenerator {
 		double angle=2*pi/n;
 		double angleofr=2*pi/m;
         
+		//y is the radius of the cross-section
 		float y = (1.0f - r) / 2;
 		float d = (1.0f + r) / 2;
 		
-		// layer of m
-
+		// Add positions to the points on the torus
 		for(int k=0;k<m;k++)
 		{
 			float radius=(float) (d-y*Math.sin(angleofr*k));
@@ -47,7 +47,7 @@ public class MeshGenTorus extends MeshGenerator {
 			}	
 
 		}
-		//
+		//Add positions to the seam points
 		for(int i=0;i<n;i++)
 		{
 			outData.positions.put(new float[]{d*(float)Math.sin(angle*i),y,-d*(float)Math.cos(angle*i)});
@@ -55,7 +55,7 @@ public class MeshGenTorus extends MeshGenerator {
 		}
 		outData.positions.put(new float[]{0,y,-d});
 		
-		//
+
 		for(int i=0;i<m;i++)
 		{
 			outData.positions.put(new float[]{0,y*(float)Math.cos(angleofr*i),-d+y*(float)Math.sin(angleofr*i)});
@@ -64,9 +64,9 @@ public class MeshGenTorus extends MeshGenerator {
 	
 		
 		
-		// Add Normals For 2nr Faces
+		// Add Normals For  Faces
 		
-		//for layer of m
+		//Add Normals to the points on the torus
 		
 		for(int k=0;k<m;k++)
 		{
@@ -84,7 +84,7 @@ public class MeshGenTorus extends MeshGenerator {
 
 		}
 	    
-		//for seam;
+		//Add normals to the seam
 		for(int i=0;i<n+1;i++)
 		{
 			outData.normals.put(0);
@@ -93,8 +93,6 @@ public class MeshGenTorus extends MeshGenerator {
 	
 		}
 	
-		
-		//
 		for(int k=0;k<m;k++)
 		{
 			float radius=(float) (d-y*Math.sin(angleofr*k));
@@ -110,6 +108,7 @@ public class MeshGenTorus extends MeshGenerator {
 		
 		
 		// Add UV Coordinates
+		// Add UV Coordinates to the points on the torus
 		for(int k=0;k<m;k++)
 		{
 			for(int i = 0; i < n; i++)
@@ -119,28 +118,17 @@ public class MeshGenTorus extends MeshGenerator {
 			}
 		}
 		
-		
-		
-	
+		//Add UV to the seam
 		for(int i = 0; i < n; i++)
 		{
 			float[] uvs2 = {i*1.0f/n,0};
 			 outData.uvs.put(uvs2);
 		}
 		
-		
-		
-		
-		
-		
-		//
-		
 		float[] uvs3 = {1,0};
 		 outData.uvs.put(uvs3);
 		
 		 
-		 
-		//seam
 		for(int i = 0; i < m; i++)
 		{
 			float[] uvs4 = {1.0f,1.0f-1.0f*i/m};
@@ -149,8 +137,7 @@ public class MeshGenTorus extends MeshGenerator {
 
 		
 		// Add Indices
-		
-		
+
         for(int k=0;k<m-1;k++)
         {
         	for(int i=0;i<n-1;i++)
@@ -173,11 +160,7 @@ public class MeshGenTorus extends MeshGenerator {
 			outData.indices.put(n*m+n+1+1+k);
 			outData.indices.put(n*m+n+1+k);
         }
-        
-        
-        
-        
-        
+                
         for(int i=0;i<n-1;i++)
         {
         	outData.indices.put(i+n*m);
@@ -189,11 +172,7 @@ public class MeshGenTorus extends MeshGenerator {
         	
         }
         
-        
-        
-       
-        
-        
+        //Add Indices to the seam
         outData.indices.put(n*m+n);
         outData.indices.put(m*n-1);
     	outData.indices.put(n*m+n-1);
