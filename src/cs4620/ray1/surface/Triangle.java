@@ -60,8 +60,52 @@ public class Triangle extends Surface {
    */
   public boolean intersect(IntersectionRecord outRecord, Ray rayIn) {
     // TODO#A2: fill in this function.
-	  
-	return false;
+    double g, h, i, j, k, l;
+    g = rayIn.direction.x;
+    h = rayIn.direction.y;
+    i = rayIn.direction.z;
+    Vector3d v0 = owner.getPosition(index.x);
+    j = v0.x - rayIn.origin.x;
+    k = v0.y - rayIn.origin.y;
+    l = v0.z - rayIn.origin.z;
+
+    double M = a * (e * i - h * f) + b * (g * f - d * i) + c * (d * h - e * g);
+    double beta = ( j * (e * i - h * f) + k * (g * f - d * i) + l * (d * h - e * g) ) / M;
+    double gamma = ( i * (a * k - j * b) + h * (j * c - a * l) + g * (b * l - k * c) )/ M;
+    double t = - ( f * (a * k - j * b) + e * (j * c - a * l) + d * (b * l - k * c) )/ M;
+
+    if (t < rayIn.start || t > rayIn.end) {
+      return false;
+    }
+    if (gamma < 0 || gamma > 1) {
+      return false;
+    }
+    if (beta < 0 || beta > 1 - gamma) {
+      return false;
+    }
+
+    outRecord.surface = this;
+    outRecord.t = t;
+    rayIn.evaluate(outRecord.location, t);
+
+    if (norm != null) {
+      outRecord.normal.set(norm);
+    } else {
+      outRecord.normal.setZero()
+              .addMultiple(1 - beta - gamma, owner.getNormal(index.x))
+              .addMultiple(beta, owner.getNormal(index.y))
+              .addMultiple(gamma, owner.getNormal(index.z));
+    }
+    outRecord.normal.normalize();
+
+    if (owner.hasUVs()) {
+      outRecord.texCoords.setZero()
+              .addMultiple(1 - beta - gamma, owner.getUV(index.x))
+              .addMultiple(beta, owner.getUV(index.y))
+              .addMultiple(gamma, owner.getUV(index.z));
+    }
+
+	return true;
   }
 
   /**
