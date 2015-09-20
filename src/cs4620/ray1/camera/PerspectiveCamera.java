@@ -43,7 +43,7 @@ public class PerspectiveCamera extends Camera {
     	basisW.set(viewDir.clone().negate());
     	basisU.set(viewDir.clone().cross(viewUp)).normalize();   
     	basisV.set(basisW.clone().cross(basisU)).normalize();
-    	centerDir.set(viewDir.mul(projDistance));
+    	centerDir.set(viewDir).normalize().mul(projDistance);
         //System.out.println (basisW);
     	//System.out.println (basisU);
     	//System.out.println (basisV);
