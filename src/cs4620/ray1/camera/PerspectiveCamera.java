@@ -71,15 +71,12 @@ public class PerspectiveCamera extends Camera {
         // 4) Set the direction field of outRay for an orthographic camera. This
         //    should depend on your transformed inU and inV and basisU and basisV,
         //    as well as the projection distance.
-    	if(!initialized) initView(); 
-    	
+    	if(!initialized) initView();   	
         inU = (inU - 0.5) * viewWidth;
         inV = (inV - 0.5 ) * viewHeight;
-        
-        
         Vector3d point = basisU.clone().mul(inU).add(basisV.clone().mul(inV));
-        Vector3d direction = point.add(centerDir).normalize();
-        outRay.set(viewPoint, direction);
+        Vector3d direc = point.add(centerDir).normalize();
+        outRay.set(viewPoint, direc);
         outRay.makeOffsetRay();
     }
 }
