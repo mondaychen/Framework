@@ -56,6 +56,8 @@ public class OrthographicCamera extends Camera {
         outRay.origin.set(viewPoint);
         outRay.origin.addMultiple(u, basisU).addMultiple(v, basisV);
         outRay.direction.set(basisW).negate();
+
+        outRay.makeOffsetRay();
     }
 
 }
