@@ -35,16 +35,20 @@ public class Sphere extends Surface {
    */
   public boolean intersect(IntersectionRecord outRecord, Ray rayIn) {
     // TODO#A2: fill in this function.
-	 double p  = -(rayIn.origin.clone().dot(rayIn.direction));
-	 double d2 = Math.pow(rayIn.direction.dot(rayIn.origin), 2) - rayIn.origin.clone().dot(rayIn.origin) +1;
-	 double d  = -Math.sqrt(d2);
-	 double t = p + d;
-	 Vector3d normal = rayIn.origin.clone().add(rayIn.direction.mul(t));
-	 Vector3d location = normal;
-	 if(t<0) return false;
+	 double origindotdirec = rayIn.origin.clone().dot(rayIn.direction.normalize());
+	 double direcdotcenter = rayIn.direction.clone().dot(center);
+	 double origindotcenter = rayIn.origin.clone().dot(center);
+	 double centerdotcenter = center.clone().dot(center);
+	 double p = origindotdirec-direcdotcenter;
+	 double d2 = Math.pow(p,2) - rayIn.origin.clone().dot(rayIn.origin)+2*origindotcenter-centerdotcenter+Math.pow(this.radius, 2);
 	 if(d2<0) return false;
+	 double d  = -Math.sqrt(d2);
+	 double t = -p + d;
+	 if(t<0) return false;
+	 Vector3d normal = rayIn.origin.clone().addMultiple(t, rayIn.direction).sub(center);
+	 Vector3d location = normal;
  	 outRecord.location.set(location);
- 	 outRecord.normal.set(normal);
+ 	 outRecord.normal.set(normal).normalize();
  	 outRecord.t = t;
      outRecord.surface = this;
      return true;
