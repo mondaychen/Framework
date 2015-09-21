@@ -50,25 +50,20 @@ public class Lambertian extends Shader {
 		//    the intersection point from the light's position.
 		// 4) Compute the color of the point using the Lambert shading model. Add this value
 		//    to the output.
-	    int size = scene.getLights().size();
-	    outIntensity.set(0,0,0);
-	    for (int i =0; i<size;i++)
-	    {
-	    
-	    	scene.getSurfaces().get(i).intersect(record, ray);
-	    	Ray shadowRay = new Ray();
-	    	shadowRay.origin.set(record.location);
-	    	shadowRay.direction.set(scene.getLights().get(i).position.sub(record.location).normalize());
-	        Colord intensity = scene.getLights().get(i).intensity;
-	        boolean isshadowed = this.isShadowed(scene, scene.getLights().get(i), record, shadowRay);
-	        if(!isshadowed){
-	        	record.normal.normalize();
-	    		shadowRay.direction.normalize();
-		        double angle = Math.max(shadowRay.direction.clone().dot(record.normal),0.0);
-		        double distance = shadowRay.direction.len();
-		        intensity.set(intensity.clone().div(distance*distance));
-		        outIntensity.set(intensity.clone().mul(angle).mul(diffuseColor));
-	    	
+
+		Colord color = new Colord();
+		Ray shadowRay = new Ray();
+		Vector3d lightDirection = new Vector3d();
+
+		outIntensity.setZero();
+	    for (Light light: scene.getLights()) {
+	        if(!this.isShadowed(scene, light, record, shadowRay)){
+		        lightDirection.set(light.position).sub(record.location).normalize();
+		        double lightDotNormal = Math.max(lightDirection.dot(record.normal), 0);
+		        color.setZero();
+		        color.addMultiple(lightDotNormal, diffuseColor)
+				        .mul(light.intensity).div(light.position.distSq(record.location));
+		        outIntensity.add(color);
 	        }
 
 	    	
