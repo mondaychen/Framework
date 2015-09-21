@@ -54,20 +54,20 @@ public class Lambertian extends Shader {
 	    outIntensity.set(0,0,0);
 	    for (int i =0; i<size;i++)
 	    {
-	    	Shader shade = record.surface.getShader();
+	    
 	    	scene.getSurfaces().get(i).intersect(record, ray);
 	    	Ray shadowRay = new Ray();
 	    	shadowRay.origin.set(record.location);
 	    	shadowRay.direction.set(scene.getLights().get(i).position.sub(record.location).normalize());
 	        Colord intensity = scene.getLights().get(i).intensity;
-	        boolean isshadowed = shade.isShadowed(scene, scene.getLights().get(i), record, shadowRay);
+	        boolean isshadowed = this.isShadowed(scene, scene.getLights().get(i), record, shadowRay);
 	        if(!isshadowed){
 	        	record.normal.normalize();
 	    		shadowRay.direction.normalize();
-		        double angle = Math.max(shadowRay.direction.dot(record.normal),0.0);
+		        double angle = Math.max(shadowRay.direction.clone().dot(record.normal),0.0);
 		        double distance = shadowRay.direction.len();
-		        intensity = (Colord) intensity.div(distance*distance);       
-		        outIntensity = (Colord) intensity.mul(angle).mul(diffuseColor);
+		        intensity.set(intensity.clone().div(distance*distance));
+		        outIntensity.set(intensity.clone().mul(angle).mul(diffuseColor));
 	    	
 	        }
 
