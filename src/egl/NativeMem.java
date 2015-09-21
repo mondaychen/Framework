@@ -8,6 +8,8 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
+import org.lwjgl.BufferUtils;
+
 /**
  * Wrapper For Providing Correct Native Memory Within Java
  * @author Cristian
@@ -17,7 +19,7 @@ public class NativeMem {
 	/**
 	 * There Can Be Only One
 	 */
-	private static final int MEM_TOGGLE = 0;
+	private static final int MEM_TOGGLE = 2;
 	
 	/**
 	 * Allocates A Native Memory Buffer (One Hopes)
@@ -27,9 +29,8 @@ public class NativeMem {
 	public static ByteBuffer createByteBuffer(int size) {
 		switch (MEM_TOGGLE) {
 		case 0: return ByteBuffer.allocate(size);
-		default: return ByteBuffer.allocateDirect(size);
-		// TODO: Get LWJGL And Set Toggle Back To 2
-		// default: return BufferUtils.createByteBuffer(size);
+		case 1: return ByteBuffer.allocateDirect(size);
+		default: return BufferUtils.createByteBuffer(size);
 		}
 	}
 	/**
