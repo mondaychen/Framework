@@ -57,11 +57,12 @@ public class Phong extends Shader {
 		//    to the output.
 		Vector3d viewDirection = new Vector3d();
 		Vector3d lightDirection = new Vector3d();
+		Ray shadowRay = new Ray();
 		viewDirection.set(ray.origin).sub(record.location).normalize();
 
 		outIntensity.setZero();
 		for (Light light: scene.getLights()) {
-			if (!this.isShadowed(scene, light, record, ray)) {
+			if (!this.isShadowed(scene, light, record, shadowRay)) {
 				lightDirection.set(light.position).sub(record.location).normalize();
 				Vector3d halfVector = viewDirection.clone().add(lightDirection).normalize();
 				double lightDotNormal = Math.max(lightDirection.dot(record.normal), 0);

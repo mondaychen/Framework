@@ -40,7 +40,7 @@ public class PerspectiveCamera extends Camera {
         // 1) Set basisU, basisV, basisW to be the 3 basis vectors,
         // based on viewDir and viewUp
 
-    	basisW.set(viewDir.clone().negate());
+    	basisW.set(viewDir.clone().negate()).normalize();
     	basisU.set(viewDir.clone().cross(viewUp)).normalize();   
     	basisV.set(basisW.clone().cross(basisU)).normalize();
     	centerDir.set(viewDir).normalize().mul(projDistance);

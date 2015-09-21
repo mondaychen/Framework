@@ -249,8 +249,7 @@ public class RayTracer {
 		IntersectionRecord record = new IntersectionRecord();
 		if(scene.getFirstIntersection(record, ray)) {
 			Colord colord = new Colord();
-			Shader shader = record.surface.getShader();
-			shader.shade(colord, scene, ray, record);
+			record.surface.getShader().shade(colord, scene, ray, record);
 			outColor.set(colord);
 		} else {
 			outColor.set(scene.getBackColor());
