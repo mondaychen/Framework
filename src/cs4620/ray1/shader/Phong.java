@@ -68,7 +68,9 @@ public class Phong extends Shader {
 				double halfDotNormal = Math.max(halfVector.dot(record.normal), 0);
 				Colord color = new Colord();
 				color.addMultiple(lightDotNormal, diffuseColor)
-						.addMultiple(Math.pow(halfDotNormal, exponent), specularColor);
+						.addMultiple(Math.pow(halfDotNormal, exponent), specularColor)
+						.mul(light.intensity)
+						.div(light.position.distSq(record.location));
 				outIntensity.add(color);
 			}
 		}
