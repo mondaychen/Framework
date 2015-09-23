@@ -253,6 +253,6 @@ public class RayTracer {
 			outColor.set(colord);
 		} else {
 			outColor.set(scene.getBackColor());
-		}	
+		}
 	}
 }
