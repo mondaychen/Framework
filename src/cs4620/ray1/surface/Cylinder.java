@@ -32,7 +32,7 @@ public class Cylinder extends Surface {
    */
   public boolean intersect(IntersectionRecord outRecord, Ray rayIn) {
 	// TODO#A2 (extra credit): Fill in this function, and write an xml file with a cylinder in it.
-	double ox,oy,oz,dx,dy,dz,t;
+	double ox,oy,oz,dx,dy,dz,t= Double.MAX_VALUE;
 	ox = rayIn.origin.x;
 	oy = rayIn.origin.y;
 	oz = rayIn.origin.z;
@@ -40,85 +40,91 @@ public class Cylinder extends Surface {
 	dy = rayIn.direction.y;
 	dz = rayIn.direction.z;
 	double zmax = this.center.z + this.height/2;
-	double zmin = this.center.z + this.height/2;
-	double a = ox * dx + oy * dy;
+	double zmin = this.center.z - this.height/2;
+	double a = dx * dx + dy * dy;
 	double b = 2 * (ox * dx + oy * dy);
 	double c = ox * ox + oy * oy -1;
 	double root = Math.pow(b, 2) - 4 * a * c;
 	if (root < 0 ) return false;
 	double t1 = (-b + Math.sqrt(root)) / 2 * a;
 	double t2 = (-b - Math.sqrt(root)) / 2 * a;
-	double z1 = oz + t1 * dz;
-	double z2 = oz + t2 * dz;
-    //the round of the cylinder
-	if( (z1 < zmax && z1 > zmin) && (z2 < zmax && z2 > zmin) ) {
-		 t = Math.min(t1, t2);
-		 outRecord.t = t;
-		 Vector3d location = new Vector3d ();
-		 location.set(ox + t * dx, oy + t * dy, oz + t * dz);
-		 outRecord.location.set(location);
-		 outRecord.normal.set(ox + t * dx, oy + t * dy, 0).normalize();
-		 
-	}
-	if( (z1 > zmax && z1 < zmin) && (z2 > zmax && z2 < zmin) ) {
-		return false;
-	}
-	if( (z1 < zmax && z1 > zmin) && (z2 > zmax && z2 < zmin) ) {
-		 t = t1;
-		 outRecord.t = t;
-		 Vector3d location = new Vector3d ();
-		 location.set(ox + t * dx, oy + t * dy, oz + t * dz);
-		 outRecord.location.set(location);
-		 outRecord.normal.set(ox + t * dx, oy + t * dy, 0).normalize();
-		 
-	}
-	if( (z1 > zmax && z1 < zmin) && (z2 < zmax && z2 > zmin) ) {
-		 t = t2; 
-		 outRecord.t = t;
-		 Vector3d location = new Vector3d ();
-		 location.set(ox + t * dx, oy + t * dy, oz + t * dz);
-		 outRecord.location.set(location);
-		 outRecord.normal.set(ox + t * dx, oy + t * dy, 0).normalize();
-	}
-	//the cap of the cylinder
 	double t3 = ( zmin - oz ) / dz ;
 	double t4 = ( zmax - oz ) / dz ;
-	double x3 = ox + t3 * dx;
-	double y3 = oy + t3 * dy;
-	double x4 = ox + t4 * dx;
-	double y4 = oy + t4 * dy;
-	double s3 = x3 * x3 + y3 * y3;
-	double s4 = x4 * x4 + y4 * y4;
+	double x,y;
+
+	if (checkCap(t3, ox, dx, oy, dy)) {
+		t = Math.min(t, t3);
+		//System.out.println (t);
+	}
+	if (checkCap(t4, ox, dx, oy, dy)) {
+		t = Math.min(t, t4);
+	}
+    
+	    
+	if (checkround(t1, zmax, zmin, oz, dz)) {
 	
-    if( s3 < 1 && s4 < 1) {
-    	t = Math.min(t3, t4);
-    	outRecord.t = t;
-        if ( t == t3 ) {
-        	outRecord.normal.set( 0, 0, zmin).normalize();
-        	outRecord.location.set( x3 , y3 , zmin);
-        }
-        else {
-        	outRecord.normal.set( 0, 0, zmax).normalize();
-        	outRecord.location.set( x4 , y4 , zmax);
-        }
-    }
-    if( s3 > 1 && s4 > 1) {
-    	return false;
-    }
-    if( s3 < 1 && s4 > 1) {
-    	outRecord.t = t3;
-    	outRecord.normal.set( 0, 0, zmin).normalize();
-    	outRecord.location.set( x3 , y3 , zmin);
-    }
-    if( s3 > 1 && s4 < 1) {
-    	outRecord.t = t4;
-    	outRecord.normal.set( 0, 0, zmax).normalize();
-    	outRecord.location.set( x4 , y4 , zmax);
+		 t = Math.min(t, t1);
+	
+	}
+	if (checkround(t2, zmax, zmin, oz, dz)) {
+		t = Math.min(t, t2);
+	}    
+	if (t == Double.MAX_VALUE) {
+		return false;
+	}
+      
+	System.out.println (t);
+	 outRecord.t = t;
+	
+	if (t == t3) {
+		x = ox + t * dx;
+		y = oy + t * dy;
+		outRecord.normal.set(0, 0, zmin).normalize();
+	    outRecord.location.set(x, y, zmin);
+	    
+	}
+	
+	if (t == t4) {
+		x = ox + t * dx;
+		y = oy + t * dy;
+		outRecord.normal.set(0, 0, zmax).normalize();
+	    outRecord.location.set(x, y, zmax);
+	
+
+	}
+
+    if ( t== t1 || t ==t2) {
+    	x = ox + t * dx;
+		y = oy + t * dy;
+		double z = oz + t * dz;
+      	outRecord.normal.set ( x , y , 0).normalize();
+      	outRecord.location.set(x,y,z);
+      
     }
     outRecord.surface = this;
-    return false;
+	return true;
+	
+
+   
   }
 
+  private boolean checkround(double t0, double zmax, double zmin, double oz, double dz) {
+	  if ( t0 < 0) return false;
+	  double z =  oz + t0 * dz;
+	  if ( z <= zmax && z >= zmin) return true;
+	  return false;
+	  
+  }
+  private boolean checkCap(double t0, double ox, double dx, double oy, double dy) {
+	  if ( t0<0 ) return false;
+	  double x = ox + t0 * dx;
+	  double y = oy + t0 * dy;
+	  double s = x * x + y * y;
+	  if ( s < 1 ) return true;
+	  return false;
+  }
+ 
+  
   /**
    * @see Object#toString()
    */
