@@ -31,7 +31,39 @@ public class MeshConverter {
 		// Substitute This Function With His Fiery Will Of Steel
 		
 		// TODO#A1 SOLUTION START
-				
+		
+		// Allocate Mesh Data
+		data.vertexCount = tris.size() * 3;
+		data.indexCount = tris.size() * 3;
+		data.positions = NativeMem.createFloatBuffer(data.vertexCount * 3);
+		data.normals = NativeMem.createFloatBuffer(data.vertexCount * 3);
+		data.indices = NativeMem.createIntBuffer(data.indexCount);
+		
+		// Loop Through Triangles
+		int vertIndex = 0;
+		for(Vector3i t : tris) {
+			// Compute The Normal
+			Vector3 n = new Vector3(positions.get(t.z));
+			n.sub(positions.get(t.y));
+			n.cross(positions.get(t.x).clone().sub(positions.get(t.y)));
+			n.normalize();
+			
+			// Check For Degenerate Triangle
+			if(Float.isNaN(n.x) || Float.isNaN(n.y) || Float.isNaN(n.z)) {
+				data.vertexCount -= 3;
+				data.indexCount -= 3;
+				continue;
+			}
+			
+			// Add A Vertex
+			for(int vi = 0;vi < 3;vi++) {
+				Vector3 v = positions.get(t.get(vi));
+				data.positions.put(v.x); data.positions.put(v.y); data.positions.put(v.z);
+				data.normals.put(n.x); data.normals.put(n.y); data.normals.put(n.z);
+				data.indices.put(vertIndex++);
+			}
+		}
+		
 		// #SOLUTION END
 
 		return data;

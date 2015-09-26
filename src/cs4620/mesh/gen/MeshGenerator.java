@@ -1,5 +1,6 @@
 package cs4620.mesh.gen;
 
+import cs4620.common.BasicType;
 import cs4620.mesh.MeshData;
 
 
@@ -10,4 +11,10 @@ public abstract class MeshGenerator {
 	 * @param opt {@link MeshGenOptions}
 	 */
 	public abstract void generate(MeshData outData, MeshGenOptions opt);
+	
+	/**
+	 * What Kind Of Shape Is Generated
+	 * @return A Shape Enum
+	 */
+	public abstract BasicType getType();
 }

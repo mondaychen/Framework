@@ -1,5 +1,6 @@
 package cs4620.mesh.gen;
 
+import cs4620.common.BasicType;
 import cs4620.mesh.MeshData;
 import egl.NativeMem;
 
@@ -83,5 +84,10 @@ public class MeshGenCube extends MeshGenerator {
 			outData.indices.put(f + 3);
 			f >>= 2;
 		}
+	}
+
+	@Override
+	public BasicType getType() {
+		return BasicType.Cube;
 	}
 }
