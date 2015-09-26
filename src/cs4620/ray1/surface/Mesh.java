@@ -105,4 +105,7 @@ public class Mesh extends Surface {
 							mesh.normals.get(3*index+2));
 	}
 	
+	public MeshData getMeshData() {
+		return this.mesh;
+	}
 }

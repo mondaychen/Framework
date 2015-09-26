@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<scene>
+    <exposure>6.54321</exposure>
+    <camera type="PerspectiveCamera">
+      <viewPoint>3 0 -10</viewPoint>
+      <viewDir>-4 -6 -8</viewDir>
+      <viewUp>0 1 0</viewUp>
+      <projDistance>2</projDistance>
+      <viewWidth>0.5</viewWidth>
+      <viewHeight>0.5</viewHeight>
+    </camera>
+    <shader name="bunny" type="Lambertian">
+      <diffuseColor>1.0 0.7 0.7</diffuseColor>
+    </shader>
+
+    <shader name="plane" type="Lambertian">
+      <diffuseColor>1.0 1.0 0.0</diffuseColor>
+    </shader>
+
+    <shader name="box" type="Lambertian">
+      <diffuseColor>0.0 1.0 0.8</diffuseColor>
+    </shader>
+    <surface type="Mesh">
+      <shader ref="plane" />
+      <data>../../meshes/plane-notex.obj</data>
+    </surface>
+    <surface type="Mesh">
+      <shader ref="bunny" />
+      <data>../../meshes/bunny128v2.obj</data>
+    </surface>
+    <surface type="Mesh">
+      <shader ref="box" />
+      <data>../../meshes/box-offset.obj</data>
+    </surface>
+
+    <light>
+      <position>3 10 5</position>
+  	  <intensity>9 9 9</intensity>
+    </light>
+
+</scene>

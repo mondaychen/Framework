@@ -17,6 +17,7 @@ public class Lambertian extends Shader {
 	/** The color of the surface. */
 	protected final Colord diffuseColor = new Colord(Color.White);
 	public void setDiffuseColor(Colord inDiffuseColor) { diffuseColor.set(inDiffuseColor); }
+	public Colord getDiffuseColor() {return new Colord(diffuseColor);}
 
 	public Lambertian() { }
 	

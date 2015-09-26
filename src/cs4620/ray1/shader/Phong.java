@@ -16,14 +16,17 @@ public class Phong extends Shader {
 	/** The color of the diffuse reflection. */
 	protected final Colord diffuseColor = new Colord(Color.White);
 	public void setDiffuseColor(Colord diffuseColor) { this.diffuseColor.set(diffuseColor); }
+	public Colord getDiffuseColor() {return new Colord(diffuseColor);}
 
 	/** The color of the specular reflection. */
 	protected final Colord specularColor = new Colord(Color.White);
 	public void setSpecularColor(Colord specularColor) { this.specularColor.set(specularColor); }
+	public Colord getSpecularColor() {return new Colord(specularColor);}
 
 	/** The exponent controlling the sharpness of the specular reflection. */
 	protected double exponent = 1.0;
 	public void setExponent(double exponent) { this.exponent = exponent; }
+	public double getExponent() {return exponent;}
 
 	public Phong() { }
 
