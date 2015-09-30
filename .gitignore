@@ -1,2 +1,8 @@
 GLDiag.txt
 /bin/
+
+*.obj
+.idea/
+*.iml
+out/
+.metadata/
