@@ -4,6 +4,7 @@ import cs4620.common.SceneCamera;
 import cs4620.common.SceneObject;
 import egl.math.Matrix4;
 import egl.math.Vector2;
+import egl.math.Vector2d;
 
 public class RenderCamera extends RenderObject {
 	/**
@@ -62,16 +63,17 @@ public class RenderCamera extends RenderObject {
 		mView.set(mWorldTransform).invert();
 		
 		// Correct Image Aspect Ratio By Enlarging Image
+		Vector2d iSize = sceneCamera.imageSize.clone();
 		double viewAspectRatio = viewportSize.x / viewportSize.y;
-		double cameraAspectRatio = sceneCamera.imageSize.x / sceneCamera.imageSize.y;
+		double cameraAspectRatio = iSize.x / iSize.y;
 		if (viewAspectRatio > cameraAspectRatio) {
-			sceneCamera.imageSize.set(sceneCamera.imageSize.y * viewAspectRatio, sceneCamera.imageSize.y);
+			iSize.set(iSize.y * viewAspectRatio, iSize.y);
 		} else {
-			sceneCamera.imageSize.set(sceneCamera.imageSize.x, sceneCamera.imageSize.y / viewAspectRatio);
+			sceneCamera.imageSize.set(iSize.x, iSize.y / viewAspectRatio);
 		}
 
 		// Create Projection
-		Matrix4.createPerspective((float)sceneCamera.imageSize.x, (float)sceneCamera.imageSize.y,
+		Matrix4.createPerspective((float)iSize.x, (float)iSize.y,
 				(float)sceneCamera.zPlanes.x, (float)sceneCamera.zPlanes.y, mProj);
 		
 		
