@@ -1,5 +1,6 @@
 package cs4620.gl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import cs4620.common.Cubemap;
@@ -10,6 +11,8 @@ import cs4620.common.SceneCamera;
 import cs4620.common.SceneLight;
 import cs4620.common.SceneObject;
 import cs4620.common.Texture;
+import egl.math.Matrix3;
+import egl.math.Matrix4;
 import egl.math.Vector2;
 
 /**
@@ -60,8 +63,7 @@ public class RenderTreeBuilder {
 		// Pass 1: Create The Render Object Mapping
 		HashMap<String, RenderObject> dict = new HashMap<>();
 		for(SceneObject so : scene.objects) {
-			RenderObject ro;
-			
+			RenderObject ro;		
 			if(so instanceof SceneCamera) {
 				ro = new RenderCamera(so, env.viewportSize);
 				env.cameras.add((RenderCamera)ro);
@@ -119,9 +121,36 @@ public class RenderTreeBuilder {
 	 * @param env  The environment containing the hierarchy to be processed.
 	 */
 	public static void rippleTransformations(RenderEnvironment env) {
-		// TODO#A3 SOLUTION START
+		// TODO#A3 SOLUTION START	
+		// store the matrix4 and matrix3 in every node;
+		env.root.mWorldTransform.set(env.root.sceneObject.transformation);
+		env.root.mWorldTransformIT.set(env.root.sceneObject.transformation.getAxes().clone().invert().transpose());
+		ArrayList<RenderObject> children = env.root.children;
+		for(RenderObject childnode : children) {
+			childnode.mWorldTransform.set(gettransform(childnode,env));
+			childnode.mWorldTransformIT.set(gettransformIT(childnode));
 		}
+		ArrayList<RenderCamera> cameras = env.cameras;
+		for(RenderCamera cam : cameras) {
+			cam.updateCameraMatrix(cam.viewportSize);
+		}
+	}
 	// SOLUTION END
+	
+	//To get the mWorldtransform of every node;
+	public static Matrix4 gettransform(RenderObject node, RenderEnvironment env) {
+		if(node.parent == null) return env.root.mWorldTransform;
+		return node.sceneObject.transformation.clone().mulBefore(gettransform(node.parent,env));
+	}
+	
+	//To get the mWorldTransformIT of every node;
+	public static Matrix3 gettransformIT(RenderObject node) {
+		  return node.sceneObject.transformation.getAxes().clone().invert().transpose();
+		//to calculate the mWorldTransformIT for every node;
+		
+	}
+	
+	
 	
 	/**
 	 * Make a RenderMaterial for each Material in <scene>.
