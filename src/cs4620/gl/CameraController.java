@@ -7,6 +7,7 @@ import cs4620.common.Scene;
 import cs4620.common.event.SceneTransformationEvent;
 import egl.math.Matrix4;
 import egl.math.Vector3;
+import egl.math.Vector4;
 
 public class CameraController {
 	protected final Scene scene;
@@ -93,9 +94,19 @@ public class CameraController {
 	 * @param rotation  The rotation in degrees, as Euler angles (rotation angles about x, y, z axes)
 	 */
 	protected void rotate(Matrix4 parentWorld, Matrix4 transformation, Vector3 rotation) {
-		// TODO#A3 SOLUTION START
-		
-				
+		// TODO#A3 SOLUTION START	
+		Matrix4 rotateX = Matrix4.createRotationX(rotation.x);  
+		Matrix4 rotateY = Matrix4.createRotationX(rotation.y);
+		Matrix4 rotateZ = Matrix4.createRotationX(rotation.z);
+		Matrix4 rotate = new Matrix4();
+		rotate.set(rotateX.mulBefore(rotateY).mulBefore(rotateZ));	
+		if(this.orbitMode) {	
+             transformation.set(rotate).mulBefore(camera.mView.clone().invert());
+		}	
+		//flying mode, rotate about the viewpoint
+		else {
+			transformation.set(rotate.mulBefore(camera.mView));
+		}			
 		// SOLUTION END
 	}
 	
@@ -108,9 +119,11 @@ public class CameraController {
 	 * @param motion  The translation in camera-space units
 	 */
 	protected void translate(Matrix4 parentWorld, Matrix4 transformation, Vector3 motion) {
-		// TODO#A3 SOLUTION START
-
-			
+		// TODO#A3 SOLUTION START	
+        Matrix4 newtransform = new Matrix4 ();
+        newtransform = Matrix4.createTranslation(motion);
+		transformation.set(newtransform);
+		
 		// SOLUTION END
 	}
 }
