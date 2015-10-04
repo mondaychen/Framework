@@ -61,7 +61,7 @@ public class RenderCamera extends RenderObject {
 
 		// Create viewing matrix
 		mView.set(mWorldTransform).invert();
-		
+
 		// Correct Image Aspect Ratio By Enlarging Image
 		Vector2d iSize = sceneCamera.imageSize.clone();
 		double viewAspectRatio = viewportSize.x / viewportSize.y;
@@ -73,8 +73,13 @@ public class RenderCamera extends RenderObject {
 		}
 
 		// Create Projection
-		Matrix4.createPerspective((float)iSize.x, (float)iSize.y,
-				(float)sceneCamera.zPlanes.x, (float)sceneCamera.zPlanes.y, mProj);
+		if (sceneCamera.isPerspective) {
+			Matrix4.createPerspective((float) iSize.x, (float) iSize.y,
+					(float) sceneCamera.zPlanes.x, (float) sceneCamera.zPlanes.y, mProj);
+		} else {
+			Matrix4.createOrthographic((float) iSize.x, (float) iSize.y,
+					(float) sceneCamera.zPlanes.x, (float) sceneCamera.zPlanes.y, mProj);
+		}
 		
 		
 		// Set the view projection matrix using the view and projection matrices
