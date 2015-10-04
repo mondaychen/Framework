@@ -211,7 +211,30 @@ public class ManipController implements IDisposable {
 		// You may find it helpful to structure your code into a few helper functions; ours is about 150 lines.
 		
 		// TODO#A3 SOLUTION START
+		switch (manip.type) {
+			case Manipulator.Type.SCALE:
+				applyScale(manip.axis, camera, object, lastMousePos, curMousePos);
+				break;
+			case Manipulator.Type.ROTATE:
+				applyRotate(manip.axis, camera, object, lastMousePos, curMousePos);
+				break;
+			case Manipulator.Type.TRANSLATE:
+				applyTranslate(manip.axis, camera, object, lastMousePos, curMousePos);
+				break;
+			default:
+				throw new Error("Unexpected Manipulator Type");
+		}
 	
+	}
+
+	private void applyScale(int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
+
+	}
+	private void applyRotate(int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
+
+	}
+	private void applyTranslate(int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
+
 	}
 	// SOLUTION END
 	
