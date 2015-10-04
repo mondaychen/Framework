@@ -125,11 +125,8 @@ public class RenderTreeBuilder {
 		// store the matrix4 and matrix3 in every node;
 		env.root.mWorldTransform.set(env.root.sceneObject.transformation);
 		env.root.mWorldTransformIT.set(env.root.sceneObject.transformation.getAxes().clone().invert().transpose());
-		ArrayList<RenderObject> children = env.root.children;
-		for(RenderObject childnode : children) {
-			childnode.mWorldTransform.set(gettransform(childnode,env));
-			childnode.mWorldTransformIT.set(gettransformIT(childnode));
-		}
+		set(env.root, env);	
+		//update camera;
 		ArrayList<RenderCamera> cameras = env.cameras;
 		for(RenderCamera cam : cameras) {
 			cam.updateCameraMatrix(cam.viewportSize);
@@ -148,6 +145,15 @@ public class RenderTreeBuilder {
 		  return node.sceneObject.transformation.getAxes().clone().invert().transpose();
 		//to calculate the mWorldTransformIT for every node;
 		
+	}
+	//To get the child node of each node;
+	public static void set(RenderObject node, RenderEnvironment env) {
+		if(node.children.size() == 0) return;
+		for(RenderObject childnode : node.children) {
+			set(childnode, env);
+			childnode.mWorldTransform.set(gettransform(childnode,env));
+			childnode.mWorldTransformIT.set(gettransformIT(childnode));
+		}	
 	}
 	
 	
