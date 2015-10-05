@@ -211,30 +211,74 @@ public class ManipController implements IDisposable {
 		// You may find it helpful to structure your code into a few helper functions; ours is about 150 lines.
 		
 		// TODO#A3 SOLUTION START
+		Matrix4 M = new Matrix4();
 		switch (manip.type) {
 			case Manipulator.Type.SCALE:
-				applyScale(manip.axis, camera, object, lastMousePos, curMousePos);
+				applyScale(M, manip.axis, camera, object, lastMousePos, curMousePos);
 				break;
 			case Manipulator.Type.ROTATE:
-				applyRotate(manip.axis, camera, object, lastMousePos, curMousePos);
+				applyRotate(M, manip.axis, camera, object, lastMousePos, curMousePos);
 				break;
 			case Manipulator.Type.TRANSLATE:
-				applyTranslate(manip.axis, camera, object, lastMousePos, curMousePos);
+				applyTranslate(M, manip.axis, camera, object, lastMousePos, curMousePos);
 				break;
 			default:
 				throw new Error("Unexpected Manipulator Type");
 		}
+
+		if (parentSpace) {
+			object.sceneObject.transformation.mulAfter(M);
+		} else {
+			object.sceneObject.transformation.mulBefore(M);
+		}
 	
 	}
 
-	private void applyScale(int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
-
+	private void applyScale(Matrix4 M, int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
+		float amount = (float)((curMousePos.x - lastMousePos.x) * 0.1 + 1);
+		Vector3 scaleAmount = new Vector3();
+		switch (axis) {
+			case Manipulator.Axis.X:
+				scaleAmount.set(amount, 1, 1);
+				break;
+			case Manipulator.Axis.Y:
+				scaleAmount.set(1, amount, 1);
+				break;
+			case Manipulator.Axis.Z:
+				scaleAmount.set(1, 1, amount);
+				break;
+		}
+		Matrix4.createScale(scaleAmount, M);
 	}
-	private void applyRotate(int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
-
+	private void applyRotate(Matrix4 M, int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
+		float amount = (float)((curMousePos.x - lastMousePos.x) * 0.1);
+		switch (axis) {
+			case Manipulator.Axis.X:
+				Matrix4.createRotationX(amount, M);
+				break;
+			case Manipulator.Axis.Y:
+				Matrix4.createRotationY(amount, M);
+				break;
+			case Manipulator.Axis.Z:
+				Matrix4.createRotationZ(amount, M);
+				break;
+		}
 	}
-	private void applyTranslate(int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
-
+	private void applyTranslate(Matrix4 M, int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
+		float amount = (float)((curMousePos.x - lastMousePos.x) * 0.1);
+		Vector3 translateAmount = new Vector3();
+		switch (axis) {
+			case Manipulator.Axis.X:
+				translateAmount.set(amount, 0, 0);
+				break;
+			case Manipulator.Axis.Y:
+				translateAmount.set(0, amount, 0);
+				break;
+			case Manipulator.Axis.Z:
+				translateAmount.set(0, 0, amount);
+				break;
+		}
+		Matrix4.createTranslation(translateAmount, M);
 	}
 	// SOLUTION END
 	
