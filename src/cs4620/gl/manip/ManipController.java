@@ -235,7 +235,7 @@ public class ManipController implements IDisposable {
 	}
 
 	private void applyScale(Matrix4 M, int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
-		float amount = getAmountOnAxis(axis, camera.mViewProjection, object, lastMousePos, curMousePos);
+		float amount = getAmountOnAxis(axis, camera.mViewProjection, object, lastMousePos, curMousePos, true);
 		Vector3 scaleAmount = new Vector3();
 		switch (axis) {
 			case Manipulator.Axis.X:
@@ -251,7 +251,7 @@ public class ManipController implements IDisposable {
 		Matrix4.createScale(scaleAmount, M);
 	}
 	private void applyRotate(Matrix4 M, int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
-		float amount = curMousePos.x - lastMousePos.x + curMousePos.y - lastMousePos.y;
+		float amount = -(curMousePos.x - lastMousePos.x + curMousePos.y - lastMousePos.y);
 		switch (axis) {
 			case Manipulator.Axis.X:
 				Matrix4.createRotationX(amount, M);
@@ -265,7 +265,7 @@ public class ManipController implements IDisposable {
 		}
 	}
 	private void applyTranslate(Matrix4 M, int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
-		float amount = getAmountOnAxis(axis, camera.mViewProjection, object, lastMousePos, curMousePos);
+		float amount = getAmountOnAxis(axis, camera.mViewProjection, object, lastMousePos, curMousePos, false);
 		Vector3 translateAmount = new Vector3();
 		switch (axis) {
 			case Manipulator.Axis.X:
@@ -281,7 +281,7 @@ public class ManipController implements IDisposable {
 		Matrix4.createTranslation(translateAmount, M);
 	}
 
-	private float getAmountOnAxis(int axis, Matrix4 mVP, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
+	private float getAmountOnAxis(int axis, Matrix4 mVP, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos, boolean dividing) {
 		Vector3 axisDirection = new Vector3();
 		Vector3 axisOrigin = new Vector3();
 		switch (axis) {
@@ -304,7 +304,7 @@ public class ManipController implements IDisposable {
 		}
 		float t1 = getTOnAxis(axisOrigin, axisDirection, mVP, lastMousePos);
 		float t2 = getTOnAxis(axisOrigin, axisDirection, mVP, curMousePos);
-		return t2 - t1;
+		return dividing ? t2 / t1 : t2 - t1;
 	}
 	private static float getTOnAxis(Vector3 axisOrigin, Vector3 axisDirection, Matrix4 mVP, Vector2 mousePos) {
 		Vector3 p1 = new Vector3(mousePos.x, mousePos.y, -1);
