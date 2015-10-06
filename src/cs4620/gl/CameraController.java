@@ -95,17 +95,17 @@ public class CameraController {
 	 */
 	protected void rotate(Matrix4 parentWorld, Matrix4 transformation, Vector3 rotation) {
 		// TODO#A3 SOLUTION START	
-		Matrix4 rotateX = Matrix4.createRotationX(rotation.x);  
-		Matrix4 rotateY = Matrix4.createRotationX(rotation.y);
-		Matrix4 rotateZ = Matrix4.createRotationX(rotation.z);
+		Matrix4 rotateX = Matrix4.createRotationX((float)(rotation.x/180 * Math.PI));  
+		Matrix4 rotateY = Matrix4.createRotationY((float)(rotation.y/180 * Math.PI));
+		Matrix4 rotateZ = Matrix4.createRotationZ((float)(rotation.z/180 * Math.PI));
 		Matrix4 rotate = new Matrix4();
-		rotate.set(rotateX.mulBefore(rotateY).mulBefore(rotateZ));	
-		if(this.orbitMode) {	
-             transformation.set(rotate).mulBefore(camera.mView.clone().invert());
+		rotate.set(rotateZ.mulBefore(rotateY).mulBefore(rotateX));	
+		if(this.orbitMode) {	                                           //rotate about the world origin
+			transformation.mulAfter(rotate);
 		}	
-		//flying mode, rotate about the viewpoint
-		else {
-			transformation.set(rotate.mulBefore(camera.mView));
+		else {        //flying mode rotate about the camera's viewpoint
+			transformation.mulBefore(rotate);
+			
 		}			
 		// SOLUTION END
 	}
@@ -121,9 +121,8 @@ public class CameraController {
 	protected void translate(Matrix4 parentWorld, Matrix4 transformation, Vector3 motion) {
 		// TODO#A3 SOLUTION START	
         Matrix4 newtransform = new Matrix4 ();
-        newtransform = Matrix4.createTranslation(motion);
-		transformation.set(newtransform);
-		
+        newtransform.set(Matrix4.createTranslation(motion).mulBefore(transformation));
+		transformation.set(newtransform);	
 		// SOLUTION END
 	}
 }

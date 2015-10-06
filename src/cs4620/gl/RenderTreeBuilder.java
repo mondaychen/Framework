@@ -136,7 +136,7 @@ public class RenderTreeBuilder {
 	
 	//To get the mWorldtransform of every node;
 	public static Matrix4 gettransform(RenderObject node, RenderEnvironment env) {
-		return node.sceneObject.transformation.clone().mulBefore(node.parent.sceneObject.transformation);
+		return node.sceneObject.transformation.clone().mulBefore(node.parent.mWorldTransform);
 	}
 	
 	//To get the mWorldTransformIT of every node;
