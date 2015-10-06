@@ -250,6 +250,7 @@ public class ManipController implements IDisposable {
 		}
 		Matrix4.createScale(scaleAmount, M);
 	}
+	
 	private void applyRotate(Matrix4 M, int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
 		float amount = -(curMousePos.x - lastMousePos.x + curMousePos.y - lastMousePos.y);
 		switch (axis) {
@@ -257,13 +258,15 @@ public class ManipController implements IDisposable {
 				Matrix4.createRotationX(amount, M);
 				break;
 			case Manipulator.Axis.Y:
-				Matrix4.createRotationY(amount, M);
+				Matrix4.createRotationY(-amount, M);
 				break;
 			case Manipulator.Axis.Z:
 				Matrix4.createRotationZ(amount, M);
 				break;
 		}
 	}
+	
+	
 	private void applyTranslate(Matrix4 M, int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
 		float amount = getAmountOnAxis(axis, camera.mViewProjection, object, lastMousePos, curMousePos, false);
 		Vector3 translateAmount = new Vector3();
@@ -306,6 +309,9 @@ public class ManipController implements IDisposable {
 		float t2 = getTOnAxis(axisOrigin, axisDirection, mVP, curMousePos);
 		return dividing ? t2 / t1 : t2 - t1;
 	}
+	
+	
+	
 	private static float getTOnAxis(Vector3 axisOrigin, Vector3 axisDirection, Matrix4 mVP, Vector2 mousePos) {
 		Vector3 p1 = new Vector3(mousePos.x, mousePos.y, -1);
 		Vector3 p2 = new Vector3(mousePos.x, mousePos.y, 1);
@@ -326,6 +332,7 @@ public class ManipController implements IDisposable {
 	}
 	// SOLUTION END
 	
+	
 	public void checkMouse(int mx, int my, RenderCamera camera) {
 		Vector2 curMousePos = new Vector2(mx, my).add(0.5f).mul(2).div(camera.viewportSize.x, camera.viewportSize.y).sub(1);
 		if(curMousePos.x != lastMousePos.x || curMousePos.y != lastMousePos.y) {
@@ -336,6 +343,8 @@ public class ManipController implements IDisposable {
 			lastMousePos.set(curMousePos);
 		}
 	}
+	
+	
 
 	public void checkPicking(Renderer renderer, RenderCamera camera, int mx, int my) {
 		if(camera == null) return;
