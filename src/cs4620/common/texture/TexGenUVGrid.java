@@ -13,6 +13,11 @@ public class TexGenUVGrid extends ACTextureGeneratorTwoColor {
 	
 	@Override
 	public void getColor(float u, float v, Color outColor) {
-		outColor.set(100, 100, 100);
+		outColor.set(
+			MathHelper.clamp((int)Math.round(u * color1.r() + v * color2.r()), 0, 255),
+			MathHelper.clamp((int)Math.round(u * color1.g() + v * color2.g()), 0, 255),	
+			MathHelper.clamp((int)Math.round(u * color1.b() + v * color2.b()), 0, 255),	
+			MathHelper.clamp((int)Math.round(u * color1.a() + v * color2.a()), 0, 255)
+			);
 	}
 }
