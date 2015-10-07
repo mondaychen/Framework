@@ -252,7 +252,7 @@ public class ManipController implements IDisposable {
 	}
 	
 	private void applyRotate(Matrix4 M, int axis, RenderCamera camera, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos) {
-		float amount = -(curMousePos.x - lastMousePos.x + curMousePos.y - lastMousePos.y);
+		float amount = -(curMousePos.y - lastMousePos.y);
 		switch (axis) {
 			case Manipulator.Axis.X:
 				Matrix4.createRotationX(amount, M);
@@ -284,7 +284,7 @@ public class ManipController implements IDisposable {
 		Matrix4.createTranslation(translateAmount, M);
 	}
 
-	private float getAmountOnAxis(int axis, Matrix4 mVP, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos, boolean dividing) {
+	private float getAmountOnAxis(int axis, Matrix4 mVP, RenderObject object, Vector2 lastMousePos, Vector2 curMousePos, boolean ratio) {
 		Vector3 axisDirection = new Vector3();
 		Vector3 axisOrigin = new Vector3();
 		switch (axis) {
@@ -307,7 +307,7 @@ public class ManipController implements IDisposable {
 		}
 		float t1 = getTOnAxis(axisOrigin, axisDirection, mVP, lastMousePos);
 		float t2 = getTOnAxis(axisOrigin, axisDirection, mVP, curMousePos);
-		return dividing ? t2 / t1 : t2 - t1;
+		return ratio ? t2 / t1 : t2 - t1;
 	}
 	
 	
