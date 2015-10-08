@@ -313,21 +313,26 @@ public class ManipController implements IDisposable {
 	
 	
 	private static float getTOnAxis(Vector3 axisOrigin, Vector3 axisDirection, Matrix4 mVP, Vector2 mousePos) {
-		Vector3 p1 = new Vector3(mousePos.x, mousePos.y, -1);
-		Vector3 p2 = new Vector3(mousePos.x, mousePos.y, 1);
-		// invert of view-projection matrix
+		// P1P2 forms a helper ray that perpendicular to the image place
+		Vector3 p1 = new Vector3(mousePos.x, mousePos.y, 0);
+		Vector3 p2 = new Vector3(mousePos.x, mousePos.y, -1);
+		// Invert of camera's view-projection matrix
 		Matrix4 mVPI = mVP.clone().invert();
-		// Transforms and homogenizes P1 and P2
+		// Cast points to world space
 		mVPI.mulPos(p1);
 		mVPI.mulPos(p2);
-		// P1 works as ray origin and the ray direction is P1P2
-		Vector3 rayDirection = p2.clone().sub(p1);
-		// build a basis a, b, c. a is parallel to ray and c is perpendicular to axis
-		Vector3 a = rayDirection.clone();
+		Vector3 helperRayDirection = p2.clone().sub(p1);
+		// Build a basis a, b, c for a plane that parallel and contains axisOrigin.
+		// a is parallel to the helper ray and c is perpendicular to axis
+		Vector3 a = helperRayDirection.clone();
 		Vector3 c = a.clone().cross(axisDirection).normalize();
 		// b perpendicular to both a and c
 		Vector3 b = c.clone().cross(a);
-		// Now the intersection is the point on the ray with b coordinate == 0
+		// Assume a point on axis P, which is the closest point on axis (what we are looking for),
+		// P = o + td, where o is axisOrigin and d is axisDirection.
+		// Because the plane formed by P1, P and the ray from eye origin to the mouse click position
+		// is perpendicular to b, we have P1P dot b = 0
+		// t = (P1-o) dot b / d dot b
 		return p1.clone().sub(axisOrigin).dot(b) / axisDirection.dot(b);
 	}
 	// SOLUTION END
