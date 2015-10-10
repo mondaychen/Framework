@@ -78,6 +78,7 @@ vec3 get_direction(vec2 p, vec3 U, vec3 V, vec3 W, float d) {
 
   // Return the direction towards a point p on UV plane a distance
   // d away from the camera along W.
+  return U * p.x + V * p.y + U * d;
 
   // Solution End
 }
