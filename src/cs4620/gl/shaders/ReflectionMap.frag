@@ -4,6 +4,7 @@
 // vec4 getDiffuseColor(vec2 uv)
 // vec4 getNormalColor(vec2 uv)
 // vec4 getSpecularColor(vec2 uv)
+// vec4 getEnvironmentColor(vec3 dir)
 
 // Lighting Information
 
