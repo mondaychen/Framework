@@ -28,10 +28,47 @@ out vec4 vFragColor;
 // and the y value contains the t value at the far intersection.
 vec2 intersectCube(vec3 origin, vec3 ray, vec3 cube_min, vec3 cube_max) {
   // TODO#PPA1 Solution Start
+  vec2 result = vec2(-1, -1);
 
   // Implement axis-aligned box intersection here
+  float nums[6] = {
+    rayIntersectPlane(origin, ray, cube_min, vec3(0, 0, cube_max.z - cube_min.z)),
+    rayIntersectPlane(origin, ray, cube_min, vec3(0, cube_max.y - cube_min.y), 0),
+    rayIntersectPlane(origin, ray, cube_min, vec3(cube_max.x - cube_min.x), 0, 0),
+    rayIntersectPlane(origin, ray, cube_max, vec3(0, 0, cube_max.z - cube_min.z)),
+    rayIntersectPlane(origin, ray, cube_max, vec3(0, cube_max.y - cube_min.y), 0),
+    rayIntersectPlane(origin, ray, cube_max, vec3(cube_max.x - cube_min.x), 0, 0),
+  };
+
+  for (int i = 0; i < 6; i++) {
+    if (nums[i] > 0 && isInCube(nums[i], cube_min, cube_max)) {
+      if (result.x > 0) {
+        result.y = nums[i];
+      } else {
+        result.x = nums[i];
+      }
+      if (result.x > 0 && result.y > 0) {
+        break;
+      }
+    }
+  }
+
+  if (result.x > result.y) {
+    return result.yx;
+  }
+  return result;
 
   // Solution End
+}
+
+float rayIntersectPlane(vec3 origin, vec3 ray, vec3 planePoint, vec3 norm) {
+  // t = (PlanePoint - origin) dot normal / ray dot normal
+  return dot(planePoint - origin, normal) / dot(ray, normal);
+}
+
+bool isInCube(float t, vec3 cube_min, vec3 cube_max) {
+  return t > cube_min.x && t > cube_min.y && t > cube_min.z &&
+           t < cube_max.x && t < cube_max.y && t < cube_max.z;
 }
 
 // Gets the direction given a 2D position p,
