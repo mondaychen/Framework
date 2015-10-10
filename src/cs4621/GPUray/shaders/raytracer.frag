@@ -116,7 +116,55 @@ vec4 intersectTriangle(vec3 origin, vec3 dir, int index, inout vec3 normal ) {
   // 6) If there is a hit, set the "inout" normal variable
   // 7) Return a vec4 containing (t, beta, gamma, i) where i is the
   //    index of the color for the given triangle
-  return vec4(-1,0,0,0);
+
+  vec3 v0 = triangles[index][0];
+  vec3 v1 = triangles[index][1];
+  vec3 v2 = triangles[index][2];
+
+  float a, b, c, d, e, f, g, h, i, j, k, l;
+
+  a = v0.x-v1.x;
+  b = v0.y-v1.y;
+  c = v0.z-v1.z;
+
+  d = v0.x-v2.x;
+  e = v0.y-v2.y;
+  f = v0.z-v2.z;
+
+  g = dir.x;
+  h = dir.y;
+  i = dir.z;
+  j = v0.x - dir.x;
+  k = v0.y - dir.y;
+  l = v0.z - dir.z;
+
+  float M = a * (e * i - h * f) + b * (g * f - d * i) + c * (d * h - e * g);
+  float beta = ( j * (e * i - h * f) + k * (g * f - d * i) + l * (d * h - e * g) ) / M;
+  float gamma = ( i * (a * k - j * b) + h * (j * c - a * l) + g * (b * l - k * c) )/ M;
+  float t = - ( f * (a * k - j * b) + e * (j * c - a * l) + d * (b * l - k * c) )/ M;
+
+  if (gamma < 0 || gamma > 1) {
+    return vec4(-1,0,0,0);
+  }
+
+  if (beta < 0 || beta > 1 - gamma) {
+    return vec4(-1,0,0,0);
+  }
+
+  // how to get normals????
+  if (hasNormals) {
+    vec3 n0 = normals[index][0];
+    vec3 n1 = normals[index][1];
+    vec3 n2 = normals[index][2];
+    normal = (1 - gamma - beta) * n0 + beta * n1 + gamma * n2;
+  } else {
+    vec3 e0 = v1 - v0;
+    vec3 e1 = v2 - v0;
+    normal = cross(e0, e1);
+  }
+
+
+  return vec4(t, beta, gamma, i);
 
   // Solution End
 }
