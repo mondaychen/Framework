@@ -181,6 +181,12 @@ float compute_shadow(vec3 origin, vec3 dir ) {
   //    Iterate through all triangles
   //    if the ray intersects a triangle, return 0.5
   //    Otherwise return 1.0
+  vec3 normal = vec3(0,0,0);
+  for (int i = 0; i < triangles.length(); i++) {
+    if (intersectTriangle(origin, dir, i, normal) != vec4(-1,0,0,0)) {
+      return 0.5;
+    }
+  }
 
   return 1.0;
 
