@@ -20,6 +20,12 @@ out vec4 vFragColor;
 // Uniforms
 // TODO#PPA1 Solution Start
 // Add any uniforms you need to pass in from java
+uniform vec3 triangles[MAX_TRIS];
+uniform vec3 vertices[MAX_VERTS];
+uniform vec3 normals[MAX_VERTS];
+uniform vec3 colors[MAX_COLORS];
+uniform vec3 light;
+uniform vec3 diffuseColor;
 
 // Solution End
 
