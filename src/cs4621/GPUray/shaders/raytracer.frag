@@ -196,10 +196,14 @@ float compute_shadow(vec3 origin, vec3 dir ) {
 // Function to compute lambertian shading
 vec3 shade_lambertian(vec3 normal, vec3 light_dir, vec3 mesh_color) {
   // TODO#PPA1 Solution Start
-
+  float lightDotNormal = dot(light_dir, normal);
+  if (lightDotNormal < 0) {
+    lightDotNormal = 0;
+  }
   // Return the RGB vector obtained from the lambertian shading model
 
-  return vec3(1,1,1);
+  return mesh_color * lightDotNormal;
+  // ??? intensity and distance?
   // Solution End
 }
 
