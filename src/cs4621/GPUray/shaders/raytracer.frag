@@ -20,7 +20,7 @@ out vec4 vFragColor;
 // Uniforms
 // TODO#PPA1 Solution Start
 // Add any uniforms you need to pass in from java
-uniform vec3 triangles[MAX_TRIS];
+uniform ivec3 triangles[MAX_TRIS];
 uniform vec3 vertices[MAX_VERTS];
 uniform vec3 normals[MAX_VERTS];
 uniform vec3 colors[MAX_COLORS];
@@ -109,6 +109,7 @@ void setup_camera(vec2 uv, inout vec3 eyeRayOrigin, inout vec3 eyeRayDir,
   // Solution End
 }
 
+
 // Ray triangle intesection routine. The normal is returned in the given
 // normal reference argument.
 vec4 intersectTriangle(vec3 origin, vec3 dir, int index, inout vec3 normal ) {
@@ -126,9 +127,9 @@ vec4 intersectTriangle(vec3 origin, vec3 dir, int index, inout vec3 normal ) {
   // 7) Return a vec4 containing (t, beta, gamma, i) where i is the
   //    index of the color for the given triangle
 
-  vec3 v0 = triangles[index][0];
-  vec3 v1 = triangles[index][1];
-  vec3 v2 = triangles[index][2];
+  vec3 v0 = vertices[triangles[index][0]];
+  vec3 v1 = vertices[triangles[index][1]];
+  vec3 v2 = vertices[triangles[index][2]];
 
   float a, b, c, d, e, f, g, h, i, j, k, l;
 
@@ -162,9 +163,9 @@ vec4 intersectTriangle(vec3 origin, vec3 dir, int index, inout vec3 normal ) {
 
   // how to get normals????
   if (hasNormals) {
-    vec3 n0 = normals[index][0];
-    vec3 n1 = normals[index][1];
-    vec3 n2 = normals[index][2];
+    vec3 n0 = normals[triangles[index][0]];
+    vec3 n1 = normals[triangles[index][1]];
+    vec3 n2 = normals[triangles[index][2]];
     normal = (1 - gamma - beta) * n0 + beta * n1 + gamma * n2;
   } else {
     vec3 e0 = v1 - v0;
