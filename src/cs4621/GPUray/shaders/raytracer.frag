@@ -26,6 +26,9 @@ uniform vec3 normals[MAX_VERTS];
 uniform vec3 colors[MAX_COLORS];
 uniform vec3 light;
 uniform vec3 diffuseColor;
+uniform vec3 cameraOrigin;
+uniform mat4 mVP;
+uniform int debug_state;
 
 // Solution End
 
@@ -104,7 +107,13 @@ void setup_camera(vec2 uv, inout vec3 eyeRayOrigin, inout vec3 eyeRayDir,
   //    Set camV to the second,
   //    Set camW to the third.
   //    Set camd to the projection distance
-  // 3) Set eyeRayDir the direction of the eyeRay   
+  // 3) Set eyeRayDir the direction of the eyeRay
+  eyeRayOrigin = cameraOrigin;
+  eyeRayDir = vec3(uv.x, uv.y, 1) - cameraOrigin;
+  camU = mVP[0];
+  camV = mVP[1];
+  camW = mVP[2];
+  camd = length(eyeRayDir); //??
 
   // Solution End
 }
