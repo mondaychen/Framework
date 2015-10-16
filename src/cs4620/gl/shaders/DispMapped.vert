@@ -16,6 +16,7 @@ attribute vec4 vPosition; // Sem (POSITION 0)
 // Shading Information
 
 void main() {
+  // TODO A4
   vec4 worldPos = mWorld * vPosition;
   gl_Position = mViewProjection * worldPos;
 }

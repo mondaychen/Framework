@@ -13,5 +13,6 @@
 // 0 : smooth, 1: rough
 
 void main() {
+  // TODO A4
 	gl_FragColor = vec4(1,1,1,1);
 }
