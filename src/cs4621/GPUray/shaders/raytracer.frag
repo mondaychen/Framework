@@ -20,19 +20,68 @@ out vec4 vFragColor;
 // Uniforms
 // TODO#PPA1 Solution Start
 // Add any uniforms you need to pass in from java
+uniform ivec3 triangles[MAX_TRIS];
+uniform vec3 vertices[MAX_VERTS];
+uniform vec3 normals[MAX_VERTS];
+uniform vec3 colors[MAX_COLORS];
+uniform vec3 light;
+uniform vec3 diffuseColor;
+uniform vec3 cameraOrigin;
+uniform mat4 mVP;
+uniform int debug_state;
 
 // Solution End
+
+
+// helper functoins for intersectCube
+float rayIntersectPlane(vec3 origin, vec3 ray, vec3 planePoint, vec3 norm) {
+  // t = (PlanePoint - origin) dot normal / ray dot normal
+  return dot(planePoint - origin, normal) / dot(ray, normal);
+}
+
+bool isInCube(float t, vec3 cube_min, vec3 cube_max) {
+  return t > cube_min.x && t > cube_min.y && t > cube_min.z &&
+           t < cube_max.x && t < cube_max.y && t < cube_max.z;
+}
 
 // Function to return the intersection of a ray with a box.
 // Returns a vec2 in which the x value contains the t value at the near intersection
 // and the y value contains the t value at the far intersection.
 vec2 intersectCube(vec3 origin, vec3 ray, vec3 cube_min, vec3 cube_max) {
   // TODO#PPA1 Solution Start
+  vec2 result = vec2(-1, -1);
 
   // Implement axis-aligned box intersection here
+  float nums[6] = {
+    rayIntersectPlane(origin, ray, cube_min, vec3(0, 0, cube_max.z - cube_min.z)),
+    rayIntersectPlane(origin, ray, cube_min, vec3(0, cube_max.y - cube_min.y), 0),
+    rayIntersectPlane(origin, ray, cube_min, vec3(cube_max.x - cube_min.x), 0, 0),
+    rayIntersectPlane(origin, ray, cube_max, vec3(0, 0, cube_max.z - cube_min.z)),
+    rayIntersectPlane(origin, ray, cube_max, vec3(0, cube_max.y - cube_min.y), 0),
+    rayIntersectPlane(origin, ray, cube_max, vec3(cube_max.x - cube_min.x), 0, 0),
+  };
+
+  for (int i = 0; i < 6; i++) {
+    if (nums[i] > 0 && isInCube(nums[i], cube_min, cube_max)) {
+      if (result.x > 0) {
+        result.y = nums[i];
+      } else {
+        result.x = nums[i];
+      }
+      if (result.x > 0 && result.y > 0) {
+        break;
+      }
+    }
+  }
+
+  if (result.x > result.y) {
+    return result.yx;
+  }
+  return result;
 
   // Solution End
 }
+
 
 // Gets the direction given a 2D position p,
 // and a Camera with basis U, V, W and projection distance d.
@@ -41,6 +90,7 @@ vec3 get_direction(vec2 p, vec3 U, vec3 V, vec3 W, float d) {
 
   // Return the direction towards a point p on UV plane a distance
   // d away from the camera along W.
+  return U * p.x + V * p.y + U * d;
 
   // Solution End
 }
@@ -57,10 +107,17 @@ void setup_camera(vec2 uv, inout vec3 eyeRayOrigin, inout vec3 eyeRayDir,
   //    Set camV to the second,
   //    Set camW to the third.
   //    Set camd to the projection distance
-  // 3) Set eyeRayDir the direction of the eyeRay   
+  // 3) Set eyeRayDir the direction of the eyeRay
+  eyeRayOrigin = cameraOrigin;
+  eyeRayDir = vec3(uv.x, uv.y, 1) - cameraOrigin;
+  camU = mVP[0];
+  camV = mVP[1];
+  camW = mVP[2];
+  camd = length(eyeRayDir); //??
 
   // Solution End
 }
+
 
 // Ray triangle intesection routine. The normal is returned in the given
 // normal reference argument.
@@ -78,7 +135,55 @@ vec4 intersectTriangle(vec3 origin, vec3 dir, int index, inout vec3 normal ) {
   // 6) If there is a hit, set the "inout" normal variable
   // 7) Return a vec4 containing (t, beta, gamma, i) where i is the
   //    index of the color for the given triangle
-  return vec4(-1,0,0,0);
+
+  vec3 v0 = vertices[triangles[index][0]];
+  vec3 v1 = vertices[triangles[index][1]];
+  vec3 v2 = vertices[triangles[index][2]];
+
+  float a, b, c, d, e, f, g, h, i, j, k, l;
+
+  a = v0.x-v1.x;
+  b = v0.y-v1.y;
+  c = v0.z-v1.z;
+
+  d = v0.x-v2.x;
+  e = v0.y-v2.y;
+  f = v0.z-v2.z;
+
+  g = dir.x;
+  h = dir.y;
+  i = dir.z;
+  j = v0.x - dir.x;
+  k = v0.y - dir.y;
+  l = v0.z - dir.z;
+
+  float M = a * (e * i - h * f) + b * (g * f - d * i) + c * (d * h - e * g);
+  float beta = ( j * (e * i - h * f) + k * (g * f - d * i) + l * (d * h - e * g) ) / M;
+  float gamma = ( i * (a * k - j * b) + h * (j * c - a * l) + g * (b * l - k * c) )/ M;
+  float t = - ( f * (a * k - j * b) + e * (j * c - a * l) + d * (b * l - k * c) )/ M;
+
+  if (gamma < 0 || gamma > 1) {
+    return vec4(-1,0,0,0);
+  }
+
+  if (beta < 0 || beta > 1 - gamma) {
+    return vec4(-1,0,0,0);
+  }
+
+  // how to get normals????
+  if (hasNormals) {
+    vec3 n0 = normals[triangles[index][0]];
+    vec3 n1 = normals[triangles[index][1]];
+    vec3 n2 = normals[triangles[index][2]];
+    normal = (1 - gamma - beta) * n0 + beta * n1 + gamma * n2;
+  } else {
+    vec3 e0 = v1 - v0;
+    vec3 e1 = v2 - v0;
+    normal = cross(e0, e1);
+  }
+
+
+  return vec4(t, beta, gamma, i);
 
   // Solution End
 }
@@ -92,6 +197,12 @@ float compute_shadow(vec3 origin, vec3 dir ) {
   //    Iterate through all triangles
   //    if the ray intersects a triangle, return 0.5
   //    Otherwise return 1.0
+  vec3 normal = vec3(0,0,0);
+  for (int i = 0; i < triangles.length(); i++) {
+    if (intersectTriangle(origin, dir, i, normal) != vec4(-1,0,0,0)) {
+      return 0.5;
+    }
+  }
 
   return 1.0;
 
@@ -101,10 +212,14 @@ float compute_shadow(vec3 origin, vec3 dir ) {
 // Function to compute lambertian shading
 vec3 shade_lambertian(vec3 normal, vec3 light_dir, vec3 mesh_color) {
   // TODO#PPA1 Solution Start
-
+  float lightDotNormal = dot(light_dir, normal);
+  if (lightDotNormal < 0) {
+    lightDotNormal = 0;
+  }
   // Return the RGB vector obtained from the lambertian shading model
 
-  return vec3(1,1,1);
+  return mesh_color * lightDotNormal;
+  // ??? intensity and distance?
   // Solution End
 }
 
