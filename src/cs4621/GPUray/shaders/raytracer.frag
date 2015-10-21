@@ -284,9 +284,9 @@ void main() {
       vec3 point2light = light - point;
 
       if (compute_shadow(point, point2light) < 1) {
-        vFragColor = vec4(200, 200, 200, 1);
+        vFragColor = vec4(0, 1, 1, 1);
       } else {
-        vFragColor = vec4(100, 100, 100, 1);
+        vFragColor = vec4(0.5, 0.5, 0.5, 1);
       }
     }
 
