@@ -283,10 +283,18 @@ void main() {
       vec3 point  = origin + t * dir;
       vec3 point2light = light - point;
 
-      if (compute_shadow(point, point2light) < 1) {
-        vFragColor = vec4(0, 1, 1, 1);
-      } else {
-        vFragColor = vec4(0.5, 0.5, 0.5, 1);
+      if (debug_state == 0) {
+        
+      } else if (debug_state == 1) {
+        vFragColor = vec4(intersectNormal, 1);
+      } else if (debug_state == 2) {
+        vFragColor = vec4(point, 1);
+      } else if (debug_state == 3) {
+        if (compute_shadow(point, point2light) < 1) {
+          vFragColor = vec4(1, 1, 1, 1);
+        } else {
+          vFragColor = vec4(0.5, 0.5, 0.5, 1);
+        }
       }
     }
 
