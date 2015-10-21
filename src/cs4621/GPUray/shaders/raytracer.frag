@@ -22,6 +22,7 @@ out vec4 vFragColor;
 // Add any uniforms you need to pass in from java
 uniform ivec3 triangles[MAX_TRIS];
 uniform vec3 vertices[MAX_VERTS];
+uniform bool hasNormals;
 uniform vec3 normals[MAX_VERTS];
 uniform vec3 colors[MAX_COLORS];
 uniform vec3 light;
