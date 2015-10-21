@@ -267,23 +267,28 @@ void main() {
     //       Debug state 2: color = intersection location
     //       Debug state 3: color = white if not shadowed, else 50% grey
 
-    vec3 normal = vec3(0,0,0);
+    vec3 intersectNormal = vec3(0,0,0);
     for (int i = 0; i < triangles.length(); i++) {
-      if (intersectTriangle(origin, dir, i, normal) != vec4(-1,0,0,0)) {
-        return 0.5;
+      vec3 normal = vec3(0,0,0);
+      vec4 intersectRecord = intersectTriangle(origin, dir, i, normal);
+      if (intersectRecord.x <= 0) { // miss
+        continue;
+      }
+      if (intersectRecord.x < t) { // smaller number
+        t = intersectRecord.x;
+        intersectNormal = normal;
       }
     }
-    vec3 point  = origin + t * dir;
-    vec3 point2light = light - point;
+    if (t != tNearFar.y+1) { // changed -> there is a valid intersection
+      vec3 point  = origin + t * dir;
+      vec3 point2light = light - point;
 
-
-
-    if (compute_shadow(origin, dir) < 1) {
-      vFragColor = vec4(0, 0, 0, 1);
-    } else {
-      vFragColor = vec4(100, 100, 100, 1);
+      if (compute_shadow(point, point2light) < 1) {
+        vFragColor = vec4(200, 200, 200, 1);
+      } else {
+        vFragColor = vec4(100, 100, 100, 1);
+      }
     }
-
 
 
     // Solution End
