@@ -27,7 +27,8 @@ uniform vec3 colors[MAX_COLORS];
 uniform vec3 light;
 uniform vec3 diffuseColor;
 uniform vec3 cameraOrigin;
-uniform mat4 mVP;
+uniform mat4 invMVP;
+uniform float projDistance;
 uniform int debug_state;
 
 // Solution End
@@ -90,7 +91,7 @@ vec3 get_direction(vec2 p, vec3 U, vec3 V, vec3 W, float d) {
 
   // Return the direction towards a point p on UV plane a distance
   // d away from the camera along W.
-  return U * p.x + V * p.y + U * d;
+  return U * p.x + V * p.y - W * d;
 
   // Solution End
 }
@@ -108,12 +109,12 @@ void setup_camera(vec2 uv, inout vec3 eyeRayOrigin, inout vec3 eyeRayDir,
   //    Set camW to the third.
   //    Set camd to the projection distance
   // 3) Set eyeRayDir the direction of the eyeRay
-  eyeRayOrigin = cameraOrigin;
-  eyeRayDir = vec3(uv.x, uv.y, 1) - cameraOrigin;
-  camU = mVP[0];
-  camV = mVP[1];
-  camW = mVP[2];
-  camd = length(eyeRayDir); //??
+  eyeRayOrigin = invMVP[3].xyz;
+  camU = invMVP[0].xyz;
+  camV = invMVP[1].xyz;
+  camW = invMVP[2].xyz;
+  camd = projDistance;
+  eyeRayDir = get_direction(uv, camU, camV, camW, camd);
 
   // Solution End
 }
@@ -265,6 +266,24 @@ void main() {
     //       Debug state 1: color = normal directions
     //       Debug state 2: color = intersection location
     //       Debug state 3: color = white if not shadowed, else 50% grey
+
+    vec3 normal = vec3(0,0,0);
+    for (int i = 0; i < triangles.length(); i++) {
+      if (intersectTriangle(origin, dir, i, normal) != vec4(-1,0,0,0)) {
+        return 0.5;
+      }
+    }
+    vec3 point  = origin + t * dir;
+    vec3 point2light = light - point;
+
+
+
+    if (compute_shadow(origin, dir) < 1) {
+      vFragColor = vec4(0, 0, 0, 1);
+    } else {
+      vFragColor = vec4(100, 100, 100, 1);
+    }
+
 
 
     // Solution End
