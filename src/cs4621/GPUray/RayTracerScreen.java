@@ -18,6 +18,7 @@ import cs4620.ray1.Image;
 import cs4620.ray1.Light;
 import cs4620.ray1.Parser;
 import cs4620.ray1.Ray;
+import cs4620.ray1.RayTracer;
 import cs4620.ray1.Scene;
 import cs4620.ray1.camera.Camera;
 import cs4620.ray1.shader.Lambertian;
@@ -65,6 +66,8 @@ public final class RayTracerScreen extends GameScreen{
     private FloatBuffer fbColors = NativeMem.createFloatBuffer(3 * MAX_COLORS);
     private int numTris = 0;
     private int dbgState = 0;
+	private Light light0;
+    
     
     @Override
     public void build() {
@@ -75,16 +78,16 @@ public final class RayTracerScreen extends GameScreen{
     	
         // TODO#PPA1: load shaders from src and create program (using available framework methods)	
     	// 1) Create the GLProgram by compiling and linking the vertex and fragment shaders
-    	program.quickCreateResource("bunny", "cs4621/GPUray/raytracer.vert", "cs4621/GPUray/raytracer.frag", null);
+    	program.quickCreateResource("bunny", "cs4621/GPUray/shaders/raytracer.vert", "cs4621/GPUray/shaders/raytracer.frag", null);
    	
         // TODO#PPA1: Call setupScene() with a ScenePath to an xml scene 
     	// 2) Load the scene from XML
-    	ScenePath p = new ScenePath("cs4620/data/scenes/ray1", "bunny-shadow-scene.xml");
+    	ScenePath p = new ScenePath("data/scenes/ray1", "bunny-shadow-scene.xml");
         setupScene(p);
         
     	// (see scenes/ray1; bunny-shadow-scene.xml is a good place to start)
     	// 3) Set VP matrix for the first time
-        GLUniform.setST(program.getUniform("bunny"), mVP, false);
+        GLUniform.setST(program.getUniform("mVP"), mVP, false);
     	
     	// 4) Set up any data/buffers necessary to transfer to the shaders    
         // Create a new Vertex Array Object in memory and bind it
@@ -149,37 +152,42 @@ public final class RayTracerScreen extends GameScreen{
     	// TODO#PPA1 Solution Start
     	// 1) Parse the scene using the ray1 parser
     	Parser parser = new Parser();
-        Scene scene = (Scene) parser.parse(p.getFile(), Scene.class);  
-        
+        Scene scene = (Scene) parser.parse(p.getFile(), Scene.class);
+     
+
     	// 2) Load the first light in the XML file
-        Light light = scene.getLights().get(0);
-        GL11.glColor3d(light.position.x, light.position.y, light.position.z);
-        
+        GLUniform.set(program.getUniform("light"), new Vector3((float)scene.getLights().get(0).position.x, 
+        		(float)scene.getLights().get(0).position.y, (float)scene.getLights().get(0).position.z));
+
     	// 3) Load the meshes in the scene using addMesh()
         Mesh mesh = (Mesh) parser.parse(p.getFile(), Mesh.class);
-      	addMesh(mesh, 1);     //Mesh NUmber的问题
+      	addMesh(mesh, mesh.getMeshData().indexCount / 3);     //Mesh NUmber的问题
       	
     	// 4) Load the camera position from the scene  
     	//    Note that your camera should look directly at the origin.
     	//    The Matrix4 methods CreatePerspectiveMatrix and CreateLookatMatrix 
     	//    might be helpful here	 
-    	Image image = scene.getImage();
         Camera camera = scene.getCamera();
+        Image image = scene.getImage();
         Ray ray = new Ray();
         camera.getRay(ray, 0.5, 0.5);        
-    	Vector3d viewPoint = ray.origin;
-    	Vector3d viewDir = ray.direction;
-    	GL11.gl
-    	Matrix4.creatLookatMatrix();
+    	Vector3 origin = new Vector3();
+    	origin.set((float)ray.origin.x, (float)ray.origin.y, (float)ray.origin.z);
+    	mVP.createLookAt(origin, new Vector3(0, 0, 0), new Vector3(0, 1, 0));
     	
     	// 5) Send mesh data to the shaders using glUniform* calls. Don't forget to
     	//    rewind your buffers before sending them, and remember that the program
     	//    must be in use before setting these uniforms. The program.getUniform() and
     	//    program.getUniformArray() methods will be useful here.
-            	
+        MeshData meshdata = mesh.getMeshData();
+        meshdata.positions.rewind();
+        meshdata.indices.rewind();
+        meshdata.normals.rewind();
       	program.use();
-        rasterVerts = GLBuffer.createAsVertex(mesh.getMeshData().positions.array(), 3, BufferUsageHint.StaticDraw);
-    	
+        GL20.glUniform4(program.getUniformArray("triangles"), meshdata.indices);
+        GL20.glUniform4(program.getUniform("vertices"), meshdata.positions);
+        GL20.glUniform4(program.getUniform("normals"), meshdata.normals);
+    
     	// 6) Don't forget to unuse your program when finished.
 		GLProgram.unuse(); 
         // Solution End
@@ -245,7 +253,7 @@ public final class RayTracerScreen extends GameScreen{
     	// 2) If the spacebar is down, create a rotation matrix based on the GameTime
     	// 3) Use the rotation matrix to alter your camera uniform parameters.
     	// 4) Repeat this for the left shift key and your point light emitter's uniforms. 
-        if() {
+        if(true) {
         
             	Matrix4.createRotationX((float)gameTime.total, mVP);
             	GLUniform.setST(program.getUniform("VP"), mVP, false);
@@ -258,33 +266,25 @@ public final class RayTracerScreen extends GameScreen{
     public void draw(GameTime gameTime) {
     	// TODO#PPA1 Solutuion Start
         // 1) Update the average FPS using gameTime.Elapsed
-    	// 2) Use the raytracer GLProgram   HOW ？？？？？？？？？？？？？
+    	// 2) Use the raytracer GLProgram   
     	// 3) Set all uniforms that may have changed since the last frame
     	// 4) After the scene is drawn, unuse the raytracer GLProgram
-    	double elapse = gameTime.elapsed;
-    	
-    	
+
     	// Performance benchmark 
         // TODO#PPA1: Print time taken per frame to the console
-        
-    	
+    	float FPS = (float) (1 / gameTime.elapsed);
     	// Clear the screen and use your program
     	GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-        
-    	
         // TODO#PPA1: Use program and set Uniforms
     	program.use();
-    	
-    	
-        GLUniform.set();
-        
+  	    GL20.glUniform1f(program.getUniform("change"),FPS);
+
         // Call to bind to the VAO
         GL30.glBindVertexArray(vaoId);
-
         rasterVerts.useAsAttrib(program.getAttribute("vVertex"));
         // Draw the scene
         GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);
-
+        
         // Deselect the vertex array
         GL30.glBindVertexArray(0);
         
