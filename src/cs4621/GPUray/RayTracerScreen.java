@@ -83,6 +83,7 @@ public final class RayTracerScreen extends GameScreen{
         // TODO#PPA1: Call setupScene() with a ScenePath to an xml scene 
     	// 2) Load the scene from XML
     	ScenePath p = new ScenePath("data/scenes/ray1", "bunny-shadow-scene.xml");
+    	RayTracer.sceneWorkspace = p;
         setupScene(p);
         
     	// (see scenes/ray1; bunny-shadow-scene.xml is a good place to start)
