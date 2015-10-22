@@ -36,7 +36,7 @@ uniform int debug_state;
 
 
 // helper functoins for intersectCube
-float rayIntersectPlane(vec3 origin, vec3 ray, vec3 planePoint, vec3 norm) {
+float rayIntersectPlane(vec3 origin, vec3 ray, vec3 planePoint, vec3 normal) {
   // t = (PlanePoint - origin) dot normal / ray dot normal
   return dot(planePoint - origin, normal) / dot(ray, normal);
 }
@@ -54,14 +54,14 @@ vec2 intersectCube(vec3 origin, vec3 ray, vec3 cube_min, vec3 cube_max) {
   vec2 result = vec2(-1, -1);
 
   // Implement axis-aligned box intersection here
-  float nums[6] = {
+  float nums[6] = float[](
     rayIntersectPlane(origin, ray, cube_min, vec3(0, 0, cube_max.z - cube_min.z)),
-    rayIntersectPlane(origin, ray, cube_min, vec3(0, cube_max.y - cube_min.y), 0),
-    rayIntersectPlane(origin, ray, cube_min, vec3(cube_max.x - cube_min.x), 0, 0),
+    rayIntersectPlane(origin, ray, cube_min, vec3(0, cube_max.y - cube_min.y, 0)),
+    rayIntersectPlane(origin, ray, cube_min, vec3(cube_max.x - cube_min.x, 0, 0)),
     rayIntersectPlane(origin, ray, cube_max, vec3(0, 0, cube_max.z - cube_min.z)),
-    rayIntersectPlane(origin, ray, cube_max, vec3(0, cube_max.y - cube_min.y), 0),
-    rayIntersectPlane(origin, ray, cube_max, vec3(cube_max.x - cube_min.x), 0, 0),
-  };
+    rayIntersectPlane(origin, ray, cube_max, vec3(0, cube_max.y - cube_min.y, 0)),
+    rayIntersectPlane(origin, ray, cube_max, vec3(cube_max.x - cube_min.x, 0, 0))
+  );
 
   for (int i = 0; i < 6; i++) {
     if (nums[i] > 0 && isInCube(nums[i], cube_min, cube_max)) {

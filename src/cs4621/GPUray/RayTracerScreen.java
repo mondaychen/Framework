@@ -86,6 +86,7 @@ public final class RayTracerScreen extends GameScreen{
         // TODO#PPA1: Call setupScene() with a ScenePath to an xml scene 
     	// 2) Load the scene from XML
     	ScenePath p = new ScenePath("data/scenes/ray1", "bunny-shadow-scene.xml");
+    	RayTracer.sceneWorkspace = p;
         setupScene(p);
         
     	// (see scenes/ray1; bunny-shadow-scene.xml is a good place to start)
@@ -285,7 +286,7 @@ public final class RayTracerScreen extends GameScreen{
     	GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         // TODO#PPA1: Use program and set Uniforms
     	program.use();
-  	    GL20.glUniform1f(program.getUniform("change"),FPS);
+        GL20.glUniform1f(program.getUniform("change"),FPS);
 
         // Call to bind to the VAO
         GL30.glBindVertexArray(vaoId);
