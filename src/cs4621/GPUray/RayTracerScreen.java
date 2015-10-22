@@ -277,7 +277,7 @@ public final class RayTracerScreen extends GameScreen{
     	GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         // TODO#PPA1: Use program and set Uniforms
     	program.use();
-  	    GL20.glUniform1f(program.getUniform("change"),FPS);
+        GL20.glUniform1f(program.getUniform("change"),FPS);
 
         // Call to bind to the VAO
         GL30.glBindVertexArray(vaoId);
