@@ -112,6 +112,7 @@ public class TwistScreen extends GameScreen {
 		  //GL20.glUniform1f(program.getUniform("twisting"), 0);
 		  GL20.glUniform1f(program.getUniform("twisting"),(float)gameTime.total);
 		  
+		  
 		GLProgram.unuse();
 	}
 

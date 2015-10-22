@@ -97,10 +97,10 @@ public final class RayTracerScreen extends GameScreen{
         // Create a new Vertex Array Object in memory and bind it
         vaoId = GL30.glGenVertexArrays();
         GL30.glBindVertexArray(vaoId);
-
+     
         rasterVerts = GLBuffer.createAsVertex(new float[] {-1, 3, -1, -1, 3, -1 }, 2, BufferUsageHint.StaticDraw);
         rasterVerts.bind();
-
+        
         // Put the VBO in the attributes list at index 0
         GL20.glEnableVertexAttribArray(program.getAttribute("vVertex"));
         GL20.glVertexAttribPointer(program.getAttribute("vVertex"), 2, GL11.GL_FLOAT, false, 0, 0);
@@ -131,6 +131,8 @@ public final class RayTracerScreen extends GameScreen{
    
         GL30.glBindVertexArray(0);
         GL30.glDeleteVertexArrays(vaoId);
+        program.dispose();
+      
     	
     	// Solution End
     }
@@ -186,13 +188,12 @@ public final class RayTracerScreen extends GameScreen{
     	//    program.getUniformArray() methods will be useful here.
     	for(Mesh m : mesh) {
     		   MeshData meshdata = m.getMeshData();
-    	        meshdata.positions.rewind();
-    	        meshdata.indices.rewind();
-    	        meshdata.normals.rewind();
+    		   meshdata.positions.rewind();
+    		   meshdata.indices.rewind();
     	      	program.use();
     	        GL20.glUniform4(program.getUniformArray("triangles"), meshdata.indices);
     	        GL20.glUniform4(program.getUniform("vertices"), meshdata.positions);
-    	        GL20.glUniform4(program.getUniform("normals"), meshdata.normals);
+    	       // GL20.glUniform4(program.getUniform("normals"), meshdata.normals);
     	}
      
     
@@ -290,13 +291,12 @@ public final class RayTracerScreen extends GameScreen{
 
         // Call to bind to the VAO
         GL30.glBindVertexArray(vaoId);
-        rasterVerts.useAsAttrib(program.getAttribute("vVertex"));
+        //rasterVerts.useAsAttrib(program.getAttribute("vVertex"));
         // Draw the scene
         GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);
         
         // Deselect the vertex array
         GL30.glBindVertexArray(0);
-        
         // TODO#PPA1: Unuse program
         program.unuse();
         // Solution end
