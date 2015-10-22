@@ -1,7 +1,9 @@
 package cs4621.GPUray;
 
+import java.awt.List;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -10,6 +12,7 @@ import org.lwjgl.opengl.GL30;
 
 import blister.GameScreen;
 import blister.GameTime;
+import blister.input.KeyPressEventArgs;
 import blister.input.KeyboardEventDispatcher;
 import blister.input.KeyboardKeyEventArgs;
 import cs4620.mesh.MeshData;
@@ -108,13 +111,13 @@ public final class RayTracerScreen extends GameScreen{
         GL30.glBindVertexArray(0); 
 
         // TODO#PPA1: Initialize keyboard interaction using KeyboardEventDispatcher
+        KeyboardKeyEventArgs args = new KeyboardKeyEventArgs();
+        args.Refresh();
+        if(args.getAlt() || args.getControl() || args.getShift()) 
+        	KeyboardEventDispatcher.eventInput_KeyDown(args);
+        KeyboardEventDispatcher.eventInput_KeyUp(args);
         
-        
-        
-        
-        
-        
-        
+
  
         // Solution end
     }
@@ -124,10 +127,7 @@ public final class RayTracerScreen extends GameScreen{
     	// Dispose of any resources you allocated in build
     	// Specifically you will want to call the dispose methods of your 
     	// GLProgram and GLBuffer(s) if you set them up in build()
-    	program.dispose();
-    	
-    	
-    	
+   
         GL30.glBindVertexArray(0);
         GL30.glDeleteVertexArrays(vaoId);
     	
@@ -153,22 +153,26 @@ public final class RayTracerScreen extends GameScreen{
     	// 1) Parse the scene using the ray1 parser
     	Parser parser = new Parser();
         Scene scene = (Scene) parser.parse(p.getFile(), Scene.class);
-     
-
+ 
     	// 2) Load the first light in the XML file
         GLUniform.set(program.getUniform("light"), new Vector3((float)scene.getLights().get(0).position.x, 
         		(float)scene.getLights().get(0).position.y, (float)scene.getLights().get(0).position.z));
 
     	// 3) Load the meshes in the scene using addMesh()
-        Mesh mesh = (Mesh) parser.parse(p.getFile(), Mesh.class);
-      	addMesh(mesh, mesh.getMeshData().indexCount / 3);     //Mesh NUmber的问题
+        ArrayList<Surface> list = (ArrayList<Surface>) scene.getSurfaces();
+        ArrayList<Mesh> mesh = new ArrayList<Mesh>();
+        for(Surface s : list) {
+        	mesh.add((Mesh)s);
+        }
+      	for(Mesh m : mesh) {    //Mesh NUmber的问题
+      		addMesh(m, 1);
+      	}
       	
     	// 4) Load the camera position from the scene  
     	//    Note that your camera should look directly at the origin.
     	//    The Matrix4 methods CreatePerspectiveMatrix and CreateLookatMatrix 
     	//    might be helpful here	 
         Camera camera = scene.getCamera();
-        Image image = scene.getImage();
         Ray ray = new Ray();
         camera.getRay(ray, 0.5, 0.5);        
     	Vector3 origin = new Vector3();
@@ -179,14 +183,17 @@ public final class RayTracerScreen extends GameScreen{
     	//    rewind your buffers before sending them, and remember that the program
     	//    must be in use before setting these uniforms. The program.getUniform() and
     	//    program.getUniformArray() methods will be useful here.
-        MeshData meshdata = mesh.getMeshData();
-        meshdata.positions.rewind();
-        meshdata.indices.rewind();
-        meshdata.normals.rewind();
-      	program.use();
-        GL20.glUniform4(program.getUniformArray("triangles"), meshdata.indices);
-        GL20.glUniform4(program.getUniform("vertices"), meshdata.positions);
-        GL20.glUniform4(program.getUniform("normals"), meshdata.normals);
+    	for(Mesh m : mesh) {
+    		   MeshData meshdata = m.getMeshData();
+    	        meshdata.positions.rewind();
+    	        meshdata.indices.rewind();
+    	        meshdata.normals.rewind();
+    	      	program.use();
+    	        GL20.glUniform4(program.getUniformArray("triangles"), meshdata.indices);
+    	        GL20.glUniform4(program.getUniform("vertices"), meshdata.positions);
+    	        GL20.glUniform4(program.getUniform("normals"), meshdata.normals);
+    	}
+     
     
     	// 6) Don't forget to unuse your program when finished.
 		GLProgram.unuse(); 
@@ -253,6 +260,7 @@ public final class RayTracerScreen extends GameScreen{
     	// 2) If the spacebar is down, create a rotation matrix based on the GameTime
     	// 3) Use the rotation matrix to alter your camera uniform parameters.
     	// 4) Repeat this for the left shift key and your point light emitter's uniforms. 
+    	KeyPressEventArgs key = new KeyPressEventArgs();
         if(true) {
         
             	Matrix4.createRotationX((float)gameTime.total, mVP);
