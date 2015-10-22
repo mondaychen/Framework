@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<scene>
+
+  <mesh>
+    <name>flower_stem.obj</name>
+    <data>
+      <file>data/meshes/flower_stem.obj</file>
+    </data>
+  </mesh>
+  <mesh>
+    <name>flower_center.obj</name>
+    <data>
+      <file>data/meshes/flower_center.obj</file>
+    </data>
+  </mesh>
+  <mesh>
+    <name>flower_petals.obj</name>
+    <data>
+      <file>data/meshes/flower_petals.obj</file>
+    </data>
+  </mesh>
+
+	<material>
+		<name>FlowerStemMat</name>
+		<data>
+			<type>Flower</type>
+			<diffuse>
+				<color>0 200 40 255</color>
+			</diffuse>
+			<specular>
+        <color>100 255 140 255</color>
+			</specular>
+			<shininess>10</shininess>
+		</data>
+	</material>
+  <material>
+    <name>FlowerCenterMat</name>
+    <data>
+      <type>Flower</type>
+      <diffuse>
+        <color>200 200 40 255</color>
+      </diffuse>
+      <specular>
+        <color>255 255 140 255</color>
+      </specular>
+      <shininess>10</shininess>
+    </data>
+  </material>
+  <material>
+    <name>FlowerPetalsMat</name>
+    <data>
+      <type>Flower</type>
+      <diffuse>
+        <color>200 200 180 255</color>
+      </diffuse>
+      <specular>
+        <color>255 255 255 255</color>
+      </specular>
+      <shininess>10</shininess>
+    </data>
+  </material>
+
+	<material>
+		<name>Ambient</name>
+		<data>
+			<type>Ambient</type>
+			<diffuse>
+				<color>255 255 255 255</color>
+			</diffuse>
+		</data>
+	</material>
+	
+	<object>
+		<name>Camera</name>
+		<data type="SceneCamera">
+			<zPlanes>0.02 1000.0</zPlanes>
+			<perspective>0.01 0.01</perspective>
+
+			<translation>0 4 20</translation>
+		</data>
+	</object>
+
+  <object>
+    <name>FlowerStem</name>
+    <data>
+      <mesh>flower_stem.obj</mesh>
+      <material>FlowerStemMat</material>
+    </data>
+  </object>
+  <object>
+    <name>FlowerCenter</name>
+    <data>
+      <mesh>flower_center.obj</mesh>
+      <material>FlowerCenterMat</material>
+    </data>
+  </object>
+  <object>
+    <name>FlowerPetals</name>
+    <data>
+      <mesh>flower_petals.obj</mesh>
+      <material>FlowerPetalsMat</material>
+    </data>
+  </object>
+
+	<object>
+		<name>LightObj1</name>
+		<data>
+			<mesh>Sphere</mesh>
+			<translation>4 4 1</translation>
+
+			<material>Ambient</material>
+		</data>
+	</object>
+	<object>
+		<name>Light1</name>
+		<data type="SceneLight">
+			<parent>LightObj1</parent>
+			<intensity>1 1 1</intensity>
+		</data>
+	</object>
+	
+	<object>
+		<name>AmbientLight</name>
+		<data type="SceneLight">
+			<intensity>0.05 0.05 0.05</intensity>
+			<isAmbient>true</isAmbient>
+		</data>
+	</object>
+</scene>

@@ -98,6 +98,8 @@ public class RenderMaterial implements IDisposable {
 	private IProvider pDiffuse = null;
 	private IProvider pNormal = null;
 	private IProvider pSpecular = null;
+	private IProvider pFiberColor= null;
+	private IProvider pFiberDirection = null;
 
 	public final Material sceneMaterial;
 	
@@ -105,7 +107,8 @@ public class RenderMaterial implements IDisposable {
 		unWorld, unWorldIT, unWorldBones, unWorldITBones,
 		unV, unP, unVP, unWorldCam,
 		unLPos, unLIntensity, unLCount,
-		unCubeMap, unShininess, unRoughness, unDispMagnitude, unAmbientLIntensity, unExposure;
+		unCubeMap, unShininess, unRoughness, unDispMagnitude, unAmbientLIntensity, unExposure,
+		unTime;
 	private FloatBuffer fbLight = NativeMem.createFloatBuffer(16 * 3);
 
 	public RenderMaterial(Material m) {
@@ -129,6 +132,8 @@ public class RenderMaterial implements IDisposable {
 		code = getProvider(sceneMaterial.inputSpecular.type == Type.TEXTURE ? PROVIDER_FORMAT_TEXTURE : PROVIDER_FORMAT_COLOR, "Specular") + code;
 		code = getProvider(sceneMaterial.inputNormal.type == Type.TEXTURE ? PROVIDER_FORMAT_TEXTURE : PROVIDER_FORMAT_COLOR, "Normal") + code;
 		code = getProvider(sceneMaterial.inputDiffuse.type == Type.TEXTURE ? PROVIDER_FORMAT_TEXTURE : PROVIDER_FORMAT_COLOR, "Diffuse") + code;
+		code = getProvider(sceneMaterial.inputFiberColor.type == Type.TEXTURE ? PROVIDER_FORMAT_TEXTURE : PROVIDER_FORMAT_COLOR, "FiberColor") + code;
+		code = getProvider(sceneMaterial.inputFiberDirection.type == Type.TEXTURE ? PROVIDER_FORMAT_TEXTURE : PROVIDER_FORMAT_COLOR, "FiberDirection") + code;
 		code = PROVIDER_CUBE_MAP + code;
 		code = "\r\n#version 120\r\n" + code;
 		
@@ -205,6 +210,9 @@ public class RenderMaterial implements IDisposable {
 		//TexCubeMap.setupCubeMap(unCubeMap, "data/textures/Envir/");
 		env.cubemap.use(TextureUnit.Texture3, unCubeMap);
 		
+		// Animation Information
+		unTime = program.getUniform("time");
+		
 		createInputProviders(env);
 	}
 
@@ -224,12 +232,25 @@ public class RenderMaterial implements IDisposable {
 		else
 			pSpecular = new ColorProvider("Specular", sceneMaterial.inputSpecular.color);
 		
+		if(sceneMaterial.inputFiberColor.type == Type.TEXTURE)
+			pFiberColor = new TextureProvider("FiberColor", program, 3, sceneMaterial.inputFiberColor.texture, env);
+		else
+			pFiberColor = new ColorProvider("FiberColor", sceneMaterial.inputFiberColor.color);
+		
+		if(sceneMaterial.inputFiberDirection.type == Type.TEXTURE)
+			pFiberDirection = new TextureProvider("FiberDirection", program, 4, sceneMaterial.inputFiberDirection.texture, env);
+		else
+			pFiberDirection = new ColorProvider("FiberDirection", sceneMaterial.inputFiberDirection.color);
+		
+
 	}
 	
 	public void useMaterialProperties() {
 		pDiffuse.set(program);
 		pNormal.set(program);
 		pSpecular.set(program);
+		pFiberColor.set(program);
+		pFiberDirection.set(program);
 		
 		if (unShininess != GL.BadUniformLocation) {
 			GL20.glUniform1f(unShininess, sceneMaterial.shininess);
@@ -320,6 +341,12 @@ public class RenderMaterial implements IDisposable {
 		}
 		if (unAmbientLIntensity != GL.BadUniformLocation) {
 			GL20.glUniform3f(unAmbientLIntensity, (float)ambientLightColor.x, (float)ambientLightColor.y, (float)ambientLightColor.z);
+		}
+	}
+	
+	public void useTime(float time) {
+		if (unTime != GL.BadUniformLocation) {
+			GL20.glUniform1f(unTime, time);
 		}
 	}
 }

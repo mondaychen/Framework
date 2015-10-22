@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<scene>
+	<texture>
+		<name>Fire</name>
+		<data>
+			<file>data/textures/fire.jpg</file>
+		</data>
+	</texture>
+
+  <texture>
+    <name>Noise</name>
+    <data>
+      <file>data/textures/noise.jpg</file>
+    </data>
+  </texture>
+	
+	<material>
+		<name>FireMat</name>
+		<data>
+			<type>Fire</type>
+			<diffuse>
+				<texture>Fire</texture>
+			</diffuse>
+      <normal>
+        <texture>Noise</texture>
+      </normal>
+		</data>
+	</material>
+	
+	<object>
+		<name>FireSphere</name>
+		<data>
+			<mesh>Sphere</mesh>
+			<material>FireMat</material>
+		</data>
+	</object>
+	<object>
+		<name>Camera</name>
+		<data type="SceneCamera">
+			<zPlanes>0.02 1000.0</zPlanes>
+			<perspective>0.01 0.01</perspective>
+			
+			<translation>0 0 10</translation>
+		</data>
+	</object>
+</scene>

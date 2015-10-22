@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<scene>
+	<texture>
+		<name>diffuseMaple</name>
+		<data>
+			<file>data/textures/wood/cmaple/cmaple-param-image-diffuse.png</file>
+		</data>
+	</texture>
+
+	<texture>
+		<name>specularMaple</name>
+		<data>
+			<file>data/textures/wood/cmaple/cmaple-param-image-beta.png</file>
+		</data>
+	</texture>
+
+	<texture>
+		<name>fibercolorMaple</name>
+		<data>
+			<file>data/textures/wood/cmaple/cmaple-param-image-fiber.png</file>
+		</data>
+	</texture>
+
+	<texture>
+		<name>fiberdirectionMaple</name>
+		<data>
+			<file>data/textures/wood/cmaple/cmaple-param-image-axis.png</file>
+		</data>
+	</texture>
+
+	<material>
+		<name>WoodMaterial</name>
+		<data>
+			<type>Wood</type>
+			<diffuse>
+				<texture>diffuseMaple</texture>
+			</diffuse>
+			<specular>
+				<texture>specularMaple</texture>
+			</specular>
+			<fibercolor>
+				<texture>fibercolorMaple</texture>
+			</fibercolor>
+			<fiberdirection>
+				<texture>fiberdirectionMaple</texture>
+			</fiberdirection>
+			<shininess>50</shininess>
+		</data>
+	</material>
+
+	<material>
+		<name>Ambient</name>
+		<data>
+			<type>Ambient</type>
+			<diffuse>
+				<color>255 255 255 255</color>
+			</diffuse>
+		</data>
+	</material>
+	
+	<object>
+		<name>PlaneCenter</name>
+		<data>
+			<mesh>Plane</mesh>
+			<scale>1.47498 1 1</scale>
+			<material>WoodMaterial</material>
+		</data>
+	</object>
+	
+	<object>
+		<name>Camera</name>
+		<data type="SceneCamera">
+			<zPlanes>0.02 1000.0</zPlanes>
+			<perspective>0.01 0.01</perspective>
+
+			<translation>0 2 10</translation>
+		</data>
+	</object>
+	
+	<object>
+		<name>LightObj1</name>
+		<data>
+			<mesh>Sphere</mesh>
+			<scale>0.1 0.1 0.1</scale>
+			<translation>2 2 2</translation>
+
+			<material>Ambient</material>
+		</data>
+	</object>
+	<object>
+		<name>Light1</name>
+		<data type="SceneLight">
+			<parent>LightObj1</parent>
+			<intensity>1 1 1</intensity>
+		</data>
+	</object>
+	
+	<object>
+		<name>AmbientLight</name>
+		<data type="SceneLight">
+			<intensity>0.05 0.05 0.05</intensity>
+			<isAmbient>true</isAmbient>
+		</data>
+	</object>
+</scene>

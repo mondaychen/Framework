@@ -260,7 +260,7 @@ public class ViewScreen extends GameScreen {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		
 		if(camController.camera != null){
-			renderer.draw(camController.camera, rController.env.lights);
+			renderer.draw(camController.camera, rController.env.lights, (float) gameTime.total);
 			manipController.draw(camController.camera);
 			if (showGrid)
 				gridRenderer.draw(camController.camera);
