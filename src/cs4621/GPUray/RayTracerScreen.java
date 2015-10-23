@@ -25,6 +25,7 @@ import cs4620.ray1.Ray;
 import cs4620.ray1.RayTracer;
 import cs4620.ray1.Scene;
 import cs4620.ray1.camera.Camera;
+import cs4620.ray1.camera.PerspectiveCamera;
 import cs4620.ray1.shader.Lambertian;
 import cs4620.ray1.shader.Phong;
 import cs4620.ray1.surface.Mesh;
@@ -78,31 +79,30 @@ public final class RayTracerScreen extends GameScreen{
     public void build() {
     	// TODO#PPA1 Solution Start
     	// The build method is called once, when your RayTracerScreen is first created.
+    	// 1) Create the GLProgram by compiling and linking the vertex and fragment shaders
+    	// 2) Load the scene from XML
+    	// 3) Set VP matrix for the first time
+    	// 4) Set up any data/buffers necessary to transfer to the shaders          
+    	// 5）Create a KeyBoardEventDispatcher to handle state changes via the ZERO key.
+
     	program = new GLProgram(false);
     	
         // TODO#PPA1: load shaders from src and create program (using available framework methods)	
-    	// 1) Create the GLProgram by compiling and linking the vertex and fragment shaders
     	program.quickCreateResource("bunny", "cs4621/GPUray/shaders/raytracer.vert", "cs4621/GPUray/shaders/raytracer.frag", null);
    	
         // TODO#PPA1: Call setupScene() with a ScenePath to an xml scene 
-    	// 2) Load the scene from XML
+    	// (see scenes/ray1; bunny-shadow-scene.xml is a good place to start)
     	ScenePath p = new ScenePath("data/scenes/ray1", "bunny-shadow-scene.xml");
     	RayTracer.sceneWorkspace = p;
         setupScene(p);
-        
-    	// (see scenes/ray1; bunny-shadow-scene.xml is a good place to start)
-    	// 3) Set VP matrix for the first time
-        GLUniform.setST(program.getUniform("invMVP"), mVP.invert(), false);
-    	
-    	// 4) Set up any data/buffers necessary to transfer to the shaders   
-        
+            	
         // Create a new Vertex Array Object in memory and bind it
         vaoId = GL30.glGenVertexArrays();
         GL30.glBindVertexArray(vaoId);
      
         //define vertex position
         rasterVerts = GLBuffer.createAsVertex(new float[] {-1, 3, -1, -1, 3, -1 }, 2, BufferUsageHint.StaticDraw);      
-       
+        rasterVerts.bind();
         
         // Put the VBO in the attributes list at index 0
         GL20.glEnableVertexAttribArray(program.getAttribute("vVertex"));
@@ -115,12 +115,9 @@ public final class RayTracerScreen extends GameScreen{
         GL30.glBindVertexArray(0); 
 
         // TODO#PPA1: Initialize keyboard interaction using KeyboardEventDispatcher
-    	// Create a KeyBoardEventDispatcher to handle state changes via the ZERO key.
-        KeyboardKeyEventArgs args = new KeyboardKeyEventArgs();
+        KeyboardKeyEventArgs args = new KeyboardKeyEventArgs();    
         args.Refresh();
-        if(args.getAlt() || args.getControl() || args.getShift()) 
-        	KeyboardEventDispatcher.eventInput_KeyDown(args);
-        KeyboardEventDispatcher.eventInput_KeyUp(args);
+        
         
 
  
@@ -133,9 +130,9 @@ public final class RayTracerScreen extends GameScreen{
     	// Specifically you will want to call the dispose methods of your 
     	// GLProgram and GLBuffer(s) if you set them up in build()
    
+        program.dispose();
         GL30.glBindVertexArray(0);
         GL30.glDeleteVertexArrays(vaoId);
-        program.dispose();
       
     	
     	// Solution End
@@ -180,10 +177,13 @@ public final class RayTracerScreen extends GameScreen{
     	//    Note that your camera should look directly at the origin.
     	//    The Matrix4 methods CreatePerspectiveMatrix and CreateLookatMatrix 
     	//    might be helpful here	 
-        Camera camera = scene.getCamera();
-    	mVP.createLookAt(mEyePos, new Vector3(0, 0, 0), new Vector3(0, 1, 0));
-    	float projDistance = mEyePos.dist(new Vector3(0, 0, 0));
-    	//GL20.glUniform4f(location, v0, v1, v2, v3);
+      	PerspectiveCamera camera = (PerspectiveCamera)scene.getCamera();
+        Vector3 viewup = new Vector3();
+        viewup.set((float)camera.getViewUP().x, (float)camera.getViewUP().y, (float)camera.getViewUP().z);
+    	Matrix4.createLookAt(mEyePos, new Vector3(0, 0, 0), viewup, mVP);
+    	
+    	float projDistance = (float)camera.getProjDistance();
+    	
     	// 5) Send mesh data to the shaders using glUniform* calls. Don't forget to
     	//    rewind your buffers before sending them, and remember that the program
     	//    must be in use before setting these uniforms. The program.getUniform() and
@@ -198,8 +198,10 @@ public final class RayTracerScreen extends GameScreen{
     	GL20.glUniform1i(program.getUniform("hasNormals"), 0);       	
         GL20.glUniform1i(program.getUniform("debug_state"), 0);
         GL20.glUniform1f(program.getUniform("projDistance"), projDistance);
+        GLUniform.setST(program.getUniform("invMVP"), mVP.invert(), false);
+
     	// 6) Don't forget to unuse your program when finished.
-		program.unuse(); 
+		GLProgram.unuse(); 
         // Solution End
     }
     
@@ -263,13 +265,13 @@ public final class RayTracerScreen extends GameScreen{
     	// 2) If the spacebar is down, create a rotation matrix based on the GameTime
     	// 3) Use the rotation matrix to alter your camera uniform parameters.
     	// 4) Repeat this for the left shift key and your point light emitter's uniforms. 
-    	KeyPressEventArgs key = new KeyPressEventArgs();
+    	/*KeyPressEventArgs key = new KeyPressEventArgs();
         if(true) {
         
             	Matrix4.createRotationX((float)gameTime.total, mVP);
-            	GLUniform.setST(program.getUniform("VP"), mVP, false);
+            	GLUniform.setST(program.getUniform("invMVP"), mVP.invert(), false);
   
-        }
+        }*/
         // Solution End
     }
     
@@ -284,18 +286,22 @@ public final class RayTracerScreen extends GameScreen{
     	// Performance benchmark 
         // TODO#PPA1: Print time taken per frame to the console
     	float FPS = (float) (1 / gameTime.elapsed);
+    	
     	// Clear the screen and use your program
     	GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         // TODO#PPA1: Use program and set Uniforms
     	program.use(); 	
+    	
+    	
         //GL20.glUniform1f(program.getUniform("change"),FPS);
         
-        rasterVerts.useAsAttrib(program.getAttribute("vVertex"));
         // Call to bind to the VAO
-        GL30.glBindVertexArray(vaoId);
-       
+        GL30.glBindVertexArray(vaoId);   
+              
+        
+        rasterVerts.useAsAttrib(program.getAttribute("vVertex"));
         // Draw the scene
-        GL11.glDrawElements(GL11.GL_TRIANGLES, ibTris);
+       GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);
         
         // Deselect the vertex array
         GL30.glBindVertexArray(0);
