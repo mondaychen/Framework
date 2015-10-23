@@ -199,9 +199,9 @@ public final class RayTracerScreen extends GameScreen{
     	fbColors.rewind();
     	GL20.glUniform4(program.getUniformArray("triangles"), ibTris);
     	GL20.glUniform4(program.getUniform("vertices"), fbVerts);  
-        GL20.glUniform4(program.getUniformArray("color"), fbColors);
+        GL20.glUniform4(program.getUniformArray("colors"), fbColors);
     	GL20.glUniform1i(program.getUniform("hasNormals"), 0);       	
-        GL20.glUniform1i(program.getUniform("degub_state"), 0);
+        GL20.glUniform1i(program.getUniform("debug_state"), 0);
     	// 6) Don't forget to unuse your program when finished.
 		program.unuse(); 
         // Solution End
