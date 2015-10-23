@@ -49,37 +49,48 @@ bool isInCube(float t, vec3 cube_min, vec3 cube_max) {
 // and the y value contains the t value at the far intersection.
 vec2 intersectCube(vec3 origin, vec3 ray, vec3 cube_min, vec3 cube_max) {
   // TODO#PPA1 Solution Start
-  vec2 result = vec2(-1, -1);
-
-  // Implement axis-aligned box intersection here
-  float nums[6] = float[](
-    rayIntersectPlane(origin, ray, cube_min, vec3(0, 0, cube_max.z - cube_min.z)),
-    rayIntersectPlane(origin, ray, cube_min, vec3(0, cube_max.y - cube_min.y, 0)),
-    rayIntersectPlane(origin, ray, cube_min, vec3(cube_max.x - cube_min.x, 0, 0)),
-    rayIntersectPlane(origin, ray, cube_max, vec3(0, 0, cube_max.z - cube_min.z)),
-    rayIntersectPlane(origin, ray, cube_max, vec3(0, cube_max.y - cube_min.y, 0)),
-    rayIntersectPlane(origin, ray, cube_max, vec3(cube_max.x - cube_min.x, 0, 0))
-  );
-
-  for (int i = 0; i < 6; i++) {
-    if (nums[i] > 0 && isInCube(nums[i], cube_min, cube_max)) {
-      if (result.x > 0) {
-        result.y = nums[i];
-      } else {
-        result.x = nums[i];
-      }
-      if (result.x > 0 && result.y > 0) {
-        break;
-      }
-    }
+  vec2 result = vec2(-1,-1);
+  float tmin,tmax,tymin,tymax,tzmin,tzmax;
+  if(ray.x >= 0) {
+    tmin = (cube_min.x - origin.x) / ray.x;
+    tmax = (cube_max.x - origin.x) / ray.x;
+  } else {
+    tmin = (cube_max.x - origin.x) / ray.x;
+    tmax = (cube_min.x - origin.x) / ray.x;
   }
-
-  if (result.x > result.y) {
-    return result.yx;
+  if(ray.y >= 0) {
+    tymin = (cube_min.y - origin.y) / ray.y;
+    tymax = (cube_max.y - origin.y) / ray.y;
+  } else {
+    tymin = (cube_max.y - origin.y) / ray.y;
+    tymax = (cube_min.y - origin.y) / ray.y;
   }
-  return result;
-
-  // Solution End
+  if(tmin>tymax || tymin>tmax) {
+    return result;
+  }
+  if (tymin > tmin) {
+    tmin = tymin;
+  }
+  if (tymax < tmax) {
+    tmax = tymax;
+  }
+  if(ray.z >= 0) {
+    tzmin = (cube_min.z - origin.z) / ray.z;
+    tzmax = (cube_max.z - origin.z) / ray.z;
+  } else {
+    tzmin = (cube_max.z - origin.z) / ray.z;
+    tzmax = (cube_min.z - origin.z) / ray.z;
+  }
+  if(tmin>tzmax || tzmin>tmax) {
+    return result;
+  }
+  if (tzmin > tmin) {
+    tmin = tzmin;
+  }
+  if (tzmax < tmax) {
+    tmax = tzmax;
+  }
+  return vec2(tmin, tmax);
 }
 
 
@@ -297,6 +308,10 @@ void main() {
           vFragColor = vec4(0.5, 0.5, 0.5, 1);
         }
       }
+      vFragColor = vec4(0.5,0.5,0.5,1);
+    }
+    else {
+      vFragColor = vec4(1,0,0,1);
     }
 
 
