@@ -31,12 +31,14 @@ public abstract class Camera {
 	 */
 	protected final Vector3d viewUp = new Vector3d(0, 1, 0);
 	public void setViewUp(Vector3d viewUp) { this.viewUp.set(viewUp); }
+	public Vector3d getViewUP() {return this.viewUp; } 
 	
 	/**
 	 * The width of the viewing window.
 	 */
 	protected double viewWidth = 1.0;
 	public void setViewWidth(double viewWidth) { this.viewWidth = viewWidth; }
+	
 	
 	/**
 	 * The height of the viewing window.

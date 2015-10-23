@@ -19,6 +19,7 @@ public class PerspectiveCamera extends Camera {
     public void setprojDistance(double projDistance) {
         this.projDistance = projDistance;
     }
+    public double getProjDistance() { return this.projDistance; }
 
     /*
      * Derived values that are computed before ray generation. basisU, basisV,

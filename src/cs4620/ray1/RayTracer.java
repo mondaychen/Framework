@@ -79,9 +79,8 @@ public class RayTracer {
 	public static final void main(String[] args) {
 		ArrayList<ScenePath> pathArgs = new ArrayList<>();
 		ArrayList<ScenePath> scenesToRender = new ArrayList<>();
-		RayTracer.sceneWorkspace = new ScenePath("data/scnees/ray1", "bunny-shadow-scene.xml");
 		String currentRoot = directory;
-		
+
 		// Use All The Arguments
 		for(int i = 0;i < args.length;i++) {
 			switch(args[i].toLowerCase()) {

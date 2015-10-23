@@ -171,7 +171,7 @@ vec4 intersectTriangle(vec3 origin, vec3 dir, int index, inout vec3 normal ) {
   }
 
   // how to get normals????
-  if (hasNormals) {
+  if (hasNormals == 1) {
     vec3 n0 = normals[triangles[index][0]];
     vec3 n1 = normals[triangles[index][1]];
     vec3 n2 = normals[triangles[index][2]];

@@ -196,9 +196,8 @@ public final class RayTracerScreen extends GameScreen{
     	GL20.glUniform4(program.getUniform("vertices"), fbVerts);  
         GL20.glUniform4(program.getUniformArray("colors"), fbColors);
     	GL20.glUniform1i(program.getUniform("hasNormals"), 0);       	
-        GL20.glUniform1i(program.getUniform("debug_state"), 0);
+        GL20.glUniform1i(program.getUniform("debug_state"), 3);
         GL20.glUniform1f(program.getUniform("projDistance"), projDistance);
-        GLUniform.setST(program.getUniform("invMVP"), mVP.invert(), false);
 
     	// 6) Don't forget to unuse your program when finished.
 		GLProgram.unuse(); 
@@ -291,7 +290,7 @@ public final class RayTracerScreen extends GameScreen{
     	GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         // TODO#PPA1: Use program and set Uniforms
     	program.use(); 	
-    	
+        GLUniform.setST(program.getUniform("invMVP"), mVP.invert(), false);
     	
         //GL20.glUniform1f(program.getUniform("change"),FPS);
         
