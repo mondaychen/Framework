@@ -30,6 +30,7 @@ import cs4620.ray1.surface.Mesh;
 import cs4620.ray1.RayTracer.ScenePath;
 import cs4620.ray1.surface.Surface;
 import egl.GL.BufferUsageHint;
+import egl.GL.GLType;
 import egl.GLBuffer;
 import egl.GLProgram;
 import egl.GLUniform;
@@ -76,7 +77,6 @@ public final class RayTracerScreen extends GameScreen{
     public void build() {
     	// TODO#PPA1 Solution Start
     	// The build method is called once, when your RayTracerScreen is first created.
-    	// 5) Create a KeyBoardEventDispatcher to handle state changes via the ZERO key.
     	program = new GLProgram(false);
     	
         // TODO#PPA1: load shaders from src and create program (using available framework methods)	
@@ -93,12 +93,17 @@ public final class RayTracerScreen extends GameScreen{
     	// 3) Set VP matrix for the first time
         GLUniform.setST(program.getUniform("mVP"), mVP, false);
     	
-    	// 4) Set up any data/buffers necessary to transfer to the shaders    
+    	// 4) Set up any data/buffers necessary to transfer to the shaders   ?????????????????????????????????
+        
+        
+        
+        
         // Create a new Vertex Array Object in memory and bind it
         vaoId = GL30.glGenVertexArrays();
         GL30.glBindVertexArray(vaoId);
      
-        rasterVerts = GLBuffer.createAsVertex(new float[] {-1, 3, -1, -1, 3, -1 }, 2, BufferUsageHint.StaticDraw);
+        //define vertex position
+        rasterVerts = GLBuffer.createAsVertex(new float[] {-1, 3, -1, -1, 3, -1 }, 2, BufferUsageHint.StaticDraw);      
         rasterVerts.bind();
         
         // Put the VBO in the attributes list at index 0
@@ -112,6 +117,7 @@ public final class RayTracerScreen extends GameScreen{
         GL30.glBindVertexArray(0); 
 
         // TODO#PPA1: Initialize keyboard interaction using KeyboardEventDispatcher
+    	// Create a KeyBoardEventDispatcher to handle state changes via the ZERO key.
         KeyboardKeyEventArgs args = new KeyboardKeyEventArgs();
         args.Refresh();
         if(args.getAlt() || args.getControl() || args.getShift()) 
@@ -158,8 +164,9 @@ public final class RayTracerScreen extends GameScreen{
         Scene scene = (Scene) parser.parse(p.getFile(), Scene.class);
  
     	// 2) Load the first light in the XML file
-        GLUniform.set(program.getUniform("light"), new Vector3((float)scene.getLights().get(0).position.x, 
-        		(float)scene.getLights().get(0).position.y, (float)scene.getLights().get(0).position.z));
+        light0 = scene.getLights().get(0);
+        GLUniform.set(program.getUniform("light"), new Vector3((float)light0.position.x, 
+        		(float)light0.position.y, (float)light0.position.z));
 
     	// 3) Load the meshes in the scene using addMesh()
         ArrayList<Surface> list = (ArrayList<Surface>) scene.getSurfaces();
@@ -167,7 +174,7 @@ public final class RayTracerScreen extends GameScreen{
         for(Surface s : list) {
         	mesh.add((Mesh)s);
         }
-      	for(Mesh m : mesh) {    //Mesh NUmber的问题
+      	for(Mesh m : mesh) {   
       		addMesh(m, 1);
       	}
       	
@@ -181,24 +188,22 @@ public final class RayTracerScreen extends GameScreen{
     	Vector3 origin = new Vector3();
     	origin.set((float)ray.origin.x, (float)ray.origin.y, (float)ray.origin.z);
     	mVP.createLookAt(origin, new Vector3(0, 0, 0), new Vector3(0, 1, 0));
-    	
+    	//GL20.glUniform4f(location, v0, v1, v2, v3);
     	// 5) Send mesh data to the shaders using glUniform* calls. Don't forget to
     	//    rewind your buffers before sending them, and remember that the program
     	//    must be in use before setting these uniforms. The program.getUniform() and
     	//    program.getUniformArray() methods will be useful here.
-    	for(Mesh m : mesh) {
-    		   MeshData meshdata = m.getMeshData();
-    		   meshdata.positions.rewind();
-    		   meshdata.indices.rewind();
-    	      	program.use();
-    	        GL20.glUniform4(program.getUniformArray("triangles"), meshdata.indices);
-    	        GL20.glUniform4(program.getUniform("vertices"), meshdata.positions);
-    	       // GL20.glUniform4(program.getUniform("normals"), meshdata.normals);
-    	}
-     
-    
+    	program.use();
+    	ibTris.rewind();
+    	fbVerts.rewind();
+    	fbColors.rewind();
+    	GL20.glUniform4(program.getUniformArray("triangles"), ibTris);
+    	GL20.glUniform4(program.getUniform("vertices"), fbVerts);  
+        GL20.glUniform4(program.getUniformArray("color"), fbColors);
+    	GL20.glUniform1i(program.getUniform("hasNormals"), 0);       	
+        GL20.glUniform1i(program.getUniform("degub_state"), 0);
     	// 6) Don't forget to unuse your program when finished.
-		GLProgram.unuse(); 
+		program.unuse(); 
         // Solution End
     }
     
@@ -287,16 +292,17 @@ public final class RayTracerScreen extends GameScreen{
     	GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         // TODO#PPA1: Use program and set Uniforms
     	program.use();
+    	
         GL20.glUniform1f(program.getUniform("change"),FPS);
 
         // Call to bind to the VAO
         GL30.glBindVertexArray(vaoId);
-        //rasterVerts.useAsAttrib(program.getAttribute("vVertex"));
-        // Draw the scene
         GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);
-        
         // Deselect the vertex array
+        // Draw the scene
+        rasterVerts.useAsAttrib(program.getAttribute("vVertex"));
         GL30.glBindVertexArray(0);
+
         // TODO#PPA1: Unuse program
         program.unuse();
         // Solution end
