@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
@@ -91,12 +92,9 @@ public final class RayTracerScreen extends GameScreen{
         
     	// (see scenes/ray1; bunny-shadow-scene.xml is a good place to start)
     	// 3) Set VP matrix for the first time
-        GLUniform.setST(program.getUniform("mVP"), mVP, false);
+        GLUniform.setST(program.getUniform("invMVP"), mVP.invert(), false);
     	
-    	// 4) Set up any data/buffers necessary to transfer to the shaders   ?????????????????????????????????
-        
-        
-        
+    	// 4) Set up any data/buffers necessary to transfer to the shaders   
         
         // Create a new Vertex Array Object in memory and bind it
         vaoId = GL30.glGenVertexArrays();
@@ -104,7 +102,7 @@ public final class RayTracerScreen extends GameScreen{
      
         //define vertex position
         rasterVerts = GLBuffer.createAsVertex(new float[] {-1, 3, -1, -1, 3, -1 }, 2, BufferUsageHint.StaticDraw);      
-        rasterVerts.bind();
+       
         
         // Put the VBO in the attributes list at index 0
         GL20.glEnableVertexAttribArray(program.getAttribute("vVertex"));
@@ -183,11 +181,8 @@ public final class RayTracerScreen extends GameScreen{
     	//    The Matrix4 methods CreatePerspectiveMatrix and CreateLookatMatrix 
     	//    might be helpful here	 
         Camera camera = scene.getCamera();
-        Ray ray = new Ray();
-        camera.getRay(ray, 0.5, 0.5);        
-    	Vector3 origin = new Vector3();
-    	origin.set((float)ray.origin.x, (float)ray.origin.y, (float)ray.origin.z);
-    	mVP.createLookAt(origin, new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+    	mVP.createLookAt(mEyePos, new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+    	float projDistance = mEyePos.dist(new Vector3(0, 0, 0));
     	//GL20.glUniform4f(location, v0, v1, v2, v3);
     	// 5) Send mesh data to the shaders using glUniform* calls. Don't forget to
     	//    rewind your buffers before sending them, and remember that the program
@@ -202,6 +197,7 @@ public final class RayTracerScreen extends GameScreen{
         GL20.glUniform4(program.getUniformArray("colors"), fbColors);
     	GL20.glUniform1i(program.getUniform("hasNormals"), 0);       	
         GL20.glUniform1i(program.getUniform("debug_state"), 0);
+        GL20.glUniform1f(program.getUniform("projDistance"), projDistance);
     	// 6) Don't forget to unuse your program when finished.
 		program.unuse(); 
         // Solution End
@@ -291,18 +287,20 @@ public final class RayTracerScreen extends GameScreen{
     	// Clear the screen and use your program
     	GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         // TODO#PPA1: Use program and set Uniforms
-    	program.use();
-    	
-        GL20.glUniform1f(program.getUniform("change"),FPS);
-
+    	program.use(); 	
+        //GL20.glUniform1f(program.getUniform("change"),FPS);
+        
+        rasterVerts.useAsAttrib(program.getAttribute("vVertex"));
         // Call to bind to the VAO
         GL30.glBindVertexArray(vaoId);
-        GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);
-        // Deselect the vertex array
+       
         // Draw the scene
-        rasterVerts.useAsAttrib(program.getAttribute("vVertex"));
+        GL11.glDrawElements(GL11.GL_TRIANGLES, ibTris);
+        
+        // Deselect the vertex array
         GL30.glBindVertexArray(0);
 
+       
         // TODO#PPA1: Unuse program
         program.unuse();
         // Solution end
