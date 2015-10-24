@@ -178,7 +178,7 @@ float compute_shadow(vec3 origin, vec3 dir ) {
   //    Otherwise return 1.0
   vec3 normal = vec3(0,0,0);
   for (int i = 0; i < triangles.length(); i++) {
-    if (intersectTriangle(origin, dir, i, normal) != vec4(-1,0,0,0)) {
+    if (intersectTriangle(origin, dir, i, normal).x > 0) {
       return 0.5;
     }
   }
@@ -257,30 +257,26 @@ void main() {
       if (intersectRecord.x < t) { // smaller number
         t = intersectRecord.x;
         intersectNormal = normal;
-        intersectColor = colors[i];
+        intersectColor = colors[triangles[i].w];
       }
     }
     if (t != tNearFar.y+1) { // changed -> there is a valid intersection
       vec3 point  = origin + t * dir;
-      vec3 point2light = light - point;
+      vec3 point2light = point - light;
 
       if (debug_state == 0) {
         vFragColor = vec4(shade_lambertian(intersectNormal, point2light, intersectColor) * compute_shadow(point, point2light), 1);
       } else if (debug_state == 1) {
         vFragColor = vec4(intersectNormal / 2 + 0.5, 1);
       } else if (debug_state == 2) {
-        vFragColor = vec4(t, t, t, 1);
+        vFragColor = vec4(point, 1);
       } else if (debug_state == 3) {
         if (compute_shadow(point, point2light) < 1) {
-          vFragColor = vec4(point, 1);
-        } else {
           vFragColor = vec4(0.5, 0.5, 0.5, 1);
+        } else {
+          vFragColor = vec4(1, 1, 1, 1);
         }
       }
-      //vFragColor = vec4(0.5,0.5,0.5,1);
-    }
-    else {
-      vFragColor = vec4(1, 1, 1, 1);
     }
 
 
