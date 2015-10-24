@@ -266,7 +266,7 @@ void main() {
       if (debug_state == 0) {
         vFragColor = vec4(shade_lambertian(intersectNormal, point2light, intersectColor) * compute_shadow(point, point2light), 1);
       } else if (debug_state == 1) {
-        vFragColor = vec4(intersectNormal, 1);
+        vFragColor = vec4(intersectNormal / 2 + 0.5, 1);
       } else if (debug_state == 2) {
         vFragColor = vec4(point, 1);
       } else if (debug_state == 3) {

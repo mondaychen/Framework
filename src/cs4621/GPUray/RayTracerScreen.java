@@ -220,13 +220,10 @@ public final class RayTracerScreen extends GameScreen{
         
        
     	Matrix4.createView(viewpoint, viewDir, viewup, mVP);
-    	//Matrix4.createLookAt(viewpoint, new Vector3(-2, 1, -1), viewup, mVP);
-    	System.out.println(mVP);
+    	//Matrix4.createLookAt(viewpoint, new Vector3(0,0,0), viewup, mVP);
     	
     	viewHeight = (float)camera.getViewHeight();
     	viewWidth = (float)camera.getViewWidth();
-    	System.out.println(viewHeight);
-    	System.out.println(viewWidth);
     	
     	float projDistance = (float)camera.getProjDistance();
     	
