@@ -20,7 +20,7 @@ out vec4 vFragColor;
 // Uniforms
 // TODO#PPA1 Solution Start
 // Add any uniforms you need to pass in from java
-uniform ivec3 triangles[MAX_TRIS];
+uniform ivec4 triangles[MAX_TRIS];
 uniform vec3 vertices[MAX_VERTS];
 uniform int hasNormals;
 uniform vec3 normals[MAX_VERTS];
@@ -114,9 +114,9 @@ vec4 intersectTriangle(vec3 origin, vec3 dir, int index, inout vec3 normal ) {
   // 7) Return a vec4 containing (t, beta, gamma, i) where i is the
   //    index of the color for the given triangle
 
-  vec3 v0 = vertices[triangles[index][0]];
-  vec3 v1 = vertices[triangles[index][1]];
-  vec3 v2 = vertices[triangles[index][2]];
+  vec3 v0 = vertices[triangles[index].x];
+  vec3 v1 = vertices[triangles[index].y];
+  vec3 v2 = vertices[triangles[index].z];
 
   float a, b, c, d, e, f, g, h, i, j, k, l;
 
@@ -131,9 +131,9 @@ vec4 intersectTriangle(vec3 origin, vec3 dir, int index, inout vec3 normal ) {
   g = dir.x;
   h = dir.y;
   i = dir.z;
-  j = v0.x - dir.x;
-  k = v0.y - dir.y;
-  l = v0.z - dir.z;
+  j = v0.x - origin.x;
+  k = v0.y - origin.y;
+  l = v0.z - origin.z;
 
   float M = a * (e * i - h * f) + b * (g * f - d * i) + c * (d * h - e * g);
   float beta = ( j * (e * i - h * f) + k * (g * f - d * i) + l * (d * h - e * g) ) / M;
@@ -150,9 +150,9 @@ vec4 intersectTriangle(vec3 origin, vec3 dir, int index, inout vec3 normal ) {
 
   // how to get normals????
   if (hasNormals == 1) {
-    vec3 n0 = normals[triangles[index][0]];
-    vec3 n1 = normals[triangles[index][1]];
-    vec3 n2 = normals[triangles[index][2]];
+    vec3 n0 = normals[triangles[index].x];
+    vec3 n1 = normals[triangles[index].y];
+    vec3 n2 = normals[triangles[index].z];
     normal = (1 - gamma - beta) * n0 + beta * n1 + gamma * n2;
   } else {
     vec3 e0 = v1 - v0;
@@ -246,6 +246,7 @@ void main() {
 
     vec3 intersectNormal = vec3(0,0,0);
     vec3 intersectColor = vec3(0,0,0);
+
     for (int i = 0; i < triangles.length(); i++) {
       vec3 normal = vec3(0,0,0);
       vec4 intersectRecord = intersectTriangle(origin, dir, i, normal);
@@ -275,10 +276,10 @@ void main() {
           vFragColor = vec4(0.5, 0.5, 0.5, 1);
         }
       }
-      vFragColor = vec4(0.5,0.5,0.5,1);
+      //vFragColor = vec4(0.5,0.5,0.5,1);
     }
     else {
-      vFragColor = vec4(viewWidth,viewHeight,0,1);
+      vFragColor = vec4(1, 1, 1, 1);
     }
 
 

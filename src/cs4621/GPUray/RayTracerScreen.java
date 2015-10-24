@@ -219,8 +219,8 @@ public final class RayTracerScreen extends GameScreen{
         viewDir.set((float)camera.getViewDir().x, (float)camera.getViewDir().y, (float)camera.getViewDir().z);
         
        
-    	//Matrix4.createView(viewpoint, viewDir, viewup, mVP);
-    	Matrix4.createLookAt(viewpoint, new Vector3(-2, 1, -1), viewup, mVP);
+    	Matrix4.createView(viewpoint, viewDir, viewup, mVP);
+    	//Matrix4.createLookAt(viewpoint, new Vector3(-2, 1, -1), viewup, mVP);
     	System.out.println(mVP);
     	
     	viewHeight = (float)camera.getViewHeight();
@@ -240,8 +240,8 @@ public final class RayTracerScreen extends GameScreen{
     	fbVerts.rewind();
     	fbColors.rewind();
     	GL20.glUniform4(program.getUniformArray("triangles"), ibTris);
-    	GL20.glUniform4(program.getUniform("vertices"), fbVerts);  
-        GL20.glUniform4(program.getUniformArray("colors"), fbColors);
+    	GL20.glUniform3(program.getUniformArray("vertices"), fbVerts);  
+        GL20.glUniform3(program.getUniformArray("colors"), fbColors);
     	GL20.glUniform1i(program.getUniform("hasNormals"), 0);       	
         GL20.glUniform1f(program.getUniform("projDistance"), projDistance);
         GL20.glUniform1f(program.getUniform("viewHeight"), viewHeight);
@@ -297,7 +297,7 @@ public final class RayTracerScreen extends GameScreen{
     		}
 
     		// TODO#PPA1: update the numTris variable appropriately
-    	    numTris = md.indexCount / 3;
+    	    numTris += md.indexCount / 3;
 
 
     	} else {
@@ -339,15 +339,6 @@ public final class RayTracerScreen extends GameScreen{
     	program.use(); 	   	
         GLUniform.setST(program.getUniform("invMVP"), mVP, true);
         GL20.glUniform1i(program.getUniform("debug_state"), dbgState);
-        ibTris.rewind();
-    	fbVerts.rewind();
-    	fbColors.rewind();
-    	GL20.glUniform4(program.getUniformArray("triangles"), ibTris);
-    	GL20.glUniform4(program.getUniform("vertices"), fbVerts);  
-        GL20.glUniform4(program.getUniformArray("colors"), fbColors);
-    	GL20.glUniform1i(program.getUniform("hasNormals"), 0);
-        GL20.glUniform1f(program.getUniform("viewHeight"), viewHeight);
-        GL20.glUniform1f(program.getUniform("viewWidth"), viewWidth);
        
         // Call to bind to the VAO
         GL30.glBindVertexArray(vaoId);   
