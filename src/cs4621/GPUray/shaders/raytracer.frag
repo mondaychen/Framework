@@ -27,6 +27,7 @@ uniform vec3 normals[MAX_VERTS];
 uniform vec3 colors[MAX_COLORS];
 uniform vec3 light;
 uniform mat4 invMVP;
+uniform vec3 cameraOrigin;
 uniform float projDistance;
 uniform float viewHeight;
 uniform float viewWidth;
@@ -86,7 +87,7 @@ void setup_camera(vec2 uv, inout vec3 eyeRayOrigin, inout vec3 eyeRayDir,
   //    Set camW to the third.
   //    Set camd to the projection distance
   // 3) Set eyeRayDir the direction of the eyeRay
-  eyeRayOrigin = invMVP[3].xyz;
+  eyeRayOrigin = cameraOrigin;
   camU = invMVP[0].xyz;
   camV = invMVP[1].xyz;
   camW = invMVP[2].xyz;
@@ -268,10 +269,10 @@ void main() {
       } else if (debug_state == 1) {
         vFragColor = vec4(intersectNormal / 2 + 0.5, 1);
       } else if (debug_state == 2) {
-        vFragColor = vec4(point, 1);
+        vFragColor = vec4(t, t, t, 1);
       } else if (debug_state == 3) {
         if (compute_shadow(point, point2light) < 1) {
-          vFragColor = vec4(1, 1, 1, 1);
+          vFragColor = vec4(point, 1);
         } else {
           vFragColor = vec4(0.5, 0.5, 0.5, 1);
         }

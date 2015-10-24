@@ -243,6 +243,7 @@ public final class RayTracerScreen extends GameScreen{
         GL20.glUniform1f(program.getUniform("projDistance"), projDistance);
         GL20.glUniform1f(program.getUniform("viewHeight"), viewHeight);
         GL20.glUniform1f(program.getUniform("viewWidth"), viewWidth);
+        GLUniform.set(program.getUniform("cameraOrigin"), viewpoint);
         
     	  
 
