@@ -49,48 +49,13 @@ bool isInCube(float t, vec3 cube_min, vec3 cube_max) {
 // and the y value contains the t value at the far intersection.
 vec2 intersectCube(vec3 origin, vec3 ray, vec3 cube_min, vec3 cube_max) {
   // TODO#PPA1 Solution Start
-  vec2 result = vec2(-1,-1);
-  float tmin,tmax,tymin,tymax,tzmin,tzmax;
-  if(ray.x >= 0) {
-    tmin = (cube_min.x - origin.x) / ray.x;
-    tmax = (cube_max.x - origin.x) / ray.x;
-  } else {
-    tmin = (cube_max.x - origin.x) / ray.x;
-    tmax = (cube_min.x - origin.x) / ray.x;
-  }
-  if(ray.y >= 0) {
-    tymin = (cube_min.y - origin.y) / ray.y;
-    tymax = (cube_max.y - origin.y) / ray.y;
-  } else {
-    tymin = (cube_max.y - origin.y) / ray.y;
-    tymax = (cube_min.y - origin.y) / ray.y;
-  }
-  if(tmin>tymax || tymin>tmax) {
-    return result;
-  }
-  if (tymin > tmin) {
-    tmin = tymin;
-  }
-  if (tymax < tmax) {
-    tmax = tymax;
-  }
-  if(ray.z >= 0) {
-    tzmin = (cube_min.z - origin.z) / ray.z;
-    tzmax = (cube_max.z - origin.z) / ray.z;
-  } else {
-    tzmin = (cube_max.z - origin.z) / ray.z;
-    tzmax = (cube_min.z - origin.z) / ray.z;
-  }
-  if(tmin>tzmax || tzmin>tmax) {
-    return result;
-  }
-  if (tzmin > tmin) {
-    tmin = tzmin;
-  }
-  if (tzmax < tmax) {
-    tmax = tzmax;
-  }
-  return vec2(tmin, tmax);
+  vec3 tMin = (cube_min - origin) / ray;
+  vec3 tMax = (cube_max - origin) / ray;
+  vec3 t1 = min(tMin, tMax);
+  vec3 t2 = max(tMin, tMax);
+  float tNear = max(max(t1.x, t1.y), t1.z);
+  float tFar = min(min(t2.x, t2.y), t2.z);
+  return vec2(tNear, tFar);
 }
 
 
