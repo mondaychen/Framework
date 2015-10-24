@@ -28,6 +28,8 @@ uniform vec3 colors[MAX_COLORS];
 uniform vec3 light;
 uniform mat4 invMVP;
 uniform float projDistance;
+uniform float viewHeight;
+uniform float viewWidth;
 uniform int debug_state;
 
 // Solution End
@@ -66,7 +68,7 @@ vec3 get_direction(vec2 p, vec3 U, vec3 V, vec3 W, float d) {
 
   // Return the direction towards a point p on UV plane a distance
   // d away from the camera along W.
-  return U * p.x + V * p.y - W * d;
+  return viewWidth / 2 * p.x * U + viewHeight / 2 * p.y * V - W * d;
 
   // Solution End
 }
@@ -276,17 +278,7 @@ void main() {
       vFragColor = vec4(0.5,0.5,0.5,1);
     }
     else {
-      vFragColor = vec4(1,0,0,1);
-    }
-
-    if (debug_state == 0) {
-      vFragColor = vec4(1,0,0,0.5);
-    } else if (debug_state == 1) {
-      vFragColor = vec4(0,1,0,1);
-    } else if (debug_state == 2) {
-      vFragColor = vec4(0,0,1,1);
-    } else if (debug_state == 3) {
-      vFragColor = vec4(1,1,0,1);
+      vFragColor = vec4(viewWidth,viewHeight,0,1);
     }
 
 

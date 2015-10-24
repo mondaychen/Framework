@@ -64,6 +64,8 @@ public final class RayTracerScreen extends GameScreen{
     private GLProgram program;
     private Matrix4 mVP = new Matrix4();
     private Vector3 mEyePos = new Vector3( -2, 0, -10);
+    private float viewHeight;
+    private float viewWidth;
     // ...
     
     // Mesh state 
@@ -187,23 +189,16 @@ public final class RayTracerScreen extends GameScreen{
 
     	// 3) Load the meshes in the scene using addMesh()
         
-        ArrayList<Surface> list = (ArrayList<Surface>) scene.getSurfaces();
-        ArrayList<Mesh> mesh = new ArrayList<Mesh>();
-        mesh.add((Mesh)list.get(2));
-        addMesh(mesh.get(0), 1);
+        ArrayList<Surface> surfaces = (ArrayList<Surface>) scene.getSurfaces();
+//        addMesh((Mesh)surfaces.get(0), 0);
+        for (int i = 0; i < surfaces.size(); i++) {
+        	addMesh((Mesh)surfaces.get(i), i);
+        }
         
-        for(int i =0; i<24; i++) {
-        	System.out.println(fbVerts.get(i));
-        }
-
-        /*
-        for(Surface s : list) {
-        	mesh.add((Mesh)s);
-        }
-      	for(Mesh m : mesh) {   
-      		addMesh(m, 1);
-     	}
-     	*/
+        
+//        for(int i =0; i<24; i++) {
+//        	System.out.println(fbVerts.get(i));
+//        }
       	
     	// 4) Load the camera position from the scene  
     	//    Note that your camera should look directly at the origin.
@@ -220,11 +215,19 @@ public final class RayTracerScreen extends GameScreen{
         Vector3 viewpoint = new Vector3();
         viewpoint.set((float)camera.getViewPoint().x, (float)camera.getViewPoint().y, (float)camera.getViewPoint().z);
         
-       
+        Vector3 viewDir = new Vector3();
+        viewDir.set((float)camera.getViewDir().x, (float)camera.getViewDir().y, (float)camera.getViewDir().z);
         
-    	Matrix4.createLookAt(viewpoint, new Vector3(-2, 1, -1), viewup, mVP);
+       
+    	Matrix4.createView(viewpoint, viewDir, viewup, mVP);
+    	System.out.println(mVP);
     	
-    	float projDistance = viewpoint.dist(new Vector3(-2, 1, -1));
+    	viewHeight = (float)camera.getViewHeight();
+    	viewWidth = (float)camera.getViewWidth();
+    	System.out.println(viewHeight);
+    	System.out.println(viewWidth);
+    	
+    	float projDistance = (float)camera.getProjDistance();
     	
     	// 5) Send mesh data to the shaders using glUniform* calls. Don't forget to
     	//    rewind your buffers before sending them, and remember that the program
@@ -240,7 +243,9 @@ public final class RayTracerScreen extends GameScreen{
         GL20.glUniform4(program.getUniformArray("colors"), fbColors);
     	GL20.glUniform1i(program.getUniform("hasNormals"), 0);       	
         GL20.glUniform1f(program.getUniform("projDistance"), projDistance);
-        GLUniform.setST(program.getUniform("invMVP"), mVP, false);
+        GL20.glUniform1f(program.getUniform("viewHeight"), viewHeight);
+        GL20.glUniform1f(program.getUniform("viewWidth"), viewWidth);
+        
     	  
 
     	// 6) Don't forget to unuse your program when finished.
@@ -310,7 +315,6 @@ public final class RayTracerScreen extends GameScreen{
     	// 4) Repeat this for the left shift key and your point light emitter's uniforms.   repeat??? callrefresh? 
         if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {    	
              Matrix4.createRotationX((float)gameTime.total, mVP);
-             GLUniform.setST(program.getUniform("invMVP"), mVP, false);
         }
         // Solution End
     }
@@ -332,8 +336,17 @@ public final class RayTracerScreen extends GameScreen{
     	
         // TODO#PPA1: Use program and set Uniforms
     	program.use(); 	   	
-        GLUniform.setST(program.getUniform("invMVP"), mVP, false);
+        GLUniform.setST(program.getUniform("invMVP"), mVP, true);
         GL20.glUniform1i(program.getUniform("debug_state"), dbgState);
+        ibTris.rewind();
+    	fbVerts.rewind();
+    	fbColors.rewind();
+    	GL20.glUniform4(program.getUniformArray("triangles"), ibTris);
+    	GL20.glUniform4(program.getUniform("vertices"), fbVerts);  
+        GL20.glUniform4(program.getUniformArray("colors"), fbColors);
+    	GL20.glUniform1i(program.getUniform("hasNormals"), 0);
+        GL20.glUniform1f(program.getUniform("viewHeight"), viewHeight);
+        GL20.glUniform1f(program.getUniform("viewWidth"), viewWidth);
        
         // Call to bind to the VAO
         GL30.glBindVertexArray(vaoId);   

@@ -26,6 +26,7 @@ public abstract class Camera {
 	 */
 	protected final Vector3d viewDir = new Vector3d(0, 0, -1);
 	public void setViewDir(Vector3d viewDir) { this.viewDir.set(viewDir); }
+	public Vector3d getViewDir() {return this.viewDir;}
 	
 	/**
 	 * The upwards direction from the viewer's perspective.
@@ -39,6 +40,7 @@ public abstract class Camera {
 	 */
 	protected double viewWidth = 1.0;
 	public void setViewWidth(double viewWidth) { this.viewWidth = viewWidth; }
+	public double getViewWidth() {return this.viewWidth;}
 	
 	
 	/**
@@ -46,6 +48,7 @@ public abstract class Camera {
 	 */
 	protected double viewHeight = 1.0;
 	public void setViewHeight(double viewHeight) { this.viewHeight = viewHeight; }
+	public double getViewHeight() {return this.viewHeight;}
 	
 	/**
 	 * Generate a ray that points out into the scene for the given (u,v) coordinate.
