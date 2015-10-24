@@ -239,7 +239,6 @@ public final class RayTracerScreen extends GameScreen{
     	GL20.glUniform4(program.getUniform("vertices"), fbVerts);  
         GL20.glUniform4(program.getUniformArray("colors"), fbColors);
     	GL20.glUniform1i(program.getUniform("hasNormals"), 0);       	
-        GL20.glUniform1i(program.getUniform("debug_state"), dbgState);
         GL20.glUniform1f(program.getUniform("projDistance"), projDistance);
         GLUniform.setST(program.getUniform("invMVP"), mVP, false);
     	  
@@ -334,6 +333,7 @@ public final class RayTracerScreen extends GameScreen{
         // TODO#PPA1: Use program and set Uniforms
     	program.use(); 	   	
         GLUniform.setST(program.getUniform("invMVP"), mVP, false);
+        GL20.glUniform1i(program.getUniform("debug_state"), dbgState);
        
         // Call to bind to the VAO
         GL30.glBindVertexArray(vaoId);   

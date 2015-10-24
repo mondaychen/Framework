@@ -279,6 +279,16 @@ void main() {
       vFragColor = vec4(1,0,0,1);
     }
 
+    if (debug_state == 0) {
+      vFragColor = vec4(1,0,0,0.5);
+    } else if (debug_state == 1) {
+      vFragColor = vec4(0,1,0,1);
+    } else if (debug_state == 2) {
+      vFragColor = vec4(0,0,1,1);
+    } else if (debug_state == 3) {
+      vFragColor = vec4(1,1,0,1);
+    }
+
 
     // Solution End
   }
