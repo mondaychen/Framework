@@ -19,7 +19,8 @@ public abstract class Camera {
 	 */
 	protected final Vector3d viewPoint = new Vector3d();
 	public void setViewPoint(Vector3d viewPoint) { this.viewPoint.set(viewPoint); }
-	
+	public Vector3d getViewPoint() {return this.viewPoint; } 
+
 	/**
 	 * The direction the eye is looking.
 	 */
