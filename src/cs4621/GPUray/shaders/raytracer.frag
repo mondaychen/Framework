@@ -149,8 +149,8 @@ vec4 intersectTriangle(vec3 origin, vec3 dir, int index, inout vec3 normal ) {
     return vec4(-1,0,0,0);
   }
 
-  // how to get normals????
   if (hasNormals == 1) {
+    // hasNormals will be 0 in this assignment since this is not required
     vec3 n0 = normals[triangles[index].x];
     vec3 n1 = normals[triangles[index].y];
     vec3 n2 = normals[triangles[index].z];
@@ -162,7 +162,7 @@ vec4 intersectTriangle(vec3 origin, vec3 dir, int index, inout vec3 normal ) {
   }
 
 
-  return vec4(t, beta, gamma, i);
+  return vec4(t, beta, gamma, triangles[index].w);
 
   // Solution End
 }
@@ -257,7 +257,7 @@ void main() {
       if (intersectRecord.x < t) { // smaller number
         t = intersectRecord.x;
         intersectNormal = normal;
-        intersectColor = colors[triangles[i].w];
+        intersectColor = colors[int(intersectRecord.w)];
       }
     }
     if (t != tNearFar.y+1) { // changed -> there is a valid intersection
