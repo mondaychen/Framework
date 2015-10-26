@@ -47,7 +47,22 @@ public class TexCubeMap {
 	}
 	
 	public void createCubeMap(String dir) throws Exception {
+		glActiveTexture(TextureUnit.Texture0);
+		uintTexCube = glGenTextures();
 		
+		loadCubeMapSide(uintTexCube, TextureTarget.TextureCubeMapNegativeZ, dir + "negz.jpg");
+		loadCubeMapSide(uintTexCube, TextureTarget.TextureCubeMapPositiveZ, dir + "posz.jpg");
+		loadCubeMapSide(uintTexCube, TextureTarget.TextureCubeMapPositiveY, dir + "posy.jpg");
+		loadCubeMapSide(uintTexCube, TextureTarget.TextureCubeMapNegativeY, dir + "negy.jpg");
+		loadCubeMapSide(uintTexCube, TextureTarget.TextureCubeMapNegativeX, dir + "negx.jpg");
+		loadCubeMapSide(uintTexCube, TextureTarget.TextureCubeMapPositiveX, dir + "posx.jpg");
+		
+		glTexParameteri(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, TextureMagFilter.Linear);
+		glTexParameteri(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, TextureMinFilter.Linear);
+		glTexParameteri(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, TextureParameterName.ClampToEdge);
+		glTexParameteri(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, TextureParameterName.ClampToEdge);
+		glTexParameteri(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, TextureParameterName.ClampToEdge);
+		created = true;
 	}
 	
 	public boolean use(int textureUnit, int unCubeMap) {
@@ -62,7 +77,38 @@ public class TexCubeMap {
 	
 
 	private Boolean loadCubeMapSide(int uintTexture, int sideTarget, String name) throws Exception{
+		glBindTexture(TextureTarget.TextureCubeMap, uintTexture);
 		
+    	InputStream s = IOUtils.openFile(name);
+    	if(s == null) throw new Exception("Could Not Open Image Resource: " + name);
+    	BufferedImage image = ImageIO.read(s);
+		
+    	int w = image.getWidth();
+    	int h = image.getHeight();
+    	
+    	ByteBuffer bb = NativeMem.createByteBuffer(w * h * 4);
+    	Color c = new Color();
+    	for(int y = 0; y < h;y++) {
+    		for(int x = 0; x < w; x++) {
+    			int argb = image.getRGB(x, y);
+    			c.setIntARGB(argb);
+    			bb.put(c.R);
+    			bb.put(c.G);
+    			bb.put(c.B);
+    			bb.put(c.A);
+    		}
+    	}
+    	bb.flip();
+    	
+        glTexImage2D(sideTarget,
+				0,
+				PixelInternalFormat.Rgba,
+				image.getWidth(),
+				image.getHeight(),
+				0,
+				PixelInternalFormat.Rgba,
+				PixelType.UnsignedByte,
+				bb);
     	
     	return true;
 	}

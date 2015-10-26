@@ -11,5 +11,6 @@
 // Camera Information
 
 void main() {
+  // TODO A4
 	gl_FragColor = vec4(1,1,1,1);
 }

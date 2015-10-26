@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<scene>
+	<texture>
+		<name>EarthTexture</name>
+		<data>
+			<file>data/textures/heightmaps/earthmap1k.jpg</file>
+		</data>
+	</texture>
+	<texture>
+		<name>SphereHeightMapTexture</name>
+		<data>
+			<file>data/textures/heightmaps/earthbump1k.jpg</file>
+		</data>
+	</texture>
+	<texture>
+		<name>TerrainHeightMapTexture</name>
+		<data>
+			<file>data/textures/heightmaps/terrain-heightmap.jpg</file>
+		</data>
+	</texture>
+	<texture>
+		<name>TerrainTexture</name>
+		<data>
+			<file>data/textures/heightmaps/terrain-texture.jpg</file>
+		</data>
+	</texture>
+
+	<material>
+		<name>DispMappedSphereMaterial</name>
+		<data>
+			<type>DispMapped</type>
+			<diffuse>
+				<texture>EarthTexture</texture>
+			</diffuse>
+			<normal>
+				<texture>SphereHeightMapTexture</texture>
+			</normal>
+			<dispMagnitude>0.1</dispMagnitude>
+		</data>
+	</material>
+	
+	<material>
+		<name>DispMappedTerrainMaterial</name>
+		<data>
+			<type>DispMapped</type>
+			<diffuse>
+				<texture>TerrainTexture</texture>
+			</diffuse>
+			<normal>
+				<texture>TerrainHeightMapTexture</texture>
+			</normal>
+			<dispMagnitude>0.5</dispMagnitude>
+		</data>
+	</material>
+	
+	<material>
+		<name>Ambient</name>
+		<data>
+			<type>Ambient</type>
+			<diffuse>
+				<color>255 255 255 255</color>
+			</diffuse>
+		</data>
+	</material>
+	
+	<object>
+		<name>Ground</name>
+		<data>
+			<mesh>Plane</mesh>
+			<material>DispMappedTerrainMaterial</material>
+			<scale>20 20 20</scale>
+			<translation>0 -2 0</translation>
+		</data>
+	</object>
+	
+	<object>
+		<name>Earth</name>
+		<data>
+			<mesh>Sphere</mesh>
+			<material>DispMappedSphereMaterial</material>
+			<scale>2 2 2</scale>
+			<translation>0 6 0</translation>
+		</data>
+	</object>
+	
+	<object>
+		<name>Camera</name>
+		<data type="SceneCamera">
+			<zPlanes>0.02 1000.0</zPlanes>
+			<perspective>0.01 0.01</perspective>
+			
+			<rotation>-30 10 0</rotation>
+			<translation>0 20 20</translation>
+		</data>
+	</object>
+
+	<object>
+		<name>LightObj0</name>
+		<data>
+			<mesh>Sphere</mesh>
+			<scale>0.1 0.1 0.1</scale>
+			<translation>3 10 -5</translation>
+
+			<material>Ambient</material>
+		</data>
+	</object>
+	<object>
+		<name>Light0</name>
+		<data type="SceneLight">
+			<parent>LightObj0</parent>
+			<intensity>10 10 10</intensity>
+		</data>
+	</object>
+	
+	<object>
+		<name>LightObj1</name>
+		<data>
+			<mesh>Sphere</mesh>
+			<scale>0.1 0.1 0.1</scale>
+			<translation>-3 10 2</translation>
+
+			<material>Ambient</material>
+		</data>
+	</object>
+	<object>
+		<name>Light1</name>
+		<data type="SceneLight">
+			<parent>LightObj1</parent>
+			<intensity>6 6 6</intensity>
+		</data>
+	</object>
+	
+	<object>
+		<name>AmbientLight</name>
+		<data type="SceneLight">
+			<intensity>0.05 0.05 0.05</intensity>
+			<isAmbient>true</isAmbient>
+		</data>
+	</object>
+</scene>

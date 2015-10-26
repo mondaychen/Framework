@@ -71,6 +71,8 @@ public class Material extends ACUniqueObject implements IXMLDocWriteable {
 	public InputProvider inputDiffuse = new InputProvider();
 	public InputProvider inputNormal = new InputProvider();
 	public InputProvider inputSpecular = new InputProvider();
+	public InputProvider inputFiberColor = new InputProvider();
+	public InputProvider inputFiberDirection = new InputProvider();
 	
 	// Shininess of the surface, used with Blinn-Phong materials
 	public float shininess;
@@ -83,6 +85,8 @@ public class Material extends ACUniqueObject implements IXMLDocWriteable {
 		inputDiffuse.setColor(Color.LightGray);
 		inputNormal.setColor(new Color(128, 128, 255, 255));
 		inputSpecular.setColor(Color.White);
+		inputFiberColor.setColor(Color.Brown);
+		inputFiberDirection.setColor(new Color(255, 0, 0));
 		shininess = 50f;
 		roughness = 0.3f;
 		dispMagnitude = 0.3f;
@@ -99,6 +103,12 @@ public class Material extends ACUniqueObject implements IXMLDocWriteable {
 	}
 	public void setSpecular(InputProvider p) {
 		inputSpecular = p;
+	}
+	public void setFiberColor(InputProvider p) {
+		inputFiberColor = p;
+	}
+	public void setFiberDirection(InputProvider p) {
+		inputFiberDirection = p;
 	}
 	public void setShininess(float shininess) {
 		this.shininess = shininess;
@@ -118,6 +128,14 @@ public class Material extends ACUniqueObject implements IXMLDocWriteable {
 		
 		e = doc.createElement("diffuse");
 		inputDiffuse.saveData(doc, e);
+		eData.appendChild(e);
+		
+		e = doc.createElement("fibercolor");
+		inputFiberColor.saveData(doc, e);
+		eData.appendChild(e);
+		
+		e = doc.createElement("fiberdirection");
+		inputFiberDirection.saveData(doc, e);
 		eData.appendChild(e);
 		
 		e = doc.createElement("normal");

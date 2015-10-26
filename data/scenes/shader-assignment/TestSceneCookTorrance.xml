@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<scene>
+	<texture>
+		<name>EarthTexture</name>
+		<data>
+			<file>data/textures/Earth.png</file>
+		</data>
+	</texture>
+
+	<material>
+		<name>CookTorranceMaterial</name>
+		<data>
+			<type>CookTorrance</type>
+			<diffuse>
+				<color>255 0 20 255</color>
+			</diffuse>
+			<roughness>0.2</roughness>
+		</data>
+	</material>
+	
+	<material>
+		<name>Ambient</name>
+		<data>
+			<type>Ambient</type>
+			<diffuse>
+				<color>255 255 255 255</color>
+			</diffuse>
+		</data>
+	</material>
+	
+	<material>
+		<name>PhongMaterial</name>
+		<data>
+			<type>Phong</type>
+			<diffuse>
+				<color>255 0 20 255</color>
+			</diffuse>
+			<shininess>50</shininess>
+		</data>
+	</material>
+
+	<object>
+		<name>Earth</name>
+		<data>
+			<mesh>Sphere</mesh>
+			<scale>0.5 0.5 0.5</scale>
+			<translation>-0.5 0 0</translation>
+			
+			<material>CookTorranceMaterial</material>
+		</data>
+	</object>
+	
+	<object>
+		<name>Earth2</name>
+		<data>
+			<mesh>Sphere</mesh>
+			<scale>0.5 0.5 0.5</scale>
+			<translation>0.5 0 0</translation>
+			
+			<material>PhongMaterial</material>
+		</data>
+	</object>
+	
+	<object>
+		<name>Camera</name>
+		<data type="SceneCamera">
+			<zPlanes>0.02 1000.0</zPlanes>
+			<perspective>0.01 0.01</perspective>
+
+			<translation>0 0 10</translation>
+		</data>
+	</object>
+
+	<object>
+		<name>LightObj0</name>
+		<data>
+			<mesh>Sphere</mesh>
+			<scale>0.1 0.1 0.1</scale>
+			<translation>0.75 1.5 0</translation>
+
+			<material>Ambient</material>
+		</data>
+	</object>
+	<object>
+		<name>Light0</name>
+		<data type="SceneLight">
+			<parent>LightObj0</parent>
+			<intensity>1 1 1</intensity>
+		</data>
+	</object>
+	
+	<object>
+		<name>LightObj1</name>
+		<data>
+			<mesh>Sphere</mesh>
+			<scale>0.1 0.1 0.1</scale>
+			<translation>-0.75 -1.5 2</translation>
+
+			<material>Ambient</material>
+		</data>
+	</object>
+	<object>
+		<name>Light1</name>
+		<data type="SceneLight">
+			<parent>LightObj1</parent>
+			<intensity>1 1 1</intensity>
+		</data>
+	</object>
+	
+	<object>
+		<name>AmbientLight</name>
+		<data type="SceneLight">
+			<intensity>0.05 0.05 0.05</intensity>
+			<isAmbient>true</isAmbient>
+		</data>
+	</object>
+</scene>

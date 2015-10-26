@@ -26,7 +26,19 @@ public class TexGenCheckerBoard extends ACTextureGeneratorTwoColor {
 	
 	@Override
 	public void getColor(float u, float v, Color outColor) {
-		outColor.set(100, 100, 100);
+		// Find Tile Positions
+		int ui = (int)Math.floor(u * tiles.x);
+		ui = MathHelper.clamp(ui, 0, tiles.x - 1);
+		int vi = (int)Math.floor(v * tiles.y);
+		vi = MathHelper.clamp(vi, 0, tiles.y - 1);
+		
+		// Tile Index
+		int ti = vi * tiles.x + ui;
+		
+		// Even Checker Board Pretend We Have A Ghost Tile
+		if(tiles.x % 2 == 0) ti += vi;
+
+		outColor.set(ti % 2 == 0 ? color1 : color2);
 	}
 	
 	@Override

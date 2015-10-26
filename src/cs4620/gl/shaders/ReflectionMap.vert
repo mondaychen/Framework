@@ -14,6 +14,7 @@ uniform mat3 mWorldIT;
 attribute vec4 vPosition; // Sem (POSITION 0)
 
 void main() {
+  // TODO A4
   vec4 worldPos = mWorld * vPosition;
   gl_Position = mViewProjection * worldPos;
 }

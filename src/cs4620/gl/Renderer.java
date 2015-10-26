@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 import egl.BlendState;
 import egl.DepthState;
+import egl.GL;
 import egl.GLProgram;
 import egl.IDisposable;
 import egl.GL.GLType;
@@ -73,6 +75,10 @@ public class Renderer implements IDisposable {
 	}
 
 	public void draw(RenderCamera camera, ArrayList<RenderLight> lights) {
+		draw(camera, lights, 0.0f);
+	}
+	
+	public void draw(RenderCamera camera, ArrayList<RenderLight> lights, float time) {
 		DepthState.DEFAULT.set();
 		BlendState.OPAQUE.set();
 		RasterizerState.CULL_CLOCKWISE.set();
@@ -88,6 +94,7 @@ public class Renderer implements IDisposable {
 				material.program.use();
 				material.useMaterialProperties();
 				material.useCameraAndLights(camera, lights, 0, cc);
+				material.useTime(time);
 			}
 			if(mesh != p.mesh) {
 				if(mesh != null) mesh.iBuffer.unbind();
