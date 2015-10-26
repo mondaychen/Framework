@@ -184,8 +184,6 @@ public final class RayTracerScreen extends GameScreen{
  
     	// 2) Load the first light in the XML file
         light0 = scene.getLights().get(0);
-        GLUniform.set(program.getUniform("light"), new Vector3((float)light0.position.x, 
-        		(float)light0.position.y, (float)light0.position.z));
 
     	// 3) Load the meshes in the scene using addMesh()
         
@@ -244,6 +242,8 @@ public final class RayTracerScreen extends GameScreen{
         GL20.glUniform1f(program.getUniform("viewHeight"), viewHeight);
         GL20.glUniform1f(program.getUniform("viewWidth"), viewWidth);
         GLUniform.set(program.getUniform("cameraOrigin"), viewpoint);
+        GLUniform.set(program.getUniform("light"), new Vector3((float)light0.position.x, 
+        		(float)light0.position.y, (float)light0.position.z));
         
     	  
 
