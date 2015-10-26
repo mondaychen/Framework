@@ -67,6 +67,8 @@ public final class RayTracerScreen extends GameScreen{
     private float viewHeight;
     private float viewWidth;
     private Vector3 Light = new Vector3();
+    private Vector3 viewPoint;
+    private Vector3 viewUp;
     // ...
     
     // Mesh state 
@@ -207,18 +209,18 @@ public final class RayTracerScreen extends GameScreen{
       	
       	
        
-      	Vector3 viewup = new Vector3();
-        viewup.set((float)camera.getViewUP().x, (float)camera.getViewUP().y, (float)camera.getViewUP().z);
+      	viewUp = new Vector3();
+      	viewUp.set((float)camera.getViewUP().x, (float)camera.getViewUP().y, (float)camera.getViewUP().z);
        
-        Vector3 viewpoint = new Vector3();
-        viewpoint.set((float)camera.getViewPoint().x, (float)camera.getViewPoint().y, (float)camera.getViewPoint().z);
+        viewPoint = new Vector3();
+        viewPoint.set((float)camera.getViewPoint().x, (float)camera.getViewPoint().y, (float)camera.getViewPoint().z);
         
-        Vector3 viewDir = new Vector3();
-        viewDir.set((float)camera.getViewDir().x, (float)camera.getViewDir().y, (float)camera.getViewDir().z);
+//        Vector3 viewDir = new Vector3();
+//        viewDir.set((float)camera.getViewDir().x, (float)camera.getViewDir().y, (float)camera.getViewDir().z);
         
        
-    	Matrix4.createView(viewpoint, viewDir, viewup, mVP);
-    	//Matrix4.createLookAt(viewpoint, new Vector3(0,0,0), viewup, mVP);
+//    	Matrix4.createView(viewpoint, viewDir, viewup, mVP);
+    	Matrix4.createLookAt(viewPoint, new Vector3(0,0,0), viewUp, mVP);
     	
     	viewHeight = (float)camera.getViewHeight();
     	viewWidth = (float)camera.getViewWidth();
@@ -241,8 +243,6 @@ public final class RayTracerScreen extends GameScreen{
         GL20.glUniform1f(program.getUniform("projDistance"), projDistance);
         GL20.glUniform1f(program.getUniform("viewHeight"), viewHeight);
         GL20.glUniform1f(program.getUniform("viewWidth"), viewWidth);
-        GLUniform.set(program.getUniform("cameraOrigin"), viewpoint);
-        GLUniform.set(program.getUniform("light"), Light);
         
     	  
 
@@ -312,17 +312,11 @@ public final class RayTracerScreen extends GameScreen{
     	// 3) Use the rotation matrix to alter your camera uniform parameters.
     	// 4) Repeat this for the left shift key and your point light emitter's uniforms.   
         if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)) { 
-        	Matrix4 rotate = new Matrix4();
-            Matrix4.createRotationY((float)gameTime.elapsed, rotate);
-            mVP.mulBefore(rotate);
-//            Vector3 center = new Vector3(0, 0, 0);
-//            mVP.mulPos(center);
-//            
-//            
-//            
-//            rotate.mulBefore(Matrix4.createTranslation(center.clone().negate()));
-//            rotate.mulAfter(Matrix4.createTranslation(center));
-//            mVP.invert().mulBefore(rotate);
+        	Matrix3 rotate = new Matrix3();
+            Matrix3.createRotationY((float)gameTime.elapsed, rotate);
+            
+        	rotate.mul(viewPoint);
+            Matrix4.createLookAt(viewPoint, new Vector3(0,0,0), viewUp, mVP);
              
         }
         
@@ -355,6 +349,8 @@ public final class RayTracerScreen extends GameScreen{
         // TODO#PPA1: Use program and set Uniforms
     	program.use(); 	   	
         GLUniform.setST(program.getUniform("invMVP"), mVP, true);
+        GLUniform.set(program.getUniform("cameraOrigin"), viewPoint);
+        GLUniform.set(program.getUniform("light"), Light);
         GL20.glUniform1i(program.getUniform("debug_state"), dbgState);
        
         // Call to bind to the VAO
