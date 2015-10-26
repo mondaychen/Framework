@@ -149,6 +149,7 @@ vec4 intersectTriangle(vec3 origin, vec3 dir, int index, inout vec3 normal ) {
     vec3 e1 = v2 - v0;
     normal = cross(e0, e1);
   }
+  normal = normalize(normal);
 
 
   return vec4(t, beta, gamma, triangles[index].w);
