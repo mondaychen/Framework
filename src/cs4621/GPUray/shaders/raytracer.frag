@@ -36,17 +36,6 @@ uniform int debug_state;
 // Solution End
 
 
-// helper functoins for intersectCube
-float rayIntersectPlane(vec3 origin, vec3 ray, vec3 planePoint, vec3 normal) {
-  // t = (PlanePoint - origin) dot normal / ray dot normal
-  return dot(planePoint - origin, normal) / dot(ray, normal);
-}
-
-bool isInCube(float t, vec3 cube_min, vec3 cube_max) {
-  return t > cube_min.x && t > cube_min.y && t > cube_min.z &&
-           t < cube_max.x && t < cube_max.y && t < cube_max.z;
-}
-
 // Function to return the intersection of a ray with a box.
 // Returns a vec2 in which the x value contains the t value at the near intersection
 // and the y value contains the t value at the far intersection.
