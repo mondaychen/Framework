@@ -75,6 +75,8 @@ public final class RayTracerScreen extends GameScreen{
     private int numTris = 0;
     private int dbgState = 0;
 	private Light light0;
+	
+	private int totalFrames = 0;
 
 	
     @Override
@@ -328,7 +330,9 @@ public final class RayTracerScreen extends GameScreen{
 	
     	// Performance benchmark 
         // TODO#PPA1: Print time taken per frame to the console
-    	float FPS = (float) (1 / gameTime.elapsed);
+    	totalFrames++;
+    	System.out.println("Current FPS: " + 1 / gameTime.elapsed);
+    	System.out.println("Avg FPS: " + totalFrames / gameTime.total);
     	
     	// Clear the screen and use your program
     	GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
