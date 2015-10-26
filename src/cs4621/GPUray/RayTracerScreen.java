@@ -190,16 +190,11 @@ public final class RayTracerScreen extends GameScreen{
     	// 3) Load the meshes in the scene using addMesh()
         
         ArrayList<Surface> surfaces = (ArrayList<Surface>) scene.getSurfaces();
-//        addMesh((Mesh)surfaces.get(0), 0);
         for (int i = 0; i < surfaces.size(); i++) {
         	addMesh((Mesh)surfaces.get(i), i);
         }
         
-        
-//        for(int i =0; i<24; i++) {
-//        	System.out.println(fbVerts.get(i));
-//        }
-      	
+
     	// 4) Load the camera position from the scene  
     	//    Note that your camera should look directly at the origin.
     	//    The Matrix4 methods CreatePerspectiveMatrix and CreateLookatMatrix 
