@@ -13,8 +13,10 @@ uniform mat3 mWorldIT;
 // RenderMesh Input
 attribute vec4 vPosition; // Sem (POSITION 0)
 
+varying vec4 worldPos;
+
 void main() {
   // TODO A4
-  vec4 worldPos = mWorld * vPosition;
+  worldPos = mWorld * vPosition;
   gl_Position = mViewProjection * worldPos;
 }

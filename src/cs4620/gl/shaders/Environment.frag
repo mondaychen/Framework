@@ -9,8 +9,12 @@
 // Lighting Information
 
 // Camera Information
+uniform vec3 worldCam;
+
+varying vec4 worldPos;
 
 void main() {
   // TODO A4
-	gl_FragColor = vec4(1,1,1,1);
+  vec3 V = worldPos.xyz - worldCam;
+	gl_FragColor = getEnvironmentColor(V);
 }
