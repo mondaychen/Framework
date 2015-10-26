@@ -331,7 +331,7 @@ public final class RayTracerScreen extends GameScreen{
     	// Performance benchmark 
         // TODO#PPA1: Print time taken per frame to the console
     	totalFrames++;
-    	System.out.println("Current FPS: " + 1 / gameTime.elapsed);
+    	System.out.println("Time time taken per frame: " + gameTime.elapsed);
     	System.out.println("Avg FPS: " + totalFrames / gameTime.total);
     	
     	// Clear the screen and use your program
