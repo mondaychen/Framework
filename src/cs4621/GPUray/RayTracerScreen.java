@@ -66,6 +66,7 @@ public final class RayTracerScreen extends GameScreen{
     private Vector3 mEyePos = new Vector3( -2, 0, -10);
     private float viewHeight;
     private float viewWidth;
+    private Vector3 Light = new Vector3();
     // ...
     
     // Mesh state 
@@ -186,6 +187,8 @@ public final class RayTracerScreen extends GameScreen{
  
     	// 2) Load the first light in the XML file
         light0 = scene.getLights().get(0);
+        Light.set(new Vector3((float)light0.position.x, 
+        		(float)light0.position.y, (float)light0.position.z));
 
     	// 3) Load the meshes in the scene using addMesh()
         
@@ -239,8 +242,7 @@ public final class RayTracerScreen extends GameScreen{
         GL20.glUniform1f(program.getUniform("viewHeight"), viewHeight);
         GL20.glUniform1f(program.getUniform("viewWidth"), viewWidth);
         GLUniform.set(program.getUniform("cameraOrigin"), viewpoint);
-        GLUniform.set(program.getUniform("light"), new Vector3((float)light0.position.x, 
-        		(float)light0.position.y, (float)light0.position.z));
+        GLUniform.set(program.getUniform("light"), Light);
         
     	  
 
@@ -308,10 +310,28 @@ public final class RayTracerScreen extends GameScreen{
     	// 1) Using the keyboard class detect when the spacebar is held down
     	// 2) If the spacebar is down, create a rotation matrix based on the GameTime
     	// 3) Use the rotation matrix to alter your camera uniform parameters.
-    	// 4) Repeat this for the left shift key and your point light emitter's uniforms.   repeat??? callrefresh? 
-        if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {    	
-             Matrix4.createRotationX((float)gameTime.total, mVP);
+    	// 4) Repeat this for the left shift key and your point light emitter's uniforms.   
+        if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)) { 
+        	Matrix4 rotate = new Matrix4();
+            Matrix4.createRotationY((float)gameTime.elapsed, rotate);
+            mVP.mulBefore(rotate);
+//            Vector3 center = new Vector3(0, 0, 0);
+//            mVP.mulPos(center);
+//            
+//            
+//            
+//            rotate.mulBefore(Matrix4.createTranslation(center.clone().negate()));
+//            rotate.mulAfter(Matrix4.createTranslation(center));
+//            mVP.invert().mulBefore(rotate);
+             
         }
+        
+        if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+        	Matrix3 lightrot = new Matrix3();
+        	Matrix3.createRotationY((float)gameTime.elapsed, lightrot);
+        	lightrot.mul(Light);
+        }
+             
         // Solution End
     }
     
