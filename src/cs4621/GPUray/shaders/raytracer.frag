@@ -191,14 +191,13 @@ float compute_shadow(vec3 origin, vec3 dir ) {
 // Function to compute lambertian shading
 vec3 shade_lambertian(vec3 normal, vec3 light_dir, vec3 mesh_color) {
   // TODO#PPA1 Solution Start
-  float lightDotNormal = dot(light_dir, normal);
+  float lightDotNormal = dot(normalize(normal), normalize(light_dir));
   if (lightDotNormal < 0) {
     lightDotNormal = 0;
   }
   // Return the RGB vector obtained from the lambertian shading model
 
-  return mesh_color * lightDotNormal;
-  // ??? intensity and distance?
+  return lightDotNormal * mesh_color;
   // Solution End
 }
 
@@ -261,11 +260,11 @@ void main() {
       }
     }
     if (t != tNearFar.y+1) { // changed -> there is a valid intersection
-      vec3 point  = origin + t * dir;
-      vec3 point2light = point - light;
+      vec3 point  = origin + (t * dir);
+      vec3 point2light = light - point;
 
       if (debug_state == 0) {
-        vFragColor = vec4(shade_lambertian(intersectNormal, point2light, intersectColor) * compute_shadow(point, point2light), 1);
+        vFragColor = vec4(shade_lambertian(intersectNormal, point2light, intersectColor), 1);
       } else if (debug_state == 1) {
         vFragColor = vec4(intersectNormal / 2 + 0.5, 1);
       } else if (debug_state == 2) {
