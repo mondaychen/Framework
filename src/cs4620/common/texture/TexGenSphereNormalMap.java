@@ -31,6 +31,7 @@ public class TexGenSphereNormalMap extends ACTextureGenerator {
 	@Override
 	public void getColor(float u, float v, Color outColor) {
 		// TODO A4
-		outColor.set(100, 100, 100);
+		Colord colord = new Colord(u, v, 0);
+		outColor.set(colord);
 	}
 }
