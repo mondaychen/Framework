@@ -95,18 +95,19 @@ public class CameraController {
 	 */
 	protected void rotate(Matrix4 parentWorld, Matrix4 transformation, Vector3 rotation) {
 		// TODO#A3 SOLUTION START	
-		Matrix4 rotateX = Matrix4.createRotationX((float)(rotation.x/180 * Math.PI));  
-		Matrix4 rotateY = Matrix4.createRotationY((float)(rotation.y/180 * Math.PI));
-		Matrix4 rotateZ = Matrix4.createRotationZ((float)(rotation.z/180 * Math.PI));
-		Matrix4 rotate = new Matrix4();
-		rotate.set(rotateZ.mulBefore(rotateY).mulBefore(rotateX));	
-		if(this.orbitMode) {	                                           //rotate about the world origin
-			transformation.mulAfter(rotate);
-		}	
-		else {        //flying mode rotate about the camera's viewpoint
-			transformation.mulBefore(rotate);
-			
-		}			
+		rotation = rotation.clone().mul((float)(Math.PI / 180.0));
+		Matrix4 mRot = Matrix4.createRotationX(rotation.x);
+		mRot.mulAfter(Matrix4.createRotationY(rotation.y));
+		mRot.mulAfter(Matrix4.createRotationZ(rotation.z));
+
+		if (orbitMode) {
+			Vector3 rotCenter = new Vector3(0,0,0);
+			transformation.clone().invert().mulPos(rotCenter);
+			parentWorld.clone().invert().mulPos(rotCenter);
+			mRot.mulBefore(Matrix4.createTranslation(rotCenter.clone().negate()));
+			mRot.mulAfter(Matrix4.createTranslation(rotCenter));
+		}
+		transformation.mulBefore(mRot);
 		// SOLUTION END
 	}
 	
