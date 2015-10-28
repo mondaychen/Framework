@@ -31,7 +31,24 @@ public class TexGenSphereNormalMap extends ACTextureGenerator {
 	@Override
 	public void getColor(float u, float v, Color outColor) {
 		// TODO A4
-		Colord colord = new Colord(u, v, 0);
+		float cellSize = 1.0f/resolution;
+		float actualBumpRadius = bumpRadius * cellSize;
+		
+		int row = (int)Math.round(u/cellSize);
+		int col = (int)Math.round(v/cellSize);
+		
+		float localU = u % cellSize - 0.5f * cellSize; // (-cellSize/2, cellSize/2)
+		float localV = v % cellSize - 0.5f * cellSize;
+		
+		float finalX = 0.5f;
+		float finalY = 0.5f;
+		
+		if(Math.sqrt(Math.pow(localU, 2) + Math.pow(localV, 2)) < actualBumpRadius){
+			finalX -= Math.sin(localU * Math.PI);
+			finalY -= Math.sin(localV * Math.PI);
+		}
+		
+		Colord colord = new Colord(finalX, finalY, 1);
 		outColor.set(colord);
 	}
 }
