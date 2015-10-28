@@ -25,11 +25,13 @@ uniform float shininess;
 varying vec2 fUV;
 varying vec3 fN; // normal at the vertex
 varying vec4 worldPos; // vertex position in world coordinates
+varying mat3 mTBN; // tangent-binormal-normal frame (local->world)
 
 
 void main() {
   // TODO A4
-	vec3 N = normalize(getNormalColor(fUV).xyz);
+  vec3 normalColor = normalize(getNormalColor(fUV).xyz * 2.0 - 1.0);
+	vec3 N = normalize(mTBN * normalColor);
   vec3 V = normalize(worldCam - worldPos.xyz);
 
   vec4 finalColor = vec4(0.0, 0.0, 0.0, 0.0);
