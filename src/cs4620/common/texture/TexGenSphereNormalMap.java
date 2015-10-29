@@ -3,6 +3,7 @@ package cs4620.common.texture;
 import egl.math.Color;
 import egl.math.Colord;
 import egl.math.Matrix3;
+import egl.math.Matrix3d;
 import egl.math.Vector2i;
 import egl.math.Vector3;
 import egl.math.Vector3d;
@@ -33,49 +34,52 @@ public class TexGenSphereNormalMap extends ACTextureGenerator {
 	@Override
 	public void getColor(float u, float v, Color outColor) {
 		// TODO A4
-		float cellSize = 1.0f/resolution;
-		float actualBumpRadius = bumpRadius * cellSize;
+		double cellSize = 1.0/resolution;
+		double actualBumpRadius = bumpRadius * cellSize;
 		
-		float localU = u % cellSize - 0.5f * cellSize; // (-cellSize/2, cellSize/2)
-		float localV = v % cellSize - 0.5f * cellSize;
+		double localU = u % cellSize; // (-cellSize/2, cellSize/2)
+		double localV = v % cellSize;
 		
-		float finalX = 0.5f;
-		float finalY = 0.5f;
+		if (localU > 0.5f * cellSize) {
+			localU -= cellSize;
+		}
+		if (localV > 0.5f * cellSize) {
+			localV -= cellSize;
+		}
 		
-		Colord colord = new Colord(finalX, finalY, 1);
+		Colord colord = new Colord(0.5, 0.5, 1);
 		
 		if(Math.sqrt(Math.pow(localU, 2) + Math.pow(localV, 2)) > actualBumpRadius){
 			outColor.set(colord);
 			return;
 		}
 		
-		float centerU = u - localU;
-		float centerV = v - localV;
+		double centerU = u - localU;
+		double centerV = v - localV;
 		
-		Vector3 centerNormal = getNormal(centerU, centerV);
+		Vector3d centerNormal = getNormal(centerU, centerV);
 		
-		Vector3 thisNormal = getNormal(u, v);
-		Vector3 tangent = new Vector3(thisNormal.x, 0f, -thisNormal.z).normalize();
-		Vector3 bitangent = thisNormal.clone().cross(tangent).normalize();
+		Vector3d thisNormal = getNormal(u, v);
+		Vector3d tangent = new Vector3d(thisNormal.z, 0, -thisNormal.x).normalize();
+		Vector3d bitangent = tangent.clone().cross(thisNormal).normalize();
 		
-		Matrix3 mTBN = new Matrix3(tangent, bitangent, thisNormal);
+		Matrix3d mTBN = new Matrix3d(tangent, bitangent, thisNormal);
 		
-		Vector3 finalNormal = centerNormal.clone();
+		Vector3d finalNormal = centerNormal.clone();
 		mTBN.mul(finalNormal);
-		colord.set(finalNormal.x, finalNormal.y, finalNormal.z);
-		System.out.println(colord);
+		colord.set(finalNormal.x * 0.5 + 0.5, finalNormal.y * 0.5 + 0.5, finalNormal.z * 0.5 + 0.5);
+
 		outColor.set(colord);
 	}
 	
-	private Vector3 getNormal(float u, float v) {
-		float radius = 1;
-		float theta = 2f * (float)Math.PI * u;
-		float phi = (float)Math.PI * v;
-
-		float _x = (float)(Math.cos(theta) * Math.sin(phi) * radius);
-		float _z = (float)(Math.sin(theta) * Math.sin(phi) * radius);
-		float _y = (float)(-Math.cos(phi) * radius);
+	private Vector3d getNormal(double u, double v) {
+		double radius = 1;
+		double theta = 2  * Math.PI * u;
+		double phi = Math.PI * (1 - v);
+		double _z = -(Math.cos(theta) * Math.sin(phi) * radius);
+		double _x = -(Math.sin(theta) * Math.sin(phi) * radius);
+		double _y = (Math.cos(phi) * radius);
 		
-		return new Vector3(_x, _y, _z).normalize();
+		return new Vector3d(_x, _y, _z).normalize();
 	}
 }

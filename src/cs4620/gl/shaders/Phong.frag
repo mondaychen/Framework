@@ -47,6 +47,6 @@ void main() {
 	// calculate ambient term
 	vec4 Iamb = getDiffuseColor(fUV);
 	
-	gl_FragColor = (finalColor + vec4(ambientLightIntensity, 0.0) * Iamb) * exposure; 
+	gl_FragColor = (finalColor + vec4(ambientLightIntensity, 0.0) * Iamb) * exposure;
 
 }
