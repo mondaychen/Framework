@@ -28,6 +28,10 @@ varying vec3 fN; // normal at the vertex
 varying vec4 worldPos; // vertex position in world coordinates
 varying mat3 mTNB; // tangent-normal-binormal frame (local->world)
 
+float g(float beta, float psiH) {
+  return exp(-psiH*psiH/(2*beta*beta));
+}
+
 void main() {
 	// Renormalize and orient the coordinate system 
 	// to match the wood texture convention
@@ -49,7 +53,44 @@ void main() {
     // Geometric factor
     // Add material contributions
 
-	gl_FragColor = vec4(1,1,1,1);
+  vec3 N = normalize(fN);
+  vec3 V = normalize(worldCam - worldPos.xyz);
 
+  vec4 finalColor = vec4(0.0, 0.0, 0.0, 0.0);
+
+  vec3 localFiberDir = normalize(getFiberDirectionColor(fUV).xyz * 2.0 - 1.0);
+  vec3 U = normalize(tnb * localFiberDir);
+  vec4 fiberColor = getFiberColorColor(fUV);
+
+
+  for (int i = 0; i < numLights; i++) {
+    float r = length(lightPosition[i] - worldPos.xyz);
+    vec3 L = normalize(lightPosition[i] - worldPos.xyz);
+    vec3 H = normalize(L + V);
+
+    // calculate diffuse term
+    vec4 Idiff = getDiffuseColor(fUV) * max(dot(N, L), 0.0);
+
+    // calculate specular term
+    vec4 Ispec = getSpecularColor(fUV) * pow(max(dot(N, H), 0.0), shininess);
+
+    // subsurface
+    float psiR = asin(dot(V, U)/ncellulose);
+    float psiI = asin(dot(L, U)/ncellulose);
+    float psiD = psiR - psiI;
+    float psiH = psiR + psiI;
+    vec4 Isub = fiberColor * g(length(getSpecularColor(fUV)), psiH) / (0.5 * cos(psiD) * cos(psiD));
+
+    finalColor += vec4(lightIntensity[i], 0.0) * (Idiff + Ispec + Isub) / (r*r);
+
+
+  }
+
+  // calculate ambient term
+  vec4 Iamb = getDiffuseColor(fUV);
+
+  finalColor += vec4(ambientLightIntensity, 0.0) * Iamb;
+
+  gl_FragColor = finalColor * exposure;
 	// End Solution TODO#PPA2
 }
