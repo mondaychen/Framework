@@ -14,7 +14,24 @@ varying vec3 fPos;
 
 void main() {
   // TODO#PPA2 SOLUTION START
-    
-	gl_FragColor = vec4(1,1,1,1);
+
+  vec2 noiseUVs[3] = vec2[](fUV, fUV, fUV);
+  vec2 textureUV = vec2(0, 0);
+  vec4 finalColor = vec4(0);
+  for (int i = 0; i < 3; i++) {
+    noiseUVs[i] *= texture_scales[i];
+    noiseUVs[i].y += scroll_speeds[i] * time;
+    // put it in [0, 1]
+    noiseUVs[i].x -= int(noiseUVs[i].x);
+    noiseUVs[i].y -= int(noiseUVs[i].y);
+
+    textureUV += getNormalColor(noiseUVs[i]).xy;
+    finalColor += getDiffuseColor(getNormalColor(noiseUVs[i]).xy);
+  }
+  textureUV /= 3;
+  finalColor /= 3;
+
+	gl_FragColor = getDiffuseColor(textureUV);
+  gl_FragColor = finalColor;
   // SOLUTION END
 }
