@@ -79,7 +79,7 @@ void main() {
     float psiI = asin(dot(L, U)/ncellulose);
     float psiD = psiR - psiI;
     float psiH = psiR + psiI;
-    vec4 Isub = fiberColor * g(length(getSpecularColor(fUV)), psiH) / (0.5 * cos(psiD) * cos(psiD));
+    vec4 Isub = fiberColor * g(getSpecularColor(fUV).x, psiH) / (0.5 * cos(psiD) * cos(psiD));
 
     finalColor += vec4(lightIntensity[i], 0.0) * (Idiff + Ispec + Isub) / (r*r);
 
