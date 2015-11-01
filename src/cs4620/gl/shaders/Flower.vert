@@ -52,7 +52,7 @@ void main() {
     // the light lies on the z>0 part of the x-y plane
     mat4 frameToObj = mat4(lightPosition[0].x / L_x, 0, lightPosition[0].z / L_x, 0,
                            0,                        1,  0,                        0,
-                           lightPosition[0].z / L_x, 0,  lightPosition[0].x / L_x, 0,
+                           -lightPosition[0].z / L_x, 0,  lightPosition[0].x / L_x, 0,
                            0,                        0,  0,                        1);
 
     // Find inverse of frameToObj
@@ -69,46 +69,27 @@ void main() {
 //      
 //    
     float theta = atan(L_y, L_x);
-     
     float phi = PI / 2 - theta;
-     
     float r = height / phi;
-      
-    
-
-      
     float index = vPosition.y;
-      
     float arpha = index * phi / height ;
+ 
+    mat4 Vrotation = mat4(cos(-arpha / 2), sin(-arpha / 2),  0, 0,
+                          -sin(-arpha / 2), cos(-arpha / 2), 0, 0,
+                           0,           0,            1, 0,
+                           0,           0,            0, 1);
       
+      
+    mat4 Nrotation = mat4(cos(-arpha), sin(-arpha),  0, 0,
+                          -sin(-arpha), cos(-arpha), 0, 0,
+                          0,           0,            1, 0,
+                          0,           0,            0, 1);
 
-      
-      mat4 Vrotation = mat4(cos(-arpha / 2), sin(-arpha / 2),  0, 0,
-                            -sin(-arpha / 2), cos(-arpha / 2), 0, 0,
-                            0,           0,            1, 0,
-                            0,           0,            0, 1);
-      
-      
-      mat4 Nrotation = mat4(cos(-arpha), sin(-arpha),  0, 0,
-                            -sin(-arpha), cos(-arpha), 0, 0,
-                            0,           0,            1, 0,
-                            0,           0,            0, 1);
-      
-
-      
-      
-      
-      
-      worldPos = mWorld *  Vrotation * vPosition;
-
+      worldPos = mWorld * frameToObj * Vrotation * objToFrame * vPosition;
       gl_Position = mViewProjection * worldPos;
-
-     
       
-      
-      fN = normalize(mWorldIT * (Nrotation * vec4(vNormal, 0)).xyz);
+      fN = normalize(mWorldIT * (frameToObj * Nrotation * objToFrame  * vec4(vNormal, 0)).xyz);
 
-//  fN = normalize((mWorldIT * vNormal).xyz);
       
       
       

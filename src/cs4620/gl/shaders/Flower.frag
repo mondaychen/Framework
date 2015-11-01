@@ -43,7 +43,7 @@ void main() {
         // calculate specular term
         vec4 Ispec = colSpecular * pow(max(dot(N, H), 0.0), shininess);
         
-        finalColor += vec4(lightIntensity[i], 0.0) * (Idiff + Ispec) / (r*r);
+        finalColor += vec4(lightIntensity[i], 0.0) * (Idiff + Ispec) / r;
     }
     
     // calculate ambient term
