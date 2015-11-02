@@ -73,9 +73,10 @@ void main() {
     float r = height / phi;
     float index = vPosition.y;
     float arpha = index * phi / height ;
+    
  
-    mat4 Vrotation = mat4(cos(-arpha / 2), sin(-arpha / 2),  0, 0,
-                          -sin(-arpha / 2), cos(-arpha / 2), 0, 0,
+    mat4 Vrotation = mat4(cos(-arpha), sin(-arpha),  0, 0,
+                          -sin(-arpha), cos(-arpha), 0, 0,
                            0,           0,            1, 0,
                            0,           0,            0, 1);
       
@@ -88,6 +89,8 @@ void main() {
       worldPos = mWorld * frameToObj * Vrotation * objToFrame * vPosition;
       gl_Position = mViewProjection * worldPos;
       
+      
+     
       fN = normalize(mWorldIT * (frameToObj * Nrotation * objToFrame  * vec4(vNormal, 0)).xyz);
 
       
