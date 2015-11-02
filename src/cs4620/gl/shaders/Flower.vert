@@ -75,14 +75,14 @@ void main() {
     float arpha = index * phi / height ;
     
  
-    mat4 Vrotation = mat4(cos(-arpha), sin(-arpha),  0, 0,
-                          -sin(-arpha), cos(-arpha), 0, 0,
+    mat4 Vrotation = mat4(cos(-arpha * 0.6), sin(-arpha * 0.6),  0, 0,
+                          -sin(-arpha  * 0.6), cos(-arpha * 0.6), 0, 0,
                            0,           0,            1, 0,
                            0,           0,            0, 1);
       
       
-    mat4 Nrotation = mat4(cos(-arpha), sin(-arpha),  0, 0,
-                          -sin(-arpha), cos(-arpha), 0, 0,
+    mat4 Nrotation = mat4(cos(-arpha), sin(-arpha ),  0, 0,
+                          -sin(-arpha), cos(-arpha ), 0, 0,
                           0,           0,            1, 0,
                           0,           0,            0, 1);
 
