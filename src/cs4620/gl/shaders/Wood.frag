@@ -29,7 +29,7 @@ varying vec4 worldPos; // vertex position in world coordinates
 varying mat3 mTNB; // tangent-normal-binormal frame (local->world)
 
 float gaussian(float beta, float psiH) {
-  return exp(-psiH*psiH/(2*beta*beta))/sqrt(2*M_PI*beta);
+  return exp(-psiH*psiH/(2*beta*beta))/sqrt(2*M_PI)/beta;
 }
 
 void main() {
@@ -75,11 +75,11 @@ void main() {
     vec4 Ispec = getSpecularColor(fUV) * pow(max(dot(N, H), 0.0), shininess);
 
     // subsurface
-    float psiR = asin(dot(V, U)/ncellulose);
-    float psiI = asin(dot(L, U)/ncellulose);
+    float psiI = asin(dot(V, U)/ncellulose);
+    float psiR = asin(dot(L, U)/ncellulose);
     float psiD = psiR - psiI;
     float psiH = psiR + psiI;
-    vec4 Isub = fiberColor * gaussian(length(getSpecularColor(fUV)), psiH) / (0.5 * cos(psiD) * cos(psiD));
+    vec4 Isub = fiberColor * gaussian(length(getSpecularColor(fUV)), psiH) / (cos(psiD/2) * cos(psiD/2));
 
     finalColor += vec4(lightIntensity[i], 0.0) * (Idiff + Ispec + Isub);
 
