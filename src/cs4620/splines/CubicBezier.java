@@ -10,7 +10,7 @@ import egl.math.Vector2;
 public class CubicBezier {
 	
 	//This Bezier's control points
-	Vector2 p0, p1, p2, p3;
+	public Vector2 p0, p1, p2, p3;
 	
 	//Control parameter for curve smoothness
 	float epsilon;
