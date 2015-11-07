@@ -62,8 +62,79 @@ public class CubicBezier {
     private void tessellate() {
     	 // TODO A5
     	//SOLUTION
-    	
+    	//Compute curve points and tangents
+    	tessellateHelper(p0, p1, p2, p3, 0, this.curvePoints, this.curveTangents);  	
+    	//Compute normals using tangents and curve points
+    	computeNormals(this.curveTangents, this.curveNormals);
     	//END SOLUTION
+    	//END SOLUTION
+    }
+    
+    private void computeNormals(ArrayList<Vector2> tangents, ArrayList<Vector2> outNormals) {    	
+
+    	for(int i = 0; i < tangents.size(); ++i) {
+    		Vector2 tangent = tangents.get(i);
+    		
+    		Vector2 normal = new Vector2(tangent.y / tangent.len(), -tangent.x / tangent.len());
+    		outNormals.add(normal);
+    	}
+    }
+    
+    /**
+     * Recursive helper for adaptive curve tessellation.  Tessellate the segment with the
+     * given control points, proceeding by recursive subdivision until the sharpest angle in
+     * the control polygon is below epsilon.  The points on the curve are written into the
+     * array outPoints, and output tangents are written to outTangents.
+     */
+    private static final int MAX_LEVEL = 10;
+    private void tessellateHelper(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, int level,
+    								ArrayList<Vector2> outPoints, ArrayList<Vector2> outTangents) {
+
+		// the three segments of the control polygon
+		Vector2 v0 = p1.clone().sub(p0);
+		Vector2 v1 = p2.clone().sub(p1);
+		Vector2 v2 = p3.clone().sub(p2);
+
+    	// find the maximum of the two angles between the segments.
+    	float maxAngle = Math.max(Math.abs(v0.angle(v1)), Math.abs(v1.angle(v2)));
+
+    	// Subdivide further if the angle is too high, but stop after a fixed maximum
+    	// number of subdivisions.
+    	if (level <= MAX_LEVEL && maxAngle > epsilon/2f) {
+    		Vector2 p10 = new Vector2();
+    		Vector2 p11 = new Vector2();
+    		Vector2 p12 = new Vector2();
+    		Vector2 p20 = new Vector2();
+    		Vector2 p21 = new Vector2();
+    		Vector2 p30 = new Vector2();
+    		
+    		// Use de Casteljeau's algorithm to compute the point on this segment at
+    		// t = 0.5.  This produces the control points for the left and right halves 
+    		// of the spline.
+    		
+    		p10.set(p0);
+    		p11.set(p1);
+    		p12.set(p2);
+    		p10.lerp(p1, .5f);
+    		p11.lerp(p2, .5f);
+    		p12.lerp(p3, .5f);
+    		
+    		p20.set(p10);
+    		p21.set(p11);
+    		p20.lerp(p11, .5f);
+    		p21.lerp(p12, .5f);
+    		
+    		p30.set(p20);
+    		p30.lerp(p21, .5f);
+    		
+    		tessellateHelper(p0, p10, p20, p30, level + 1, outPoints, outTangents);
+    		tessellateHelper(p30, p21, p12, p3, level + 1, outPoints, outTangents);
+    	} else {
+    		// Not subdividing, just tessellating this curve with a single vertex.
+    		outPoints.add(new Vector2(p0));
+    		//if(v0.dot(new Vector2(0,1)) < 0) v0.mul(-1);
+    		outTangents.add(new Vector2(v0).normalize());
+    	}
     }
 	
     
