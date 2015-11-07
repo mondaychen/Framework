@@ -23,9 +23,9 @@ public class BSpline extends SplineCurve{
 
 		//Just putting this in a Matrix4 because we don't have arbitrary sized matrices
 		Matrix4 bspPoints = new Matrix4(p0.x, p0.y, 0, 0,
-							p1.x, p1.y, 0, 0,
-							p2.x, p2.y, 0, 0,
-							p3.x, p3.y, 0, 0);
+										p1.x, p1.y, 0, 0,
+										p2.x, p2.y, 0, 0,
+										p3.x, p3.y, 0, 0);
 		
 		Matrix4 bezPoints = bspToBez.mulBefore(bspPoints);
 		
