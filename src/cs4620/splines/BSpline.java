@@ -17,9 +17,9 @@ public class BSpline extends SplineCurve{
 		//TODO A5 (Extra Credit)
 		//SOLUTION
 		Matrix4 bspToBez = new Matrix4(1/6f,4/6f,1/6f,0/6f,
-				0/6f,4/6f,2/6f,0/6f,
-				0/6f,2/6f,4/6f,0/6f,
-				0/6f,1/6f,4/6f,1/6f);
+									   0/6f,4/6f,2/6f,0/6f,
+									   0/6f,2/6f,4/6f,0/6f,
+									   0/6f,1/6f,4/6f,1/6f);
 
 		//Just putting this in a Matrix4 because we don't have arbitrary sized matrices
 		Matrix4 bspPoints = new Matrix4(p0.x, p0.y, 0, 0,
