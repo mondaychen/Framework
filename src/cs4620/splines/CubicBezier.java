@@ -74,12 +74,7 @@ public class CubicBezier {
     	//END SOLUTION
     }
     
-    /**
-     * Recursive helper for adaptive curve tessellation.  Tessellate the segment with the
-     * given control points, proceeding by recursive subdivision until the sharpest angle in
-     * the control polygon is below epsilon.  The points on the curve are written into the
-     * array outPoints, and output tangents are written to outTangents.
-     */
+    // recursively split the segment, terminating when the control polygon is straight enough
     private static final int MAX_LEVEL = 10;
     private void tessellateHelper(int level, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3,
     								ArrayList<Vector2> outPoints, ArrayList<Vector2> outTangents) {
@@ -93,7 +88,7 @@ public class CubicBezier {
     	float maxAngle = Math.max(Math.abs(v0.angle(v1)), Math.abs(v1.angle(v2)));
 
     	// Subdivide further if the angle is still good; stop after MAX_LEVEL is reached
-    	if (level <= MAX_LEVEL && maxAngle > epsilon/2f) {
+    	if (maxAngle > epsilon/2f && level <= MAX_LEVEL) {
     		Vector2 p10 = new Vector2();
     		Vector2 p11 = new Vector2();
     		Vector2 p12 = new Vector2();
@@ -102,8 +97,6 @@ public class CubicBezier {
     		Vector2 p30 = new Vector2();
     		
     		// de Casteljeau's algorithm
-    		// compute the point on this segment att = 0.5.
-    		
     		p10.set(p0);
     		p10.lerp(p1, .5f);
     		p11.set(p1);

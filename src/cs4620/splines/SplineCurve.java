@@ -187,14 +187,14 @@ public abstract class SplineCurve {
 			this.bezierCurves.add(this.toBezier(controlPoints.get(i-1), controlPoints.get(i),
 					controlPoints.get(i+1), controlPoints.get(i+2), epsilon));
 		}
-		// if it is a closed curve, add 3 curves
+		// if it is a closed curve, add 3 curves using (-3,0), (-2,1) & (-1,2)
 		if(isClosed) {
-			int lastIndex = controlPoints.size() - 1;
-			this.bezierCurves.add(this.toBezier(controlPoints.get(lastIndex-2), controlPoints.get(lastIndex-1),
-					controlPoints.get(lastIndex), controlPoints.get(0), epsilon));
-			this.bezierCurves.add(this.toBezier(controlPoints.get(lastIndex-1), controlPoints.get(lastIndex),
+			int pointsSize = controlPoints.size();
+			this.bezierCurves.add(this.toBezier(controlPoints.get(pointsSize-3), controlPoints.get(pointsSize-2),
+					controlPoints.get(pointsSize-1), controlPoints.get(0), epsilon));
+			this.bezierCurves.add(this.toBezier(controlPoints.get(pointsSize-2), controlPoints.get(pointsSize-1),
 					controlPoints.get(0), controlPoints.get(1), epsilon));
-			this.bezierCurves.add(this.toBezier(controlPoints.get(lastIndex), controlPoints.get(0),
+			this.bezierCurves.add(this.toBezier(controlPoints.get(pointsSize-1), controlPoints.get(0),
 					controlPoints.get(1), controlPoints.get(2), epsilon));
 		}
 	}
