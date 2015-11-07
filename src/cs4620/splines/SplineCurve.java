@@ -192,7 +192,7 @@ public abstract class SplineCurve {
 			int lastIndex = controlPoints.size() - 1;
 			this.bezierCurves.add(this.toBezier(controlPoints.get(lastIndex-2), controlPoints.get(lastIndex-1),
 					controlPoints.get(lastIndex), controlPoints.get(0), epsilon));
-			this.bezierCurves.add(this.toBezier(controlPoints.get(lastIndex-1), controlPoints.get(lastIndex-2),
+			this.bezierCurves.add(this.toBezier(controlPoints.get(lastIndex-1), controlPoints.get(lastIndex),
 					controlPoints.get(0), controlPoints.get(1), epsilon));
 			this.bezierCurves.add(this.toBezier(controlPoints.get(lastIndex), controlPoints.get(0),
 					controlPoints.get(1), controlPoints.get(2), epsilon));
