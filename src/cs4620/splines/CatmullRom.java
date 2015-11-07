@@ -24,13 +24,15 @@ public class CatmullRom extends SplineCurve {
 				                      -3, 3, 0, 0, 0, 0, -3, 3);
 		
 		Matrix4 hertober = beztoher.invert();
+		
+		Matrix4 berzier = new Matrix4(-1, 3, -3, 1, 3, -6, 3, 0,
+				                       -3, 3, 0, 0, 1, 0, 0, 0);
+		
 	    Matrix4 Romtoher = new Matrix4(0,   1, 0,    0, 0,    0,  1,   0,
 	    		                     -0.5f, 0, 0.5f, 0, 0, -0.5f, 0, 0.5f);
 		
-	    Matrix4 hermit = new Matrix4(2, -2, 1, 1, -3, 3, -2, -1,
-	    		                     0,  0, 1, 0,  1, 0,  0,  0);
 	    
-	    Matrix4 trans = hertober.mulBefore(hermit).mulBefore(Romtoher);
+	    Matrix4 trans = berzier.mulBefore(hertober).mulBefore(Romtoher);
 	   
 	    Vector4 xaxis = new Vector4(p0.x, p1.x, p2.x, p3.x);
 	    Vector4 yaxis = new Vector4(p0.y, p1.y, p2.y, p3.y);
