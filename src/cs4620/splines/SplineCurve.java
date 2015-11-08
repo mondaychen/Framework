@@ -253,7 +253,89 @@ public abstract class SplineCurve {
 		 * 
 		 * Then set the data of positions / normals / indices with what you have calculated.
 		 */
+		ArrayList<Vector2> csPoints = crossSection.getPoints();
+		ArrayList<Vector2> csNormals = crossSection.getNormals();
+		if (crossSection.isClosed) {
+			csPoints.add(csPoints.get(0).clone());
+			csNormals.add(csNormals.get(0).clone());
+		}
+		
+		int circleDivision = (int)(360f/sliceTolerance) + 1;
+		int curveDivision = csPoints.size();
+		
+		ArrayList<Vector3> positions = new ArrayList<>();
+		ArrayList<Vector3> normals = new ArrayList<>();
+		
+		// compute circle by circle
+		for (int i = 0; i < csPoints.size(); i++) {
+			Vector2 point = csPoints.get(i);
+			// fixed y, using radius=x to calculate x and z; each size = n + 1
+			ArrayList<Vector2> circle = generatePointsInCircle(circleDivision, point.x);
+			// the seam
+			circle.add(circle.get(0));
+			
+			// same thing for normals
+			Vector2 normalEndPoint = csPoints.get(i).clone().add(csNormals.get(i));
+			ArrayList<Vector2> normalEndCircle = generatePointsInCircle(circleDivision, normalEndPoint.x);
+			normalEndCircle.add(normalEndCircle.get(0));
+			
+			for (int j = 0; j < circle.size(); j++) {
+				positions.add(new Vector3(circle.get(j).x, point.y, -circle.get(j).y));
+				normals.add(new Vector3(normalEndCircle.get(j).x - circle.get(j).x,
+										normalEndPoint.y - point.y,
+										-normalEndCircle.get(j).y+circle.get(j).y).normalize());
+			}
+			
+		}
+		data.vertexCount = positions.size();
+		data.indexCount = (csPoints.size() - 1) * circleDivision * 2 * 3;
+		// Create Storage Spaces
+		data.positions = NativeMem.createFloatBuffer(data.vertexCount * 3);
+		data.uvs = NativeMem.createFloatBuffer(data.vertexCount * 2);
+//		data.normals = NativeMem.createFloatBuffer(data.vertexCount * 3);
+		data.indices = NativeMem.createIntBuffer(data.indexCount);
+		for (Vector3 p: positions) {
+			data.positions.put(p.x);
+			data.positions.put(p.y);
+			data.positions.put(p.z);
+		}
+		for (Vector3 n: normals) {
+//			data.normals.put(n.x);
+//			data.normals.put(n.y);
+//			data.normals.put(n.z);
+		}
+		// Create The Indices
+		for (int i = 0; i < csPoints.size() - 1; i++) {
+			for (int j = 0; j < circleDivision; j++) {
+				int index = i * (circleDivision + 1) + j;
+				data.indices.put(index);
+				data.indices.put(index + circleDivision + 2);
+				data.indices.put(index + circleDivision + 1);
+				data.indices.put(index);
+				data.indices.put(index + 1);
+				data.indices.put(index + circleDivision + 2);
+			}
+		}
 
+	}
+	private static ArrayList<Vector2> generatePointsInCircle(int count, float radius) {
+		ArrayList<Vector2> result = new ArrayList<Vector2>();
+		for (int i = 0; i < count; i++) {
+			float x = round(Math.sin(Math.PI * 2 / count * i), 5) * radius;
+			float y = round(Math.cos(Math.PI * 2 / count * i), 5) * radius;
+			result.add(new Vector2(x, y));
+		}
+
+		return result;
+	}
+
+	private static float round(double v, int scale) {
+		String temp="0.";
+		for (int i = 0; i < scale; i++)
+		{
+			temp += "0";
+		}
+		return Float.valueOf(new java.text.DecimalFormat(temp).format(v));
 	}
 }
 
