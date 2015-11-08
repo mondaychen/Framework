@@ -260,7 +260,7 @@ public abstract class SplineCurve {
 			csNormals.add(csNormals.get(0).clone());
 		}
 		
-		int circleDivision = (int)(360f/sliceTolerance) + 1;
+		int circleDivision = (int)(Math.PI*2/sliceTolerance) + 1;
 		int curveDivision = csPoints.size();
 		
 		ArrayList<Vector3> positions = new ArrayList<>();
