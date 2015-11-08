@@ -280,7 +280,7 @@ public abstract class SplineCurve {
 			normalEndCircle.add(normalEndCircle.get(0));
 			
 			for (int j = 0; j < circle.size(); j++) {
-				positions.add(new Vector3(circle.get(j).x, circle.get(j).y, point.y));
+				positions.add(new Vector3(circle.get(j).x * scale, circle.get(j).y * scale, point.y * scale));
 				normals.add(new Vector3(normalEndCircle.get(j).x - circle.get(j).x,
 										normalEndCircle.get(j).y - circle.get(j).y,
 										normalEndPoint.y - point.y).normalize());
