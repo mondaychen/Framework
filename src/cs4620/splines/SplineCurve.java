@@ -269,7 +269,7 @@ public abstract class SplineCurve {
 		// compute circle by circle
 		for (int i = 0; i < csPoints.size(); i++) {
 			Vector2 point = csPoints.get(i);
-			// fixed y, using radius=x to calculate x and z; each size = n + 1
+			// using z=y; using radius=x to calculate x and z; each size = n + 1
 			ArrayList<Vector2> circle = generatePointsInCircle(circleDivision, point.x);
 			// the seam
 			circle.add(circle.get(0));
@@ -280,10 +280,10 @@ public abstract class SplineCurve {
 			normalEndCircle.add(normalEndCircle.get(0));
 			
 			for (int j = 0; j < circle.size(); j++) {
-				positions.add(new Vector3(circle.get(j).x, point.y, -circle.get(j).y));
+				positions.add(new Vector3(circle.get(j).x, circle.get(j).y, point.y));
 				normals.add(new Vector3(normalEndCircle.get(j).x - circle.get(j).x,
-										normalEndPoint.y - point.y,
-										-normalEndCircle.get(j).y+circle.get(j).y).normalize());
+										normalEndCircle.get(j).y - circle.get(j).y,
+										normalEndPoint.y - point.y).normalize());
 			}
 			
 		}
@@ -292,7 +292,7 @@ public abstract class SplineCurve {
 		// Create Storage Spaces
 		data.positions = NativeMem.createFloatBuffer(data.vertexCount * 3);
 		data.uvs = NativeMem.createFloatBuffer(data.vertexCount * 2);
-//		data.normals = NativeMem.createFloatBuffer(data.vertexCount * 3);
+		data.normals = NativeMem.createFloatBuffer(data.vertexCount * 3);
 		data.indices = NativeMem.createIntBuffer(data.indexCount);
 		for (Vector3 p: positions) {
 			data.positions.put(p.x);
@@ -300,20 +300,20 @@ public abstract class SplineCurve {
 			data.positions.put(p.z);
 		}
 		for (Vector3 n: normals) {
-//			data.normals.put(n.x);
-//			data.normals.put(n.y);
-//			data.normals.put(n.z);
+			data.normals.put(n.x);
+			data.normals.put(n.y);
+			data.normals.put(n.z);
 		}
 		// Create The Indices
 		for (int i = 0; i < csPoints.size() - 1; i++) {
 			for (int j = 0; j < circleDivision; j++) {
 				int index = i * (circleDivision + 1) + j;
 				data.indices.put(index);
-				data.indices.put(index + circleDivision + 2);
 				data.indices.put(index + circleDivision + 1);
-				data.indices.put(index);
-				data.indices.put(index + 1);
 				data.indices.put(index + circleDivision + 2);
+				data.indices.put(index);
+				data.indices.put(index + circleDivision + 2);
+				data.indices.put(index + 1);
 			}
 		}
 
