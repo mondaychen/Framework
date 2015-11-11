@@ -268,7 +268,7 @@ public abstract class SplineCurve {
 		
 		// compute circle by circle
 		for (int i = 0; i < csPoints.size(); i++) {
-			Vector4 point = new Vector4(csPoints.get(i).x, 0, csPoints.get(i).y, 1);
+			Vector4 point = new Vector4(csPoints.get(i).x * scale, 0, csPoints.get(i).y * scale, 1);
 			Vector4 normal = new Vector4(csNormals.get(i).x, 0, csNormals.get(i).y, 0);
 			
 			for (int j = 0; j <= circleDivision; j++) {
