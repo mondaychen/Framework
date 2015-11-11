@@ -261,31 +261,26 @@ public abstract class SplineCurve {
 		}
 		
 		int circleDivision = (int)(Math.PI*2/sliceTolerance) + 1;
-		int curveDivision = csPoints.size();
+		float slice = (float)Math.PI*2 / circleDivision;
 		
 		ArrayList<Vector3> positions = new ArrayList<>();
 		ArrayList<Vector3> normals = new ArrayList<>();
 		
 		// compute circle by circle
 		for (int i = 0; i < csPoints.size(); i++) {
-			Vector2 point = csPoints.get(i);
-			// using z=y; using radius=x to calculate x and z; each size = n + 1
-			ArrayList<Vector2> circle = generatePointsInCircle(circleDivision, point.x);
-			// the seam
-			circle.add(circle.get(0));
+			Vector4 point = new Vector4(csPoints.get(i).x, 0, csPoints.get(i).y, 1);
+			Vector4 normal = new Vector4(csNormals.get(i).x, 0, csNormals.get(i).y, 0);
 			
-			// same thing for normals
-			Vector2 normalEndPoint = csPoints.get(i).clone().add(csNormals.get(i));
-			ArrayList<Vector2> normalEndCircle = generatePointsInCircle(circleDivision, normalEndPoint.x);
-			normalEndCircle.add(normalEndCircle.get(0));
-			
-			for (int j = 0; j < circle.size(); j++) {
-				positions.add(new Vector3(circle.get(j).x * scale, circle.get(j).y * scale, point.y * scale));
-				normals.add(new Vector3(normalEndCircle.get(j).x - circle.get(j).x,
-										normalEndCircle.get(j).y - circle.get(j).y,
-										normalEndPoint.y - point.y).normalize());
+			for (int j = 0; j <= circleDivision; j++) {
+				float angel = slice * j;
+				Matrix4 transformer = Matrix4.createRotationZ(angel);
+				Vector4 p = point.clone();
+				Vector4 n = normal.clone();
+				transformer.mul(p);
+				transformer.mul(n);
+				positions.add(new Vector3(p.x, p.y, p.z));
+				normals.add(new Vector3(n.x, n.y, n.z));
 			}
-			
 		}
 		data.vertexCount = positions.size();
 		data.indexCount = (csPoints.size() - 1) * circleDivision * 2 * 3;
@@ -309,33 +304,14 @@ public abstract class SplineCurve {
 			for (int j = 0; j < circleDivision; j++) {
 				int index = i * (circleDivision + 1) + j;
 				data.indices.put(index);
+				data.indices.put(index + circleDivision + 2);
 				data.indices.put(index + circleDivision + 1);
-				data.indices.put(index + circleDivision + 2);
 				data.indices.put(index);
-				data.indices.put(index + circleDivision + 2);
 				data.indices.put(index + 1);
+				data.indices.put(index + circleDivision + 2);
 			}
 		}
 
-	}
-	private static ArrayList<Vector2> generatePointsInCircle(int count, float radius) {
-		ArrayList<Vector2> result = new ArrayList<Vector2>();
-		for (int i = 0; i < count; i++) {
-			float x = round(Math.sin(Math.PI * 2 / count * i), 5) * radius;
-			float y = round(Math.cos(Math.PI * 2 / count * i), 5) * radius;
-			result.add(new Vector2(x, y));
-		}
-
-		return result;
-	}
-
-	private static float round(double v, int scale) {
-		String temp="0.";
-		for (int i = 0; i < scale; i++)
-		{
-			temp += "0";
-		}
-		return Float.valueOf(new java.text.DecimalFormat(temp).format(v));
 	}
 }
 
