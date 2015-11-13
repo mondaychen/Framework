@@ -531,6 +531,30 @@ public class Matrix3 implements Cloneable {
 		}
 		return norm;
 	}
+	
+	/**
+	* Compute polar decomposition of this.
+	* Algorithm from:
+	*    N. Higham, Computing the Polar Decomposition---with Applications
+	*    SIAM J. Sci. Stat. Comput. 7:4 (Oct 1986)
+	*
+	*/
+	
+	public void polar_decomp(Matrix3 outQ, Matrix3 outP) {
+	    final float TOL = 1e-6f;
+	    Matrix3 Xprev = new Matrix3();
+	    Matrix3 X = new Matrix3(this);
+	    Matrix3 Y = new Matrix3();
+	    do {
+	    	Y.set(X).invert();
+	    	Xprev.set(X);
+	    	X.interpolate(X, Y.transpose(), 0.5f);
+	    } while (X.clone().sub(Xprev).norm1() > TOL * Xprev.norm1());
+	    outQ.set(X);
+	    outP.set(X).transpose().mulBefore(this);
+
+	
+	}
 
 	/**
 	 * @return A Copy Of This
