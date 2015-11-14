@@ -480,6 +480,7 @@ public final class ParticleScreen extends GameScreen{
                 //     the velocity lines.
             	linesProgram.use();
                 {
+                	GLUniform.setST(linesProgram.getUniform("mModelViewProjection"), mViewProjection, false);
                 	velocityVerts.useAsAttrib(linesSI);
                     
                     ibVelocities.bind();
