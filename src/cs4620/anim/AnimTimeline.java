@@ -61,6 +61,13 @@ public class AnimTimeline {
 	}
 
 	public void getSurroundingFrames(int frame, AnimKeyframe[] outPair) {
-		
+	    // Search For Surrounding Frames
+	    AnimKeyframe tmp = new AnimKeyframe(frame);
+	    outPair[0] = frames.floor(tmp);
+	    outPair[1] = frames.ceiling(tmp);
+
+	    // At Least One Is Non-Null From Our Invariant, But One Might Be NUll
+	    if(outPair[0] == null) outPair[0] = outPair[1];
+	    else if(outPair[1] == null) outPair[1] = outPair[0];
 	}
 }
