@@ -462,14 +462,32 @@ public final class ParticleScreen extends GameScreen{
                 // Populate the vertex buffer to display velocities for each particle.
                 // 1.) Disable depth testing so that you can see the lines no matter what. 
                 //     Don't forget to re-enable this at the end!
+            	
+            	
                 // 2.) Put the particle position and the particle position + (velocity scaled
                 //     by some constant amount) into the float buffer for velocities (vBufVelocities).
                 //     Don't forget to rewind at the appropriate locations!
+            	Vector3 velocity = p.getVelocity().clone().mul(scale).add(particlePosition);
+            	vBufVelocities.put(velocity.x);
+            	vBufVelocities.put(velocity.y);
+            	vBufVelocities.put(velocity.z);
+            	vBufVelocities.rewind();
                 // 3.) Set the appropriate GLBuffer (velocityVerts) using vBufVelocities
+            	velocityVerts.setDataInitial(vBufVelocities);
                 // 4.) Use the program (linesProgram and bind the attributes, uniforms and the  
                 //     appropriate index buffer (ibVelocities).
                 // 5.) Bind the GLBuffer to the appropriate shader interface (linesSI) and draw
                 //     the velocity lines.
+            	linesProgram.use();
+                {
+                	GLUniform.setST(linesProgram.getUniform("mModelViewProjection"), mViewProjection, false);
+                	velocityVerts.useAsAttrib(linesSI);
+                    
+                    ibVelocities.bind();
+                    GL11.glDrawElements(PrimitiveType.Lines, 2, GLType.UnsignedInt, 0);
+                    ibVelocities.unbind();
+                }
+                GLProgram.unuse();
                 
                 // SOLUTION END
             }
