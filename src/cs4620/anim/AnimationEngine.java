@@ -152,6 +152,11 @@ public class AnimationEngine {
 		// And Update Transformations Accordingly
 		// (You WILL Need To Use this.scene)
 
+		// get pair of surrounding frames
+		// (function in AnimTimeline)
+
+		// get interpolation ratio
+
 		// interpolate translations linearly
 
 		// polar decompose axis matrices
@@ -161,5 +166,12 @@ public class AnimationEngine {
 		// combine interpolated R,S,and T
 
 
+	 }
+
+         public static float getRatio(int min, int max, int cur) {
+	     if(min == max) return 0f;
+	     float total = max - min;
+	     float diff = cur - min;
+	     return diff / total;
 	 }
 }
