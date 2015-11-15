@@ -6,6 +6,9 @@ import cs4620.common.Scene;
 import cs4620.common.SceneObject;
 import cs4620.common.event.SceneTransformationEvent;
 import egl.math.Matrix4;
+import egl.math.Vector3;
+import egl.math.Matrix3;
+import egl.math.Quat;
 
 /**
  * A Component Resting Upon Scene That Gives
@@ -141,9 +144,22 @@ public class AnimationEngine {
 	 * The Current Frame - For Each Updated Transformation, An Event Has To Be 
 	 * Sent Through The Scene Notifying Everyone Of The Change
 	 */
-	public void updateTransformations() {
-		
-	}
-	
 
+	// TODO A6 - Animation
+
+	 public void updateTransformations() {
+		// Loop Through All The Timelines
+		// And Update Transformations Accordingly
+		// (You WILL Need To Use this.scene)
+
+		// interpolate translations linearly
+
+		// polar decompose axis matrices
+
+		// slerp rotation matrix and linearly interpolate scales
+
+		// combine interpolated R,S,and T
+
+
+	 }
 }

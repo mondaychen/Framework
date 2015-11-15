@@ -366,6 +366,42 @@ public class Quat extends AbstractList<Float> implements Cloneable {
 		return addScaled(s, q.w, q.x, q.y, q.z);
 	}
 
+	public static Quat slerp(Quat i1, Quat i2, float t)
+        {
+            Quat q1 = (Quat) i1.clone();
+            Quat q2 = (Quat) i2.clone();
+            
+            float cosTheta = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
+            if (cosTheta < 0)
+            {
+              cosTheta = -cosTheta;
+              q2.negate();
+            }
+            if (cosTheta > 1) cosTheta = 1;
+            
+            float theta = (float) Math.acos(cosTheta);
+            
+            Quat q = new Quat();
+            if (theta < 0.01f)
+            {
+              q.set(q1);
+              q.scale(1 - t);
+              q2.scale(t);
+              q.add(q2);
+            }
+            else
+            {
+              float sinTheta = (float) Math.sin(theta);
+              q.set(q1);
+              q.scale((float) Math.sin((1 - t) * theta) / sinTheta);
+              q2.scale((float) Math.sin(t * theta) / sinTheta);
+              q.add(q2);
+            }
+            
+            return q;
+        }
+
+
 	/**
 	 * Return The Normalized Axis And The Angle Of This Rotation
 	 * @param aa [{@link Vector4 OUT}] Unit Axis Then Angle (Radians)
