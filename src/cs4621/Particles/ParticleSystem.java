@@ -127,6 +127,8 @@ public class ParticleSystem {
     		p.spawn(1f, new Vector3(0f, -0.5f, 0f), new Vector3(0, 20*(float)Math.random(), 0));
     		mSpawnedParticles.add(p);
     	}
+    	System.out.println(mUnspawnedParticles.size());
+    	System.out.println(mSpawnedParticles.size());
         // 4.) For each spawned particle:
         //          - Accumulate forces: gravity should move the particle in -y direction
         //                               wind should move the particle in the +x direction
@@ -134,22 +136,26 @@ public class ParticleSystem {
         //          - Animate each particle according to these new forces.
         //          - Check if the particle is too old. If it is, remove it from the 
         //            linked list of spawned particles and append it to the linked list of
-        //            unspawned particles. 
-        for (Particle p: mSpawnedParticles) {
-        	Vector3 velocity = p.getVelocity();
-        	velocity.x = velocity.x > 0 ? -1 : 1;
-        	velocity.y = velocity.x > 0 ? -1 : 1;
-        	velocity.z = velocity.x > 0 ? -1 : 1;
+        //            unspawned particles.
+    	
+    	int i = 0;
+    	while (i < mSpawnedParticles.size()) {
+    		Particle p = mSpawnedParticles.get(i); 
+    		Vector3 velocity = p.getVelocity();
+    		velocity.x = velocity.x > 0 ? -1 : 1;
+        	velocity.y = velocity.y > 0 ? -1 : 1;
+        	velocity.z = velocity.z > 0 ? -1 : 1;
         	p.accumForce(new Vector3(wind, -gravity, 0));
-//        	p.accumForce(velocity.div(5));
+        	p.accumForce(velocity.div(5));
         	
         	p.animate(dt);
         	
-        	if (p.getAge() > 1f) {
-        		mSpawnedParticles.remove(p);
-        		mUnspawnedParticles.add(p);
+        	if (p.getAge() > 5f) {
+        		mUnspawnedParticles.add(mSpawnedParticles.removeFirst());
+        	} else {
+        		i++;
         	}
-        }
+    	}
         
         //ENDSOLUTION
     }
