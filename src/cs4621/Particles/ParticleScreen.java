@@ -462,7 +462,7 @@ public final class ParticleScreen extends GameScreen{
                 // Populate the vertex buffer to display velocities for each particle.
                 // 1.) Disable depth testing so that you can see the lines no matter what. 
                 //     Don't forget to re-enable this at the end!
-            	
+            	GL11.glDisable(GL11.GL_DEPTH_TEST);
             	
                 // 2.) Put the particle position and the particle position + (velocity scaled
                 //     by some constant amount) into the float buffer for velocities (vBufVelocities).
@@ -488,6 +488,8 @@ public final class ParticleScreen extends GameScreen{
                     ibVelocities.unbind();
                 }
                 GLProgram.unuse();
+                
+                GL11.glEnable(GL11.GL_DEPTH_TEST);
                 
                 // SOLUTION END
             }

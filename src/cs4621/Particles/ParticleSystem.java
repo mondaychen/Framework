@@ -124,11 +124,9 @@ public class ParticleSystem {
     		// 3.) Remove the particle from the linked list of unspawned particles and put it
             //     onto the linked list of spawned particles.
     		Particle p = mUnspawnedParticles.pop();
-    		p.spawn(1f, new Vector3(0f, -0.5f, 0f), new Vector3(0, 20*(float)Math.random(), 0));
+    		p.spawn(1f, new Vector3(0f, -0.5f, 0f), new Vector3(0, 200*(float)Math.random(), 0));
     		mSpawnedParticles.add(p);
     	}
-    	System.out.println(mUnspawnedParticles.size());
-    	System.out.println(mSpawnedParticles.size());
         // 4.) For each spawned particle:
         //          - Accumulate forces: gravity should move the particle in -y direction
         //                               wind should move the particle in the +x direction
@@ -141,12 +139,9 @@ public class ParticleSystem {
     	int i = 0;
     	while (i < mSpawnedParticles.size()) {
     		Particle p = mSpawnedParticles.get(i); 
-    		Vector3 velocity = p.getVelocity();
-    		velocity.x = velocity.x > 0 ? -1 : 1;
-        	velocity.y = velocity.y > 0 ? -1 : 1;
-        	velocity.z = velocity.z > 0 ? -1 : 1;
+    		Vector3 velocity = p.getVelocity().negate();
         	p.accumForce(new Vector3(wind, -gravity, 0));
-        	p.accumForce(velocity.div(5));
+        	p.accumForce(velocity.div(100).mul(drag));
         	
         	p.animate(dt);
         	
