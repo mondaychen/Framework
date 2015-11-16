@@ -134,6 +134,7 @@ public class ParticleSystem {
         //          - Animate each particle according to these new forces.
         //          - Check if the particle is too old. If it is, remove it from the 
         //            linked list of spawned particles and append it to the linked list of
+        //            unspawned particles.        
         //            unspawned particles.
         for (Particle p: mSpawnedParticles) {
         	Vector3 velocity = p.getVelocity();
@@ -163,7 +164,8 @@ public class ParticleSystem {
         // the particle is always facing the camera.
         // 1.) Obtain the inverse of the rotation of the camera.
         // 2.) Set billboardTransform.
-        
+        billboardTransform.set(view.invert());
+ 	 
         // SOLUTION END
     }
     
