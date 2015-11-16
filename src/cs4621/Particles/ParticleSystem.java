@@ -164,7 +164,7 @@ public class ParticleSystem {
         // the particle is always facing the camera.
         // 1.) Obtain the inverse of the rotation of the camera.
         // 2.) Set billboardTransform.
-        billboardTransform.set(view.invert());
+        billboardTransform.set(view.clone().invert());
  	 
         // SOLUTION END
     }
