@@ -124,11 +124,12 @@ public class Particle extends Mesh {
         // 2.) Update the velocity based on the acceleration.
         // 3.) Update the position based on the velocity.
         // 4.) Update the particle's age.
-        Vector3 accleration = new Vector3();
-        accleration = mForcesThisFrame.div(mMass);
-        mVelocity.add(accleration.mul(dt));
-        mPosition.add(mVelocity.mul(dt));
-        mAge++;
+        Vector3 accleration = mForcesThisFrame.clone().div(mMass);
+        mVelocity.add(accleration.clone().mul(dt));
+        mPosition.add(mVelocity.clone().mul(dt));
+        mAge+=dt;
+        
+        this.resetForces();
               	
         // SOLUTION END
     }

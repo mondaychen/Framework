@@ -124,7 +124,7 @@ public class ParticleSystem {
     		// 3.) Remove the particle from the linked list of unspawned particles and put it
             //     onto the linked list of spawned particles.
     		Particle p = mUnspawnedParticles.pop();
-    		p.spawn(0f, new Vector3(0f, -0.5f, 0f), new Vector3(0, (float)Math.random(), 0));
+    		p.spawn(1f, new Vector3(0f, -0.5f, 0f), new Vector3(0, (float)Math.random(), 0));
     		mSpawnedParticles.add(p);
     	}
         // 4.) For each spawned particle:
