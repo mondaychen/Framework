@@ -158,45 +158,58 @@ public class AnimationEngine {
 			// (function in AnimTimeline)
 			AnimKeyframe[] outPair = {new AnimKeyframe(curFrame), new AnimKeyframe(curFrame)};
 			timeline.getSurroundingFrames(curFrame, outPair);
+			Matrix4 m0 = outPair[0].transformation;
+			Matrix4 m1 = outPair[1].transformation;
 			
 			// get interpolation ratio
 			float ratio = getRatio(outPair[0].frame, outPair[1].frame, curFrame);
 			
 			// interpolate translations linearly
+			Vector3 translation = linearlyInterpolate(m0.getTrans(), m1.getTrans(), ratio);
 			
 			// polar decompose axis matrices
+			Matrix3 rotation0 = new Matrix3();
+			Matrix3 scale0 = new Matrix3();
+			m0.getAxes().polar_decomp(rotation0, scale0);
+
+			Matrix3 rotation1 = new Matrix3();
+			Matrix3 scale1 = new Matrix3();
+			m1.getAxes().polar_decomp(rotation1, scale1);
 			
 			// slerp rotation matrix and linearly interpolate scales
+			Quat quat0 = new Quat(rotation0);
+			Quat quat1 = new Quat(rotation1);
+			Matrix3 rotation = new Matrix3();
+			Quat.slerp(quat0, quat1, ratio).toRotationMatrix(rotation);
+			Matrix3 scale = new Matrix3();
+			scale.interpolate(scale0, scale1, ratio);
 			
 			// combine interpolated R,S,and T
+			Matrix4 transformation = new Matrix4(rotation.mulBefore(scale));
+			transformation.m[12] = translation.x;
+			transformation.m[13] = translation.y;
+			transformation.m[14] = translation.z;
 			
 			// Naive approach
-			object.transformation.set(getLinearlyInterpolate(outPair[0].transformation,
-					outPair[1].transformation, ratio));
+//			object.transformation.set(linearlyInterpolate(outPair[0].transformation,
+//					outPair[1].transformation, ratio));
+			object.transformation.set(transformation);
 			 
 			scene.sendEvent(new SceneTransformationEvent(object));
 		}
 			
 	}
+
+	private static Vector3 linearlyInterpolate(Vector3 v1, Vector3 v2, float ratio) {
+		return new Vector3(_LI(v1.x, v2.x, ratio), _LI(v1.y, v2.y, ratio), _LI(v1.z, v2.z, ratio));
+	}
 	
-	private static Matrix4 getLinearlyInterpolate(Matrix4 t1, Matrix4 t2, float ratio) {
-		return new Matrix4(_LI(t1.m[0], t2.m[0], ratio),
-				_LI(t1.m[4], t2.m[4], ratio),
-				_LI(t1.m[8], t2.m[8], ratio),
-				_LI(t1.m[12], t2.m[12], ratio),
-				_LI(t1.m[1], t2.m[1], ratio),
-				_LI(t1.m[5], t2.m[5], ratio),
-				_LI(t1.m[9], t2.m[9], ratio),
-				_LI(t1.m[13], t2.m[13], ratio),
-				_LI(t1.m[2], t2.m[2], ratio),
-				_LI(t1.m[6], t2.m[6], ratio),
-				_LI(t1.m[10], t2.m[10], ratio),
-				_LI(t1.m[14], t2.m[14], ratio),
-				_LI(t1.m[3], t2.m[3], ratio),
-				_LI(t1.m[7], t2.m[7], ratio),
-				_LI(t1.m[11], t2.m[11], ratio),
-				_LI(t1.m[15], t2.m[15], ratio)
-				);
+	private static Matrix4 linearlyInterpolate(Matrix4 m1, Matrix4 m2, float ratio) {
+		Matrix4 result = new Matrix4();
+		for(int i = 0; i < result.m.length; i++) {
+			result.m[i] = (m2.m[i] - m1.m[i]) * ratio + m1.m[i];
+		}
+		return result;
 	}
 	
 	private static float _LI(float n1, float n2, float ratio) {
