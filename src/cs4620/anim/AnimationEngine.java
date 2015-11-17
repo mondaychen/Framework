@@ -147,31 +147,66 @@ public class AnimationEngine {
 
 	// TODO A6 - Animation
 
-	 public void updateTransformations() {
+	public void updateTransformations() {
 		// Loop Through All The Timelines
 		// And Update Transformations Accordingly
 		// (You WILL Need To Use this.scene)
+		for (AnimTimeline timeline: timelines.values()) {
+			SceneObject object = timeline.object;
+			
+			// get pair of surrounding frames
+			// (function in AnimTimeline)
+			AnimKeyframe[] outPair = {new AnimKeyframe(curFrame), new AnimKeyframe(curFrame)};
+			timeline.getSurroundingFrames(curFrame, outPair);
+			
+			// get interpolation ratio
+			float ratio = getRatio(outPair[0].frame, outPair[1].frame, curFrame);
+			
+			// interpolate translations linearly
+			
+			// polar decompose axis matrices
+			
+			// slerp rotation matrix and linearly interpolate scales
+			
+			// combine interpolated R,S,and T
+			
+			// Naive approach
+			object.transformation.set(getLinearlyInterpolate(outPair[0].transformation,
+					outPair[1].transformation, ratio));
+			 
+			scene.sendEvent(new SceneTransformationEvent(object));
+		}
+			
+	}
+	
+	private static Matrix4 getLinearlyInterpolate(Matrix4 t1, Matrix4 t2, float ratio) {
+		return new Matrix4(_LI(t1.m[0], t2.m[0], ratio),
+				_LI(t1.m[4], t2.m[4], ratio),
+				_LI(t1.m[8], t2.m[8], ratio),
+				_LI(t1.m[12], t2.m[12], ratio),
+				_LI(t1.m[1], t2.m[1], ratio),
+				_LI(t1.m[5], t2.m[5], ratio),
+				_LI(t1.m[9], t2.m[9], ratio),
+				_LI(t1.m[13], t2.m[13], ratio),
+				_LI(t1.m[2], t2.m[2], ratio),
+				_LI(t1.m[6], t2.m[6], ratio),
+				_LI(t1.m[10], t2.m[10], ratio),
+				_LI(t1.m[14], t2.m[14], ratio),
+				_LI(t1.m[3], t2.m[3], ratio),
+				_LI(t1.m[7], t2.m[7], ratio),
+				_LI(t1.m[11], t2.m[11], ratio),
+				_LI(t1.m[15], t2.m[15], ratio)
+				);
+	}
+	
+	private static float _LI(float n1, float n2, float ratio) {
+		return n1 * (1-ratio) + n2 * ratio;
+	}
 
-		// get pair of surrounding frames
-		// (function in AnimTimeline)
-
-		// get interpolation ratio
-
-		// interpolate translations linearly
-
-		// polar decompose axis matrices
-
-		// slerp rotation matrix and linearly interpolate scales
-
-		// combine interpolated R,S,and T
-
-
-	 }
-
-         public static float getRatio(int min, int max, int cur) {
-	     if(min == max) return 0f;
-	     float total = max - min;
-	     float diff = cur - min;
-	     return diff / total;
-	 }
+	public static float getRatio(int min, int max, int cur) {
+		if(min == max) return 0f;
+		float total = max - min;
+		float diff = cur - min;
+		return diff / total;
+	}
 }
