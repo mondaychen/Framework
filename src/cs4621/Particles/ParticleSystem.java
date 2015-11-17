@@ -119,12 +119,12 @@ public class ParticleSystem {
         //     This spawned particle should have some random initial velocity upward in the +y 
         //     direction and its position should be (0, -0.5, 0).
     	mTimeSinceLastSpawn += dt;
-    	if (mTimeSinceLastSpawn > 1 && mUnspawnedParticles.size() > 0) {
+    	if (mTimeSinceLastSpawn > 0.1 && mUnspawnedParticles.size() > 0) {
     		mTimeSinceLastSpawn = 0;
     		// 3.) Remove the particle from the linked list of unspawned particles and put it
             //     onto the linked list of spawned particles.
     		Particle p = mUnspawnedParticles.pop();
-    		p.spawn(1f, new Vector3(0f, -0.5f, 0f), new Vector3(0, 200*(float)Math.random(), 0));
+    		p.spawn(1f, new Vector3(0f, -0.5f, 0f), new Vector3(2*(float)(Math.random()-0.5), 5*(float)Math.random(), 0));
     		mSpawnedParticles.add(p);
     	}
         // 4.) For each spawned particle:
@@ -139,14 +139,15 @@ public class ParticleSystem {
     	int i = 0;
     	while (i < mSpawnedParticles.size()) {
     		Particle p = mSpawnedParticles.get(i); 
-    		Vector3 velocity = p.getVelocity().negate();
+    		Vector3 velocity = p.getVelocity().clone().negate();
         	p.accumForce(new Vector3(wind, -gravity, 0));
-        	p.accumForce(velocity.div(100).mul(drag));
+        	p.accumForce(velocity.mul(drag));
         	
         	p.animate(dt);
         	
         	if (p.getAge() > 5f) {
-        		mUnspawnedParticles.add(mSpawnedParticles.removeFirst());
+                mSpawnedParticles.remove(p);
+        		mUnspawnedParticles.add(p);
         	} else {
         		i++;
         	}
