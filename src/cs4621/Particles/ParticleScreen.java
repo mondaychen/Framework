@@ -468,8 +468,8 @@ public final class ParticleScreen extends GameScreen{
                 //     by some constant amount) into the float buffer for velocities (vBufVelocities).
                 //     Don't forget to rewind at the appropriate locations!
                 Vector3 position = particlePosition.clone();
-                mParticleSystem.getBillboardTransform().mulPos(position);
             	Vector3 velocity = p.getVelocity().clone().mul(scale).add(position);
+                vBufVelocities.rewind();
                 vBufVelocities.put(position.x);
                 vBufVelocities.put(position.y);
                 vBufVelocities.put(position.z);

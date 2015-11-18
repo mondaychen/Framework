@@ -118,13 +118,15 @@ public class ParticleSystem {
         //     elapsed since the last particle has spawned, spawn another if you can.
         //     This spawned particle should have some random initial velocity upward in the +y 
         //     direction and its position should be (0, -0.5, 0).
+
+        float mass = 1f;
     	mTimeSinceLastSpawn += dt;
     	if (mTimeSinceLastSpawn > 0.1 && mUnspawnedParticles.size() > 0) {
     		mTimeSinceLastSpawn = 0;
     		// 3.) Remove the particle from the linked list of unspawned particles and put it
             //     onto the linked list of spawned particles.
     		Particle p = mUnspawnedParticles.pop();
-    		p.spawn(1f, new Vector3(0f, -0.5f, 0f), new Vector3(2*(float)(Math.random()-0.5), 5*(float)Math.random(), 0));
+    		p.spawn(mass, new Vector3(0f, -0.5f, 0f), new Vector3(2*(float)(Math.random()-0.5), 5*(float)Math.random(), 0));
     		mSpawnedParticles.add(p);
     	}
         // 4.) For each spawned particle:
@@ -140,7 +142,7 @@ public class ParticleSystem {
     	while (i < mSpawnedParticles.size()) {
     		Particle p = mSpawnedParticles.get(i); 
     		Vector3 velocity = p.getVelocity().clone().negate();
-        	p.accumForce(new Vector3(wind, -gravity, 0));
+        	p.accumForce(new Vector3(wind, -gravity * mass, 0));
         	p.accumForce(velocity.mul(drag));
         	
         	p.animate(dt);
@@ -165,7 +167,8 @@ public class ParticleSystem {
         // the particle is always facing the camera.
         // 1.) Obtain the inverse of the rotation of the camera.
         // 2.) Set billboardTransform.
-        billboardTransform.set(view.clone().invert());
+        ;
+        billboardTransform.set(new Matrix4(view.getAxes()).invert());
  	 
         // SOLUTION END
     }
