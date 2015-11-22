@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--  A blue box sitting on a floor.
+ -->
+<scene>
+  <samples>16</samples>
+  <camera type="PerspectiveCamera">
+    <viewPoint>0 0 25</viewPoint>
+    <viewDir>0 0 -1</viewDir>
+    <viewUp>0 1 0</viewUp>
+    <projDistance>5</projDistance>
+    <viewWidth>6.4</viewWidth>
+    <viewHeight>4.8</viewHeight>
+  </camera>
+  <image>
+    640 480
+  </image>
+  <shader name="blue" type="Lambertian">
+    <diffuseColor>.2 .3 1</diffuseColor>
+  </shader>
+  <shader name="glazed" type="Glazed">
+    <refractiveIndex>1.5</refractiveIndex>
+		<substrate type="CookTorrance">
+			<diffuseColor>0.3 0.3 0.3</diffuseColor>
+			<specularColor>0.2 0.2 0.2</specularColor>
+			<roughness>0.8</roughness>
+			<refractiveIndex>1.5</refractiveIndex>
+		</substrate>
+  </shader>
+  
+  <surface type="Group">
+	<scale name="s">8 8 8</scale>
+	<translate name="t">0 0 0</translate>
+	<rotate>30 0 0 </rotate>
+	<surface type="Mesh">
+		<shader ref="glazed" />
+		<data>../../meshes/bunnyNV.obj</data>
+	</surface>
+  </surface>
+  
+ 
+  <light type="PointLight">
+    <position>10 10 20</position>
+    <intensity>800 800 800</intensity>
+  </light>
+  
+  
+  
+  
+  <cubemap>
+    <filename>data/textures/cubemaps/galileo_cross.pfm</filename>
+  </cubemap>
+</scene>
