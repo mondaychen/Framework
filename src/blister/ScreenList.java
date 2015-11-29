@@ -85,7 +85,7 @@ public class ScreenList {
      * @param screens List Of Screens To Be Added (In Order Of Arguments)
      */
     public ScreenList(MainGame game, int startScreen, IGameScreen... screens) {
-    	this(game);
+        this(game);
         setStartScreen(startScreen);
         addScreens(screens);
     }

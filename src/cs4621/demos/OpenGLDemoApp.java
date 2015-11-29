@@ -15,12 +15,13 @@ public class OpenGLDemoApp extends MainGame {
 	@Override
 	protected void buildScreenList() {
 		screenList = new ScreenList(this, currentScreen,
-		    new HelloWorldScreen(), 
-			new GreenTriangleScreen(), 
+			new FinalProject(),
+			new HelloWorldScreen(),
+			new GreenTriangleScreen(),
 			new TwistScreen(),
-			new PositionColorScreen(), 
+			new PositionColorScreen(),
 			new TwistColorScreen()
-			);
+		);
 	}
 
 	@Override
