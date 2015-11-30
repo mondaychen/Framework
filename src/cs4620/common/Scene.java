@@ -29,6 +29,7 @@ import cs4620.mesh.gen.MeshGenCube;
 import cs4620.mesh.gen.MeshGenCylinder;
 import cs4620.mesh.gen.MeshGenPlane;
 import cs4620.mesh.gen.MeshGenSphere;
+import cs4620.mesh.gen.MeshGenSphereReversed;
 
 
 
@@ -99,6 +100,9 @@ public class Scene {
 		Mesh m = new Mesh();
 		m.setGenerator(new MeshGenSphere());
 		addMesh(new NameBindMesh("Sphere", m));
+		m = new Mesh();
+		m.setGenerator(new MeshGenSphereReversed());
+		addMesh(new NameBindMesh("SphereReversed", m));
 		m = new Mesh();
 		m.setGenerator(new MeshGenCylinder());
 		addMesh(new NameBindMesh("Cylinder", m));
