@@ -345,6 +345,21 @@ public class RayTracer {
 				// TODO#A7 Implement supersampling for antialiasing.
 				// Each pixel should have (samples*samples) subpixels.
 				
+				for (int dx = 0; dx < samples; dx++) {
+					for (int dy = 0; dy < samples; dy++) {
+						// sizeX, sizeY or width, height? I think it should be width
+						// do we need +0.5 or -0.5 for this? Or +0.5-0.5 = 0?
+						double rx = (x + dx * sInv) / width;
+						double ry = (y + dy * sInv) / height;
+						cam.getRay(ray, rx, ry);
+						
+						shadeRay(rayColor, scene, ray, 1);
+						pixelColor.add(rayColor);
+					}
+				}
+				
+				pixelColor.mul(sInvSqr).mul(exposure);
+				
 				outImage.setPixelColor(pixelColor, x, y);
 
 			}
