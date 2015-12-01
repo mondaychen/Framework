@@ -85,15 +85,15 @@ public class BvhNode {
 	public boolean intersects(Ray ray) {
 		// TODO#A7: fill in this function.
 		
-		// http://www.cs.utah.edu/~awilliam/box/box.pdf
+		// From http://www.cs.utah.edu/~awilliam/box/box.pdf
 		double tmin,tmax,tymin,tymax,tzmin,tzmax;
 		Vector3d inv_direction = new Vector3d(1/ray.direction.x,
 				1/ray.direction.y, 1/ray.direction.z);
 		Vector3d[] bounds = {this.minBound, this.maxBound};
 		int[] sign = {
-				inv_direction.x < 0 ? 0 : 1,
-				inv_direction.y < 0 ? 0 : 1,
-				inv_direction.z < 0 ? 0 : 1
+				inv_direction.x < 0 ? 1 : 0,
+				inv_direction.y < 0 ? 1 : 0,
+				inv_direction.z < 0 ? 1 : 0
 		};
 		tmin=(bounds[sign[0]].x-ray.origin.x)*inv_direction.x;
 		tmax=(bounds[1-sign[0]].x-ray.origin.x)*inv_direction.x;
