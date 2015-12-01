@@ -84,7 +84,37 @@ public class BvhNode {
 	 */
 	public boolean intersects(Ray ray) {
 		// TODO#A7: fill in this function.
-
-        return false;
+		
+		// http://www.cs.utah.edu/~awilliam/box/box.pdf
+		double tmin,tmax,tymin,tymax,tzmin,tzmax;
+		Vector3d inv_direction = new Vector3d(1/ray.direction.x,
+				1/ray.direction.y, 1/ray.direction.z);
+		Vector3d[] bounds = {this.minBound, this.maxBound};
+		int[] sign = {
+				inv_direction.x < 0 ? 0 : 1,
+				inv_direction.y < 0 ? 0 : 1,
+				inv_direction.z < 0 ? 0 : 1
+		};
+		tmin=(bounds[sign[0]].x-ray.origin.x)*inv_direction.x;
+		tmax=(bounds[1-sign[0]].x-ray.origin.x)*inv_direction.x;
+		tymin=(bounds[sign[1]].y-ray.origin.y)*inv_direction.y;
+		tymax=(bounds[1-sign[1]].y-ray.origin.y)*inv_direction.y;
+		if((tmin>tymax)||(tymin>tmax))
+			return false;
+		if(tymin>tmin)
+			tmin=tymin;
+		if(tymax<tmax)
+			tmax=tymax;
+		tzmin=(bounds[sign[2]].z-ray.origin.z)*inv_direction.z;
+		tzmax=(bounds[1-sign[2]].z-ray.origin.z)*inv_direction.z;
+		if((tmin>tzmax)||(tzmin>tmax))
+			return false;
+		if(tzmin>tmin)
+			tmin=tzmin;
+		if(tzmax<tmax)
+			tmax=tzmax;
+		
+		//return ((tmin<t1)&&(tmax>t0));
+		return tmin < tmax;
 	}
 }
