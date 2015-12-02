@@ -78,7 +78,7 @@ public class CookTorrance extends Shader {
 				double ndotv = normal.dot(viewDirection);
 				double ndotl = normal.dot(lightDirection);
 				
- 				double fresTerm = fresnel(normal, viewDirection, refractiveIndex);
+ 				double fresTerm = fresnel(halfVector, viewDirection, refractiveIndex);
  				
  				double micropart1 = 1.0 / (Math.pow(roughness, 2) * Math.pow(ndoth, 4));
 				double micropart2 = Math.exp((Math.pow(ndoth, 2) - 1) / (Math.pow(roughness, 2) * Math.pow(ndoth, 2)));
