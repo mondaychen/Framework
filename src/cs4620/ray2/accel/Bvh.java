@@ -74,7 +74,7 @@ public class Bvh implements AccelStruct {
 		}
 		
 		IntersectionRecord rec = new IntersectionRecord();
-		if (node.child[0] == null && node.child[1] == null) {
+		if (node.isLeaf()) {
 			for (int i = node.surfaceIndexStart; i < node.surfaceIndexEnd; i++) {
 				if (surfaces[i].intersect(rec, rayIn)) {
 					flag = true;
