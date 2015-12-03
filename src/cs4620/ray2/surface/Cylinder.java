@@ -149,7 +149,9 @@ public class Cylinder extends Surface {
 		// averagePosition, minBound, and maxBound.
 		// Hint: The bounding box may be transformed by a transformation matrix.
 
-        
+		this.computeBoundingBoxHelper(
+				new Vector3d(center.x - radius, center.y - radius, center.z - height/2),
+				new Vector3d(center.x + radius, center.y + radius, center.z + height/2));
 	}
 
 	/**

@@ -87,6 +87,43 @@ public abstract class Surface {
 	 */
 	public abstract void computeBoundingBox();
 	
+	// For A7; added by Mengdi Chen
+	private ArrayList<Vector3d> getBoxInWorld(Vector3d minPt, Vector3d maxPt) {
+		ArrayList<Vector3d> worldBox = new ArrayList<Vector3d>();
+		
+		// transform box points into world space
+		worldBox.add(tMat.mulPos(new Vector3d(minPt.x, minPt.y, minPt.z)));
+		worldBox.add(tMat.mulPos(new Vector3d(minPt.x, minPt.y, maxPt.z)));
+		worldBox.add(tMat.mulPos(new Vector3d(minPt.x, maxPt.y, minPt.z)));
+		worldBox.add(tMat.mulPos(new Vector3d(minPt.x, maxPt.y, maxPt.z)));
+		worldBox.add(tMat.mulPos(new Vector3d(maxPt.x, minPt.y, minPt.z)));
+		worldBox.add(tMat.mulPos(new Vector3d(maxPt.x, minPt.y, maxPt.z)));
+		worldBox.add(tMat.mulPos(new Vector3d(maxPt.x, maxPt.y, minPt.z)));
+		worldBox.add(tMat.mulPos(new Vector3d(maxPt.x, maxPt.y, maxPt.z)));
+		
+		return worldBox;
+	}
+	protected void computeBoundingBoxHelper(Vector3d minPt, Vector3d maxPt) {
+		
+		minBound = new Vector3d(Double.MAX_VALUE);
+		maxBound = new Vector3d(-Double.MAX_VALUE);
+		
+		for (Vector3d point : getBoxInWorld(minPt, maxPt)) {
+			if (point.x < minBound.x) minBound.x = point.x;
+			if (point.y < minBound.y) minBound.y = point.y;
+			if (point.z < minBound.z) minBound.z = point.z;
+			
+			if (point.x > maxBound.x) maxBound.x = point.x;
+			if (point.y > maxBound.y) maxBound.y = point.y;
+			if (point.z > maxBound.z) maxBound.z = point.z;
+		}
+
+		averagePosition = new Vector3d(
+				(maxBound.x + minBound.x)/2,
+				(maxBound.y + minBound.y)/2,
+				(maxBound.z + minBound.z)/2);
+	}
+	
 	/**
 	 * Add this surface to the array list in. This array list will be used
 	 * in the AABB tree construction.

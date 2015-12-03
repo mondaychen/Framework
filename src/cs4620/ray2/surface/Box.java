@@ -74,6 +74,7 @@ public class Box extends Surface {
 		// because
 		// this object can be transformed by a transformation matrix.
 
+		this.computeBoundingBoxHelper(minPt, maxPt);
         
 	}
 
