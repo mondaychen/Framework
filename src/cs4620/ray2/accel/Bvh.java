@@ -1,6 +1,7 @@
 
 package cs4620.ray2.accel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -113,27 +114,58 @@ public class Bvh implements AccelStruct {
 		// Find out the BIG bounding box enclosing all the surfaces in the range [start, end)
 		// and store them in minB and maxB.
 		// Hint: To find the bounding box for each surface, use getMinBound() and getMaxBound() */
-
+		Vector3d minB = new Vector3d(Double.MAX_VALUE);
+		Vector3d maxB = new Vector3d(-Double.MAX_VALUE);
+		for (int i = start; i < end; i++) {
+			minB.x = Math.min(minB.x, surfaces[i].getMinBound().x);
+			minB.y = Math.min(minB.y, surfaces[i].getMinBound().y);
+			minB.z = Math.min(minB.z, surfaces[i].getMinBound().z);
+			maxB.x = Math.max(maxB.x, surfaces[i].getMaxBound().x);
+			maxB.y = Math.max(maxB.y, surfaces[i].getMaxBound().y);
+			maxB.z = Math.max(maxB.z, surfaces[i].getMaxBound().z);
+		}
         
 		// ==== Step 2 ====
 		// Check for the base case. 
 		// If the range [start, end) is small enough (e.g. less than or equal to 10), just return a new leaf node.
+		if (end - start <= 10) {
+			return new BvhNode(minB, maxB, null, null, start, end);
+		}
 
 
 		// ==== Step 3 ====
 		// Figure out the widest dimension (x or y or z).
 		// If x is the widest, set widestDim = 0. If y, set widestDim = 1. If z, set widestDim = 2.
+		double[] dimension = { maxB.x - minB.x, maxB.y - minB.y, maxB.z - minB.z};
+		int widestDimension = 2;
+		if (dimension[0] > dimension[1] && dimension[0] > dimension[2]) {
+			widestDimension = 0;
+		} else if (dimension[1] > dimension[0] && dimension[1] > dimension[2]) {
+			widestDimension = 1;
+		}
 
 
 		// ==== Step 4 ====
 		// Sort surfaces according to the widest dimension.
+		MyComparator comparator = new MyComparator();
+		comparator.setIndex(widestDimension);
+		ArrayList<Surface> list = new ArrayList<>();
+		for (int i = start; i < end; i++) {
+			list.add(surfaces[i]);
+		}
+		list.sort(comparator);
+		for (int i = 0; i < end - start; i++) {
+			surfaces[i + start] = list.get(i);
+		}
 
 
 		// ==== Step 5 ====
 		// Recursively create left and right children.
 
-        
-        return root;
+		int mid = (start + end)/2;
+		BvhNode left = createTree(start, mid);
+		BvhNode right = createTree(mid, end);
+		return new BvhNode(minB, maxB, left, right,start, end);
 	}
 
 }
