@@ -107,7 +107,9 @@ public class Sphere extends Surface {
 		// TODO#A7: Compute the bounding box and store the result in
 		// averagePosition, minBound, and maxBound.
 
-
+		this.computeBoundingBoxHelper(
+				new Vector3d(center.x - radius, center.y - radius, center.z - radius),
+				new Vector3d(center.x + radius, center.y + radius, center.z + radius));
 	}
 
 	/**
