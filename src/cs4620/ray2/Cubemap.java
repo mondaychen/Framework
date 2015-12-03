@@ -74,6 +74,9 @@ public class Cubemap {
 		outRadiance.mul(scaleFactor);
 	}
 
+	
+	
+	
 	protected int dirToFace(Vector3d dir, Vector2d outFaceUV) {
 		// direction to cube face
 		int iFace;

@@ -61,48 +61,45 @@ public class CookTorrance extends Shader {
 		ArrayList<Light> lights = (ArrayList)scene.getLights();
 		Vector3d normal = record.normal.clone().normalize();
 		Vector3d viewDirection = ray.direction.clone().negate().normalize();
-		
-		
-		for(Light light : lights) {
-			
-			//***Notice **********Not sure if the lightDirection should be negated 
-			Vector3d lightDirection = light.getDirection(record.location).clone().negate().normalize();
-			Vector3d halfVector = lightDirection.clone().add(viewDirection).normalize();
-			
-		    Ray shadowray = new Ray(record.location, lightDirection);
-			
-			if(!isShadowed(scene, light, record,shadowray)) {
-				
-				double vdoth = viewDirection.dot(halfVector);
-				double ndoth = normal.dot(halfVector);
-				double ndotv = normal.dot(viewDirection);
-				double ndotl = normal.dot(lightDirection);
-				
- 				double fresTerm = fresnel(halfVector, viewDirection, refractiveIndex);
- 				
- 				double micropart1 = 1.0 / (Math.pow(roughness, 2) * Math.pow(ndoth, 4));
-				double micropart2 = Math.exp((Math.pow(ndoth, 2) - 1) / (Math.pow(roughness, 2) * Math.pow(ndoth, 2)));
-				double microD = micropart1 * micropart2;
-				
-				double geoA = Math.min(1, Math.min(2 * ndoth * ndotv / vdoth, 2 * ndoth * ndotl / vdoth));
-				
-				double distance = light.getRSq(record.location);
-						
-				Vector3d Color1 = (specularColor.clone().mul(fresTerm / Math.PI).mul(microD * geoA /(ndotv * ndotl)).add(diffuseColor));
-				Vector3d Color2 = light.intensity.clone().mul(Math.max(ndotl, 0)).div(Math.pow(distance, 2));
-				
-				//Not include the last term of ambient intensity;
-				Colord color = new Colord(Color1.mul(Color2));
-				outIntensity.set(color);
-				
-						
-			}
-			
+		Vector3d color = new Vector3d();
+
+
+	for(Light light : lights) {
+
+		//***Notice **********Not sure if the lightDirection should be negated
+		Vector3d lightDirection = light.getDirection(record.location).clone().negate().normalize();
+		Vector3d halfVector = lightDirection.clone().add(viewDirection).normalize();
+
+		Ray shadowray = new Ray(record.location, lightDirection);
+
+		if(!isShadowed(scene, light, record,shadowray)) {
+
+		double nDotl = normal.dot(lightDirection);
+		double vDoth = viewDirection.dot(halfVector);
+		double nDoth = normal.dot(halfVector);
+		double nDotv = normal.dot(viewDirection);
+
+		double fresTerm = fresnel(normal, viewDirection, refractiveIndex);
+
+		double micropart1 = 1.0 / (Math.pow(roughness, 2) * Math.pow(nDoth, 4));
+		double micropart2 = Math.exp((Math.pow(nDoth, 2) - 1) / (Math.pow(roughness, 2) * Math.pow(nDoth, 2)));
+		double microD = micropart1 * micropart2;
+
+		double geoA = Math.min(1, Math.min(2 * nDoth * nDotv / vDoth, 2 * nDoth * nDotl / vDoth));
+
+		double distance = light.getRSq(record.location);
+
+		Vector3d Color1 = (specularColor.clone().mul(fresTerm / Math.PI).mul(microD * geoA /(nDotv * nDotl)).add(diffuseColor));
+		Vector3d Color2 = light.intensity.clone().mul(Math.max(nDotl, 0)).div(Math.pow(distance, 2));
+
+		//Not include the last term of ambient intensity;
+		color.add(Color1.mul(Color2));
 		}
-	
-		
-	    
-		
+
+	 }
+
+	 outIntensity.set(color);
+
         
     }
 }

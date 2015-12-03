@@ -51,41 +51,57 @@ public class Glass extends Shader {
 		
 	    Vector3d normal = record.normal;
 	    Vector3d viewdirection = ray.direction.clone().negate().normalize();
+	    
 	    Vector3d reflectlight = new Vector3d();
+	    
 	    Vector3d refractlight = new Vector3d();
+	    
 	    Vector3d outlight = new Vector3d();
-	    Colord color = new Colord();
+	    
+	    Colord colorreflect = new Colord();
+	    Colord colorrefract = new Colord();
 	 
+	    Colord color = new Colord();
 	    
 	    double cosangle = viewdirection.dot(normal);
     	double angle = Math.acos(cosangle);
 
 	    //light coming from the material;
 	    if(cosangle >= 0) {
+	    	
 	    	reflectlight = viewdirection.mul(2 * cosangle - 1);
-	    	outlight.add(reflectlight);
+	    	Ray outray = new Ray(record.location, reflectlight);
+	    	
+	    	RayTracer.shadeRay(colorreflect, scene, outray, depth);
+	    	
+	    	color.add(colorreflect);
 	    	
 	    	if(refractiveIndex != 1) {
 		    	double sinrefract = (1 - refractiveIndex) * Math.sin(angle) / refractiveIndex;
 		    	double cosrefract = Math.cos(Math.asin(sinrefract));
 		    	refractlight = normal.clone().negate().normalize().div(cosrefract);
-		    	outlight.add(refractlight);
+		    	
+		    	RayTracer.shadeRay(colorrefract, scene, new Ray(record.location, refractlight), depth);
+		    	color.add(refractlight);
 	    	}
-	    	color.set(outlight);
 	    }
 	    else {
 	    	angle = Math.PI - angle;
 	    	reflectlight = viewdirection.mul(2 * Math.cos(angle) - 1);
-	    	outlight.add(reflectlight);
+	    	
+	    	RayTracer.shadeRay(colorreflect, scene, new Ray(record.location, reflectlight), depth);
+	    	color.add(colorreflect);
 	    	
 	    	if(refractiveIndex != 1) {
 	    		double sinrefract = refractiveIndex * Math.sin(angle) / (1 - refractiveIndex);
 	    		double cosrefract = Math.cos(Math.asin(sinrefract));
 	    		refractlight = normal.clone().div(cosrefract);
-	    		outlight.add(refractlight);
+	    		
+	    		RayTracer.shadeRay(colorrefract, scene, new Ray(record.location, refractlight), depth);
+		    	color.add(refractlight);
 	    	}
-    	    color.set(outlight);
 	    }
+	    
 	    outIntensity.set(color);      
 	}
 	
