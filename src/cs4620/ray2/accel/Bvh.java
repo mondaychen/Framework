@@ -57,8 +57,36 @@ public class Bvh implements AccelStruct {
 		// TODO#A7: fill in this function.
 		// Hint: For a leaf node, use a normal linear search. Otherwise, search in the left and right children.
 		// Another hint: save time by checking if the ray intersects the node first before checking the childrens.
+		
+		if (!node.intersects(rayIn)) {
+			return false;
+		}
+		boolean flag = false;
+		
+		if (node.child[0] != null) {
+			flag = intersectHelper(node.child[0], outRecord, rayIn, anyIntersection);
+		}
+		if (node.child[1] != null) {
+			// still need to go to the right child even if flag is ready true
+			// to make sure outRecord is set correctly
+			flag = intersectHelper(node.child[1], outRecord, rayIn, anyIntersection) || flag;
+		}
+		
+		IntersectionRecord rec = new IntersectionRecord();
+		if (node.child[0] == null && node.child[1] == null) {
+			for (int i = node.surfaceIndexStart; i < node.surfaceIndexEnd; i++) {
+				if (surfaces[i].intersect(rec, rayIn)) {
+					flag = true;
+					if (anyIntersection) {
+						return true;
+					} else if (rec.t < outRecord.t) {
+						outRecord.set(rec);
+					}
+				}
+			}
+		}
 
-        return false;
+        return flag;
 	}
 
 
