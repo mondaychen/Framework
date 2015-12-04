@@ -13,8 +13,13 @@ uniform vec3 worldCam;
 
 varying vec4 worldPos;
 
+
+vec4 getWaterColor(vec3 V) {
+    V.y = -V.y;
+    return vec4(0.2, 0.8, 1, 1) * 0.5 + getEnvironmentColor(V) * 0.5;
+}
+
 void main() {
-  // TODO A4
   vec3 V = worldPos.xyz - worldCam;
-  gl_FragColor = worldPos.y <= 0.1 ? vec4(0.2, 0.8, 1, 1) : getEnvironmentColor(V);
+  gl_FragColor = worldPos.y < 0 ? getWaterColor(V) : getEnvironmentColor(V);
 }

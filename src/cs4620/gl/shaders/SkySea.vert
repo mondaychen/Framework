@@ -18,8 +18,5 @@ varying vec4 worldPos;
 void main() {
   // TODO A4
   worldPos = mWorld * vPosition;
-  if (worldPos.y < 0.1) {
-    worldPos.y = 0.1;
-  }
   gl_Position = mViewProjection * worldPos;
 }
