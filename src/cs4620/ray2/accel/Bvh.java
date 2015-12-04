@@ -63,10 +63,6 @@ public class Bvh implements AccelStruct {
 			return false;
 		}
 		boolean flag = false;
-		// IMPORTANT! outRecord.t == 0 by default. So it's less than any t in rec
-		if (outRecord.surface == null) {
-			outRecord.t = Double.MAX_VALUE;
-		}
 		
 		if (node.child[0] != null) {
 			flag = intersectHelper(node.child[0], outRecord, rayIn, anyIntersection);
@@ -85,8 +81,8 @@ public class Bvh implements AccelStruct {
 					if (anyIntersection) {
 						outRecord.set(rec);
 						return true;
-					// ray in ray2 package doesn't have end value? any better way than use t directly?
-					} else if (rec.t < outRecord.t) {
+					} else if (rec.t < rayIn.end) {
+						rayIn.end = rec.t;
 						outRecord.set(rec);
 					}
 				}
