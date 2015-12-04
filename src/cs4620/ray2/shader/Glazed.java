@@ -64,6 +64,7 @@ public class Glazed extends Shader {
 		Vector3d refelected = record.normal.clone()
 				.mul(2).mul(outgoing.dot(record.normal)).sub(outgoing);
 		Ray refelectedRay = new Ray(record.location, refelected);
+		refelectedRay.makeOffsetRay();
 		
 		RayTracer.shadeRay(glazeColor, scene, refelectedRay, depth+1);
 		glazeColor.mul(R);
