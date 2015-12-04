@@ -62,19 +62,13 @@ public class Cubemap {
     	double[] uvCoordinate = lookUp(dir.x, dir.y, dir.z);
 		double u = uvCoordinate[0];
 		double v = uvCoordinate[1];
-		System.out.println(u + "***");
-		System.out.println(v + "*****");
 		
-		//System.out.println(imageData.length);
 		
 		//look for the color;
 		Vector3d data = new Vector3d();
 		data.x = imageData[(int)(u + width * v) * 3];
 		data.y = imageData[(int)(u + width * v ) * 3 + 1];
-		data.z = imageData[(int)(u + width * v ) * 3 + 1];
-		
-	
-		System.out.println(data + "color");
+		data.z = imageData[(int)(u + width * v ) * 3 + 2];
 		
 		outRadiance.set(new Colord(data));
 		outRadiance.mul(scaleFactor);
@@ -94,8 +88,8 @@ public class Cubemap {
 				uvCoordinate[1] = 2 * blockSz + tempv * blockSz;
 			}
 			else {
-				tempu = (z + x) / (2 * x);
-				tempv = (-y + x) / (2 * x);
+				tempu = (-z + x) / (2 * x);
+				tempv = (y + x) / (2 * x);
 				uvCoordinate[0] = 0 + tempu * blockSz;
 				uvCoordinate[1] = 2 * blockSz + tempv * blockSz;
 			}
