@@ -52,55 +52,64 @@ public class Glass extends Shader {
         // 2) Determine whether total internal reflection occurs.
         // 3) Compute the reflected ray and refracted ray (if total internal reflection does not occur)
         //    using Snell's law and call RayTracer.shadeRay on them to shade them
-	
+
 		Vector3d outgoing = new Vector3d();
-		outgoing.set(ray.direction.clone().negate().normalize());
-		
+		outgoing.set(ray.origin.clone().sub(record.location).normalize());
+
 		Vector3d reflectlight = new Vector3d();
 		Vector3d refractlight = new Vector3d();
-		
+
 		Vector3d normal = new Vector3d();
-		Vector3d newnormal = new Vector3d();
+
 		normal.set(record.normal.normalize());
-		newnormal.set(record.normal.clone().negate().normalize());
-		
-		outIntensity.setZero();		
+
+		outIntensity.setZero();
+		double refrac = refractiveIndex;
 		Colord reflect = new Colord();
 		Colord refract = new Colord();
-		
+
 		double cosangle = outgoing.clone().dot(normal);
-		double R = fresnel(normal, outgoing, refractiveIndex);
+		double R = fresnel(normal, outgoing, refrac);
+
+		double theta1 = Math.acos(cosangle);		
 		
-		double theta1 = Math.acos(cosangle);
-				
 		if(cosangle < 0) {
-			theta1 = Math.PI - theta1;
-			refractiveIndex = 1 / refractiveIndex;
-			R = fresnel(newnormal, outgoing, refractiveIndex);
+		 theta1 = Math.PI - theta1;
+		 refrac = 1 / refractiveIndex;
+		 normal.set(record.normal.negate().normalize());
+		 R = fresnel(normal, outgoing, refrac);
 		}
 		
-		reflectlight.set(normal.clone().mul(2 * Math.cos(theta1)).sub(outgoing));
 		
+
+		reflectlight.set(normal.clone().mul(2 * outgoing.dot(normal)).sub(outgoing.normalize()));
+
 		Ray reflectray = new Ray(record.location, reflectlight);
 		
-		
 		reflectray.makeOffsetRay();
+		
+		System.out.println(reflectray.direction);
+
+		
 		RayTracer.shadeRay(reflect, scene, reflectray, depth + 1);
 		
+		System.out.println(reflect);
+
+		
 		outIntensity.add(reflect.mul(R));
-		
+
 		if(R != 1) {
-			double theta2 = Math.asin(Math.sin(theta1) / refractiveIndex);
-			refractlight.set(outgoing.clone().negate().add(normal.clone().mul(Math.cos(theta1))).
-					div(refractiveIndex).sub(normal.clone().mul(Math.cos(theta2))));
-			
-			Ray refractray = new Ray(record.location, refractlight);
-			refractray.makeOffsetRay();
-			
-			RayTracer.shadeRay(refract, scene, refractray, depth + 1);
-			outIntensity.add(refract.mul(1 - R));
+		double theta2 = Math.asin(Math.sin(theta1) / refrac);
+		refractlight.set(outgoing.clone().negate().add(normal.clone().mul(Math.cos(theta1))).
+		div(refrac).sub(normal.clone().mul(Math.cos(theta2))));
+
+		Ray refractray = new Ray(record.location, refractlight);
+		refractray.makeOffsetRay();
+
+		RayTracer.shadeRay(refract, scene, refractray, depth + 1);
+		outIntensity.add(refract.mul(1 - R));
 		}
-		
+
 	
 	}  
     
