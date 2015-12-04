@@ -14,12 +14,18 @@ uniform vec3 worldCam;
 varying vec4 worldPos;
 
 
-vec4 getWaterColor(vec3 V) {
-    V.y = -V.y;
-    return vec4(0.2, 0.8, 1, 1) * 0.5 + getEnvironmentColor(V) * 0.5;
+vec4 getWaterColor() {
+    vec3 outgoing = - worldPos.xyz + worldCam;
+    vec3 normal = vec3(0, 1, 0);
+    vec3 relected = normal * 2 * dot(normal, outgoing) - outgoing;
+    
+    return vec4(0.2, 0.8, 1, 1) * 0.5 + getEnvironmentColor(relected) * 0.5;
+}
+
+vec4 getSkyColor() {
+    return getEnvironmentColor(worldPos.xyz - worldCam);
 }
 
 void main() {
-  vec3 V = worldPos.xyz - worldCam;
-  gl_FragColor = worldPos.y < 0 ? getWaterColor(V) : getEnvironmentColor(V);
+  gl_FragColor = worldPos.y < 0 ? getWaterColor() : getSkyColor();
 }
