@@ -74,12 +74,11 @@ public class Glass extends Shader {
 		double theta1 = Math.acos(cosangle);		
 		
 		if(cosangle < 0) {
-		 theta1 = Math.PI - theta1;
-		 refrac = 1 / refractiveIndex;
-		 normal.set(record.normal.negate().normalize());
-		 R = fresnel(normal, outgoing, refrac);
+			theta1 = Math.PI - theta1;
+			refrac = 1 / refractiveIndex;
+			normal.set(record.normal.negate().normalize());
+			R = fresnel(normal, outgoing, refrac);
 		}
-		
 		
 
 		reflectlight.set(normal.clone().mul(2 * outgoing.dot(normal)).sub(outgoing.normalize()));
@@ -87,27 +86,22 @@ public class Glass extends Shader {
 		Ray reflectray = new Ray(record.location, reflectlight);
 		
 		reflectray.makeOffsetRay();
-		
-		System.out.println(reflectray.direction);
 
-		
-		RayTracer.shadeRay(reflect, scene, reflectray, depth + 1);
-		
-		System.out.println(reflect);
-
-		
-		outIntensity.add(reflect.mul(R));
+		if (theta1 != 0) {
+			RayTracer.shadeRay(reflect, scene, reflectray, depth + 1);
+			outIntensity.add(reflect.mul(R));
+		}
 
 		if(R != 1) {
-		double theta2 = Math.asin(Math.sin(theta1) / refrac);
-		refractlight.set(outgoing.clone().negate().add(normal.clone().mul(Math.cos(theta1))).
-		div(refrac).sub(normal.clone().mul(Math.cos(theta2))));
-
-		Ray refractray = new Ray(record.location, refractlight);
-		refractray.makeOffsetRay();
-
-		RayTracer.shadeRay(refract, scene, refractray, depth + 1);
-		outIntensity.add(refract.mul(1 - R));
+			double theta2 = Math.asin(Math.sin(theta1) / refrac);
+			refractlight.set(outgoing.clone().negate().add(normal.clone().mul(Math.cos(theta1))).
+			div(refrac).sub(normal.clone().mul(Math.cos(theta2))));
+	
+			Ray refractray = new Ray(record.location, refractlight);
+			refractray.makeOffsetRay();
+	
+			RayTracer.shadeRay(refract, scene, refractray, depth + 1);
+			outIntensity.add(refract.mul(1 - R));
 		}
 
 	
