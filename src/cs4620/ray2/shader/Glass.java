@@ -53,13 +53,18 @@ public class Glass extends Shader {
         // 3) Compute the reflected ray and refracted ray (if total internal reflection does not occur)
         //    using Snell's law and call RayTracer.shadeRay on them to shade them
 	
-		Vector3d outgoing = ray.origin.clone().sub(record.location).normalize();
+		Vector3d outgoing = new Vector3d();
+		outgoing.set(ray.direction.clone().negate().normalize());
+		
 		Vector3d reflectlight = new Vector3d();
 		Vector3d refractlight = new Vector3d();
 		
-		Vector3d normal = record.normal.normalize();
-		outIntensity.setZero();
+		Vector3d normal = new Vector3d();
+		Vector3d newnormal = new Vector3d();
+		normal.set(record.normal.normalize());
+		newnormal.set(record.normal.clone().negate().normalize());
 		
+		outIntensity.setZero();		
 		Colord reflect = new Colord();
 		Colord refract = new Colord();
 		
@@ -70,12 +75,12 @@ public class Glass extends Shader {
 				
 		if(cosangle < 0) {
 			theta1 = Math.PI - theta1;
-			normal = normal.clone().negate();
 			refractiveIndex = 1 / refractiveIndex;
-			R = fresnel(normal.clone().negate(), outgoing, refractiveIndex);
+			R = fresnel(newnormal, outgoing, refractiveIndex);
 		}
 		
 		reflectlight.set(normal.clone().mul(2 * Math.cos(theta1)).sub(outgoing));
+		
 		Ray reflectray = new Ray(record.location, reflectlight);
 		
 		
@@ -88,6 +93,7 @@ public class Glass extends Shader {
 			double theta2 = Math.asin(Math.sin(theta1) / refractiveIndex);
 			refractlight.set(outgoing.clone().negate().add(normal.clone().mul(Math.cos(theta1))).
 					div(refractiveIndex).sub(normal.clone().mul(Math.cos(theta2))));
+			
 			Ray refractray = new Ray(record.location, refractlight);
 			refractray.makeOffsetRay();
 			
