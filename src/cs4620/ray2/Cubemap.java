@@ -57,24 +57,85 @@ public class Cubemap {
 	public void evaluate(Vector3d dir, Colord outRadiance) {
 		// TODO#A7 Look up for the radiance of the environment mapping in a given direction
 		// don't forget to multiply the radiance by scaleFactor;
-		Vector2d image = new Vector2d();
+		
+		//Used to store the uv coordinates of the texture;
+    	double[] uvCoordinate = lookUp(dir.x, dir.y, dir.z);
+		double u = uvCoordinate[0];
+		double v = uvCoordinate[1];
+		System.out.println(u + "***");
+		System.out.println(v + "*****");
+		
+		//System.out.println(imageData.length);
+		
+		//look for the color;
 		Vector3d data = new Vector3d();
-		image.x = 1.5 * blockSz + dir.x * blockSz;
-		if(dir.y == 0 && dir.z != 0) {
-			image.y = 1.5 * blockSz - dir.z * blockSz;
-		}
-		else {
-			image.y = 2.5 * blockSz + dir.y * blockSz;
-		}		
-		data.x = imageData[(int) (3 * (image.x + width * image.y))];
-		data.y = imageData[(int) (3 * (image.x + width * image.y) + 1)];
-		data.z = imageData[(int) (3 * (image.x + width * image.y) + 2)];	
+		data.x = imageData[(int)(u + width * v) * 3];
+		data.y = imageData[(int)(u + width * v ) * 3 + 1];
+		data.z = imageData[(int)(u + width * v ) * 3 + 1];
+		
+	
+		System.out.println(data + "color");
 		
 		outRadiance.set(new Colord(data));
 		outRadiance.mul(scaleFactor);
 	}
-
 	
+	//look up the value in the texture;
+	public double[] lookUp(double x, double y, double z) {
+		double[] uvCoordinate = new double[2];
+		double tempu = 0;
+		double tempv = 0;
+		//X-axis right face
+		if(Math.abs(x) >= Math.abs(y) && Math.abs(x) >= Math.abs(z)) {
+			if(x > 0) {
+				tempu = (z + x) / (2 * x);
+				tempv = (y + x) / (2 * x);
+				uvCoordinate[0] = 2 * blockSz + tempu * blockSz;
+				uvCoordinate[1] = 2 * blockSz + tempv * blockSz;
+			}
+			else {
+				tempu = (z + x) / (2 * x);
+				tempv = (-y + x) / (2 * x);
+				uvCoordinate[0] = 0 + tempu * blockSz;
+				uvCoordinate[1] = 2 * blockSz + tempv * blockSz;
+			}
+		}
+		
+		//Y-axis right face
+		else if(Math.abs(y) >= Math.abs(x) && Math.abs(y) >= Math.abs(z)) {
+			if(y > 0) {
+				tempu = (x + y) / (2 * y);
+				tempv = (z + y) / (2 * y);
+				uvCoordinate[0] = blockSz + tempu * blockSz;
+				uvCoordinate[1] = 3 * blockSz + tempv * blockSz;
+			}
+			else {
+				tempu = (x + y) / (2 * y);
+				tempv = (-z + y) / (2 * y);
+				uvCoordinate[0] = blockSz + tempu * blockSz;
+				uvCoordinate[1] = blockSz + tempv * blockSz;		
+			}
+			
+		}
+		
+		//Z-axie right face
+		else if(Math.abs(z) >= Math.abs(x) && Math.abs(z) >= Math.abs(y)) {
+			if(z > 0) {
+				tempu = (x + z) / (2 * z);
+				tempv = (-y + z) / (2 * z);
+				uvCoordinate[0] = blockSz + tempu * blockSz;
+				uvCoordinate[1] = 0 + tempv * blockSz;
+			}
+			else {
+				tempu = (x + z) / ( 2 * z);
+				tempv = (y + z) / (2 * z);
+				uvCoordinate[0] = blockSz + tempu * blockSz;
+				uvCoordinate[1] = 2 * blockSz + tempv * blockSz;
+			}
+		}
+		return uvCoordinate;
+	}
+
 	
 	
 	protected int dirToFace(Vector3d dir, Vector2d outFaceUV) {
