@@ -1,7 +1,11 @@
 package cs4620.ray2.shader;
 
 import cs4620.ray2.RayTracer;
+
+import java.util.ArrayList;
+
 import cs4620.ray2.IntersectionRecord;
+import cs4620.ray2.Light;
 import cs4620.ray2.Ray;
 import cs4620.ray2.Scene;
 import egl.math.Colord;
@@ -49,61 +53,67 @@ public class Glass extends Shader {
         // 3) Compute the reflected ray and refracted ray (if total internal reflection does not occur)
         //    using Snell's law and call RayTracer.shadeRay on them to shade them
 		
-	    Vector3d normal = record.normal;
-	    Vector3d viewdirection = ray.direction.clone().negate().normalize();
-	    
-	    Vector3d reflectlight = new Vector3d();
-	    
-	    Vector3d refractlight = new Vector3d();
-	    
-	    Vector3d outlight = new Vector3d();
-	    
-	    Colord colorreflect = new Colord();
-	    Colord colorrefract = new Colord();
-	 
-	    Colord color = new Colord();
-	    
-	    double cosangle = viewdirection.dot(normal);
-    	double angle = Math.acos(cosangle);
+		Vector3d viewDirection = ray.direction.clone().negate().normalize();		
+		Vector3d Normal = record.normal.clone().normalize();
+		
+		Vector3d reflectlight = new Vector3d();
+		Vector3d refractlight = new Vector3d();
+		
+		Colord reflect = new Colord();
+		Colord refract = new Colord();
+		Colord color = new Colord();
+		
+		double costheta1 = viewDirection.dot(Normal);
+		
+		double theta1 = Math.acos(costheta1);
+		
+		if(costheta1 >= 0) {
+			
+			reflectlight = Normal.clone().mul(2 * Math.cos(theta1)).sub(viewDirection);
+			double R = fresnel(Normal, viewDirection, refractiveIndex);
+					
+			RayTracer.shadeRay(reflect, scene, new Ray(record.location, reflectlight), 6);
+			
+		    System.out.println(reflectlight);
+		    
 
-	    //light coming from the material;
-	    if(cosangle >= 0) {
-	    	
-	    	reflectlight = viewdirection.mul(2 * cosangle - 1);
-	    	Ray outray = new Ray(record.location, reflectlight);
-	    	
-	    	RayTracer.shadeRay(colorreflect, scene, outray, depth);
-	    	
-	    	color.add(colorreflect);
-	    	
-	    	if(refractiveIndex != 1) {
-		    	double sinrefract = (1 - refractiveIndex) * Math.sin(angle) / refractiveIndex;
-		    	double cosrefract = Math.cos(Math.asin(sinrefract));
-		    	refractlight = normal.clone().negate().normalize().div(cosrefract);
-		    	
-		    	RayTracer.shadeRay(colorrefract, scene, new Ray(record.location, refractlight), depth);
-		    	color.add(refractlight);
-	    	}
-	    }
-	    else {
-	    	angle = Math.PI - angle;
-	    	reflectlight = viewdirection.mul(2 * Math.cos(angle) - 1);
-	    	
-	    	RayTracer.shadeRay(colorreflect, scene, new Ray(record.location, reflectlight), depth);
-	    	color.add(colorreflect);
-	    	
-	    	if(refractiveIndex != 1) {
-	    		double sinrefract = refractiveIndex * Math.sin(angle) / (1 - refractiveIndex);
-	    		double cosrefract = Math.cos(Math.asin(sinrefract));
-	    		refractlight = normal.clone().div(cosrefract);
-	    		
-	    		RayTracer.shadeRay(colorrefract, scene, new Ray(record.location, refractlight), depth);
-		    	color.add(refractlight);
-	    	}
-	    }
-	    
-	    outIntensity.set(color);      
+			color.add(reflect.mul(R));
+			
+			if(R != 1) {
+				double theta2 = Math.asin(Math.sin(theta1) / refractiveIndex);
+				Vector3d refp = Normal.clone().mul(Math.cos(theta1)).sub(viewDirection).normalize();
+				refractlight = Normal.clone().negate().normalize().add(refp.mul(Math.tan(theta2)));
+				
+				System.out.println(refractlight);
+				
+				RayTracer.shadeRay(refract, scene, new Ray(record.location, refractlight), 6);
+				
+				 System.out.println(refract);
+				 
+				color.add(refract.mul(1 - R));			
+			}
+			
+		}
+		
+		else {
+			theta1 = Math.PI - theta1;
+			reflectlight = Normal.clone().mul(2 * Math.cos(theta1)).sub(viewDirection);
+			
+			double R = fresnel(Normal.clone().negate(), viewDirection, refractiveIndex);
+			
+			RayTracer.shadeRay(reflect, scene, new Ray(record.location, reflectlight), 6);
+			color.add(reflect.mul(R));
+			
+			if(R != 1) {
+				double theta2 = Math.asin(refractiveIndex * Math.sin(theta1));
+				Vector3d refp = Normal.clone().negate().mul(Math.cos(theta1)).sub(viewDirection).normalize();
+				refractlight = Normal.clone().normalize().add(refp.mul(Math.tan(theta2)));
+				
+				RayTracer.shadeRay(refract, scene, new Ray(record.location, refractlight), 6);
+				color.add(refract.mul(1 - R));			
+			}	
+		}  
+		outIntensity.set(color);
+    
 	}
-	
-
 }
