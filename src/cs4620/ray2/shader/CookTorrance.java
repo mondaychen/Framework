@@ -66,8 +66,8 @@ public class CookTorrance extends Shader {
 
 	for(Light light : lights) {
 
-		//***Notice **********Not sure if the lightDirection should be negated
-		Vector3d lightDirection = light.getDirection(record.location).clone().negate().normalize();
+		//***Notice **********lightDirection should not be negtaed!!!!!!!!!
+		Vector3d lightDirection = light.getDirection(record.location).clone().normalize();
 		Vector3d halfVector = lightDirection.clone().add(viewDirection).normalize();
 
 		Ray shadowray = new Ray(record.location, lightDirection);
