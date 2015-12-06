@@ -1,5 +1,7 @@
 #version 120
 
+uniform float time;
+
 // You May Use The Following Functions As RenderMaterial Input
 // vec4 getDiffuseColor(vec2 uv)
 // vec4 getNormalColor(vec2 uv)
@@ -12,6 +14,11 @@
 uniform vec3 worldCam;
 
 varying vec4 worldPos;
+
+const float SKY_RADIUS = 10;
+const float SUN_RADIUS = 1000;
+
+vec3 sunPositon;
 
 
 vec4 getWaterColor() {
@@ -26,6 +33,12 @@ vec4 getSkyColor() {
     return getEnvironmentColor(worldPos.xyz - worldCam);
 }
 
+void updateSunPostion() {
+    float key = time / 180 / 10;
+    sunPositon = SUN_RADIUS * vec3(sin(key), cos(key), 0);
+}
+
 void main() {
-  gl_FragColor = worldPos.y < 0 ? getWaterColor() : getSkyColor();
+    updateSunPostion();
+    gl_FragColor = worldPos.y < 0 ? getWaterColor() : getSkyColor();
 }

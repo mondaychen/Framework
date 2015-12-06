@@ -19,7 +19,7 @@
         <name>SkyBox</name>
         <data>
             <mesh>SphereReversed</mesh>
-            <scale>500 500 500</scale>
+            <scale>10 10 10</scale>
             <translation>0 0 0</translation>
             <material>SkySeaMaterial</material>
         </data>
@@ -31,7 +31,7 @@
             <zPlanes>0.02 1000.0</zPlanes>
             <perspective>0.01 0.01</perspective>
             <exposure>1</exposure>
-            <rotation>-30 0 0</rotation>
+            <rotation>0 0 0</rotation>
             <translation>0 7 0</translation>
         </data>
     </object>
