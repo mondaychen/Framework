@@ -25,7 +25,7 @@ public class GPURayApp extends MainGame {
     
     @Override
     protected void buildScreenList() {
-        screenList = new ScreenList(this, 0, new RayTracerScreen());
+        screenList = new ScreenList(this, 1, new RayTracerScreen(), new FinalProject());
     }
 
     @Override

@@ -1,22 +1,15 @@
-#version 120
+#version 330
+// Note: There is no need to modify anything in this src file
 
-// Note: We multiply a vector with a matrix from the left side (M * v)!
-// mProj * mView * mWorld * pos
+in vec2 vVertex; //object space vertex position
 
-// RenderCamera Input
-uniform mat4 mViewProjection;
-
-// RenderObject Input
-uniform mat4 mWorld;
-uniform mat3 mWorldIT;
-
-// RenderMesh Input
-attribute vec4 vPosition; // Sem (POSITION 0)
-
-varying vec4 worldPos;
-
-void main() {
-  // TODO A4
-  worldPos = mWorld * vPosition;
-  gl_Position = mViewProjection * worldPos;
+//output to fragment shader
+out vec2 vUV;					
+ 
+void main()
+{  
+	//set the current object space position as the output texture coordinates
+	//and the clip space position
+ 	vUV = vVertex;	
+	gl_Position = vec4(vVertex.xy ,0,1);
 }

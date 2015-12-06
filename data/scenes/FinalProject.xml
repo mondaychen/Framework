@@ -1,39 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <scene>
+    <exposure>10</exposure>
+    <camera type="PerspectiveCamera">
+      <viewPoint>3 0 10</viewPoint>
+      <viewDir>-4 0 -8</viewDir>
+      <viewUp>0 1 0</viewUp>
+      <projDistance>1</projDistance>
+      <viewWidth>1</viewWidth>
+      <viewHeight>1</viewHeight>
+    </camera>
+    <image>
+      800 800
+    </image>
 
-    <cubemap>
-        <name>EnvMap</name>
-        <data>
-            <file>data/textures/Envir/LancellottiChapel/</file>
-        </data>
-    </cubemap>
+    <shader name="skybox" type="Lambertian">
+      <diffuseColor>0.0 1.0 0.3</diffuseColor>
+    </shader>
 
-    <material>
-        <name>SkySeaMaterial</name>
-        <data>
-            <type>SkySea</type>
-        </data>
-    </material>
+    <surface type="Mesh">
+      <shader ref="skybox" />
+      <data>../meshes/skybox.obj</data>
+    </surface>
 
-    <object>
-        <name>SkyBox</name>
-        <data>
-            <mesh>SphereReversed</mesh>
-            <scale>500 500 500</scale>
-            <translation>0 0 0</translation>
-            <material>SkySeaMaterial</material>
-        </data>
-    </object>
-
-    <object>
-        <name>Camera</name>
-        <data type="SceneCamera">
-            <zPlanes>0.02 1000.0</zPlanes>
-            <perspective>0.01 0.01</perspective>
-            <exposure>1</exposure>
-            <rotation>-30 0 0</rotation>
-            <translation>0 7 0</translation>
-        </data>
-    </object>
+    <light>
+      <position>3 10 5</position>
+      <intensity>9 9 9</intensity>
+    </light>
 
 </scene>
+
