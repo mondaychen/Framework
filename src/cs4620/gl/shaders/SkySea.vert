@@ -3,6 +3,8 @@
 // Note: We multiply a vector with a matrix from the left side (M * v)!
 // mProj * mView * mWorld * pos
 
+uniform float time;
+
 // RenderCamera Input
 uniform mat4 mViewProjection;
 
@@ -19,24 +21,19 @@ attribute vec4 vPosition; // Sem (POSITION 0)
 varying vec4 worldPos;
 varying vec3 sunPositon;
 
-
-
-
-//
-//void updateSunPostion() {
-//    float key = time / 180 / 10;
-//    vec3 sunPositon = SUN_RADIUS * vec3(sin(key), cos(key), 0);
-//}
+const float SUN_RADIUS = 1000;
 
 void main() {
-  // TODO A4
-    
-  //updateSunPostion();
-  vec4 worldPos = mWorld * vPosition;
+
+    float key = 0; // time / 180 / 10
+    sunPositon = vec3(sin(key), cos(key), 0);
+
+
+	worldPos = mWorld * vPosition;
   
-  //Set the ray from the camera to intersect point;
+    //Set the ray from the camera to intersect point;
     
-  gl_Position = mViewProjection * worldPos;
+ 	gl_Position = mViewProjection * worldPos;
   
 }
 
