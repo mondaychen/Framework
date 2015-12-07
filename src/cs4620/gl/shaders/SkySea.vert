@@ -26,12 +26,10 @@ const float SUN_RADIUS = 1000;
 void main() {
 
     float key = 0; // time / 180 / 10
-    sunPositon = vec3(sin(key), cos(key), 0);
+    sunPositon = vec3(1, 0, 0);
 
 
 	worldPos = mWorld * vPosition;
-  
-    //Set the ray from the camera to intersect point;
     
  	gl_Position = mViewProjection * worldPos;
   
