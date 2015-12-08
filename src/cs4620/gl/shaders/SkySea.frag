@@ -121,7 +121,7 @@ float specular(vec3 n,vec3 l,vec3 e,float s) {
 
 // bteitler: Generate a smooth sky gradient color based on ray direction's Y value
 // sky
-vec3 getSkyColor(vec3 e) {
+vec3 getSkyColorSimple(vec3 e) {
     e.y = max(e.y,0.0);
     vec3 ret;
     ret.x = pow(1.0-e.y,2.0);
@@ -261,7 +261,7 @@ vec3 getSeaColor(vec3 p, vec3 n, vec3 l, vec3 eye, vec3 dist) {
     fresnel = pow(fresnel,3.0) * 0.65;
         
     // bteitler: Bounce eye ray off ocean towards sky, and get the color of the sky
-    vec3 reflected = getSkyColor(reflect(eye,n));    
+    vec3 reflected = getSkyColorSimple(reflect(eye,n));    
     
     // bteitler: refraction effect based on angle between light surface normal
     vec3 refracted = SEA_BASE + diffuse(n,l,80.0) * SEA_WATER_COLOR * 0.12; 
@@ -368,7 +368,8 @@ float heightMapTracing(vec3 ori, vec3 dir, out vec3 p) {
 
 // Seascapge end
 
-/*
+
+// Gejun's part start
 
 //vec4 getMieColor(vec3 outgoing) {
 //    //vec4 backColor = vec4(0.678, 0.847, 0.902, 0.6);
@@ -428,7 +429,8 @@ vec3 getSkyColor() {
     return backColor;
     
 }
-*/
+
+// Gejun's part end
 
 void main() {
     vec4 fragCoord = gl_FragCoord;
@@ -478,32 +480,26 @@ void main() {
              
     // color
 
-    // bteitler: Mix (linear interpolate) a color calculated for the sky (based solely on ray direction) and a sea color 
-    // which contains a realistic lighting model.  This is basically doing a fog calculation: weighing more the sky color
-    // in the distance in an exponential manner.
-    vec3 color = mix(
-        getSkyColor(dir),
-        getSeaColor(p,n,light,dir,dist),
-        pow(smoothstep(0.0,-0.05,dir.y), 0.3) // bteitler: Can be thought of as "fog" that gets thicker in the distance
-    );
-    
-    /*
-    Gejun's part
+    // Gejun's part
     //Set waveLength;
     float redLength = pow(0.65f, 4.0f);
     float greenLength = pow(0.57f, 4.0f);
     float blueLength = pow(0.475f, 4.0f);
     vec3 waveLength = vec3(1 / redLength, 1 / greenLength, 1 / blueLength);
+
+    vec3 skyColor = getSkyColor() * waveLength * K_rfactor;
+    // Gejun's part end
+
+    // bteitler: Mix (linear interpolate) a color calculated for the sky (based solely on ray direction) and a sea color 
+    // which contains a realistic lighting model.  This is basically doing a fog calculation: weighing more the sky color
+    // in the distance in an exponential manner.
+    vec3 color = mix(
+        skyColor, //getSkyColorSimple(dir),
+        getSeaColor(p,n,light,dir,dist),
+        pow(smoothstep(0.0,-0.05,dir.y), 0.3) // bteitler: Can be thought of as "fog" that gets thicker in the distance
+    );
     
-    //Set the raydirection to the inersect point;
-    if(worldPos.y < 0) {
-        gl_FragColor = getWaterColor();
-    }
-    else {
-        vec3 newcolor = getSkyColor();
-        gl_FragColor = vec4(newcolor * waveLength * K_rfactor, 1);
-    }
-    */
+
 
     // post
     
