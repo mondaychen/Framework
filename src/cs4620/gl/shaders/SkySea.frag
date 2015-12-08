@@ -449,11 +449,6 @@ void main() {
     // bteitler: Distort the ray a bit for a fish eye effect (if you remove this line, it will remove
     // the fish eye effect and look like a realistic perspective).
     // dir.z += length(uv) * 0.15;
-
-    // bteitler: Renormalize the ray direction, and then rotate it based on the previously calculated
-    // animation angle "ang".  "fromEuler" just calculates a rotation matrix from a vector of angles.
-    // if you remove the " * fromEuler(ang)" part, you will disable the camera rotation animation.
-    // dir = normalize(dir) * fromEuler(ang);
     
     // tracing
 
