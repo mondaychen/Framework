@@ -14,13 +14,13 @@ uniform float time;
 uniform vec3 worldCam;
 const float PI = 3.1415926;
 
-//const int numSamples = 5;
-//const g = -0.80f;
-//const SKY_RADIUS = 10;
-//const SUN_RADIUS = 1000;
-//const K_rfactor = 0.0025f;
-//const K_mfactor = 0.0010f;
-//const Sun_Intense = 20.0f
+const int numSamples = 5;
+const float g = -0.80f;
+const float SKY_RADIUS = 10;
+const float SUN_RADIUS = 1000;
+const float K_rfactor = 0.0025f;
+const float K_mfactor = 0.0010f;
+const float Sun_Intense = 20.0f;
 
 //const vec3 waveLength = ;
 
@@ -392,12 +392,8 @@ float scale(float fCos)
 }
 
 
-vec4 getSkyColor() {
+vec3 getSkyColor() {
     
-    float K_rfactor = 0.0025f;
-    float K_mfactor = 0.0010f;
-    float Sun_Intense = 20.0f;
-    int numSamples = 5;
     float fscale = 1.0f / (10 - length(worldCam));
     float fscaleOverscaledepth = fscale / 0.25f;
     
@@ -405,7 +401,7 @@ vec4 getSkyColor() {
     float lengthCamera = length(worldCam);
     
     camera2point = camera2point / length(camera2point);
-    
+
     //calculate the sample ray;
     float sampleLength = length(camera2point) / numSamples;
     float scaledLength = sampleLength * fscale;
@@ -429,7 +425,7 @@ vec4 getSkyColor() {
         samplepoint = samplepoint + sampleRay;
     }
     
-    return vec4(backColor * Sun_Intense * K_rfactor, 1);
+    return backColor;
     
 }
 */
@@ -490,12 +486,28 @@ void main() {
         getSeaColor(p,n,light,dir,dist),
         pow(smoothstep(0.0,-0.05,dir.y), 0.3) // bteitler: Can be thought of as "fog" that gets thicker in the distance
     );
-        
+    
+    /*
+    Gejun's part
+    //Set waveLength;
+    float redLength = pow(0.65f, 4.0f);
+    float greenLength = pow(0.57f, 4.0f);
+    float blueLength = pow(0.475f, 4.0f);
+    vec3 waveLength = vec3(1 / redLength, 1 / greenLength, 1 / blueLength);
+    
+    //Set the raydirection to the inersect point;
+    if(worldPos.y < 0) {
+        gl_FragColor = getWaterColor();
+    }
+    else {
+        vec3 newcolor = getSkyColor();
+        gl_FragColor = vec4(newcolor * waveLength * K_rfactor, 1);
+    }
+    */
+
     // post
     
     // bteitler: Apply an overall image brightness factor as the final color for this pixel.  Can be
     // tweaked artistically.
     gl_FragColor = vec4(pow(color,vec3(0.75)), 1.0);
-  
-    // gl_FragColor = worldPos.y < 0 ? getWaterColor() : getSkyColor();
 }
