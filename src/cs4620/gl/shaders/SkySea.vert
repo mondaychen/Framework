@@ -20,17 +20,22 @@ attribute vec4 vPosition; // Sem (POSITION 0)
 
 varying vec4 worldPos;
 varying vec3 sunPositon;
+varying vec3 sunDir;
 
 const float SUN_RADIUS = 1000;
 
 void main() {
 
     float key = 0; // time / 180 / 10
-    sunPositon = vec3(1, 0, 0);
+    sunPositon = vec3(0.0, 0.0, 1000.0);
+    
+    //Setting the sundirection;
+    sunDir =normalize(vec3(0.0, 0.0, 1.0));
 
 
 	worldPos = mWorld * vPosition;
     
+
  	gl_Position = mViewProjection * worldPos;
   
 }

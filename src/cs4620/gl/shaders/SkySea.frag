@@ -15,11 +15,12 @@ uniform vec3 worldCam;
 const float PI = 3.1415926;
 
 const int numSamples = 5;
-const float g = -0.80f;
 const float SKY_RADIUS = 10;
-const float SUN_RADIUS = 1000;
+const float SUN_RADIUS = 10.25f;
 const float K_rfactor = 0.0025f;
 const float K_mfactor = 0.0010f;
+
+//Turn the Sun_Intense into the vec3;
 const float Sun_Intense = 20.0f;
 
 //const vec3 waveLength = ;
@@ -29,6 +30,7 @@ varying vec4 worldPos;
 
 //need to be normalized in Vertex shader;
 varying vec3 sunPositon;
+varying vec3 sunDir;
 
 
 // for Seascapge
@@ -371,19 +373,15 @@ float heightMapTracing(vec3 ori, vec3 dir, out vec3 p) {
 
 // Gejun's part start
 
-//vec4 getMieColor(vec3 outgoing) {
-//    //vec4 backColor = vec4(0.678, 0.847, 0.902, 0.6);
-//    
-//    float g2 = g * g;
-//    float cosangle = dot(outgoing, sunPositon) / (length(outgoing) * length(sunPositon));
-//    
-//    //calculate the attenuate phase;
-//    float phasepart1 = 3 * (1 - g2) * (1 + cosangle * cosangle);
-//    float phasepart2 = 2 * (2 + g2) * pow((1 + g2 - 2 * g * cosangle), 1.5);
-//    float miePhase = phasepart1 / phasepart2;
-//    
-//    return
-//}
+float phase(float q, float g) {
+    //vec4 backColor = vec4(0.678, 0.847, 0.902, 0.6);
+    float g2 = g * g;
+    
+    //calculate the attenuate phase;
+    float phasepart1 = 3 * (1 - g2) * (1 + q * q);
+    float phasepart2 = 2 * (2 + g2) * pow((1 + g2 - 2 * g * q), 1.5);
+    return phasepart1 / phasepart2;
+}
 
 float scale(float fCos)
 {
@@ -393,16 +391,18 @@ float scale(float fCos)
 }
 
 
-vec3 getSkyColor() {
+vec3 getSkyColor(vec3 waveLength) {
     
-    float fscale = 1.0f / (10 - length(worldCam));
+    vec3 backColor = vec3(0.18867780436772762, 0.4978442963618773, 0.6616065586417131);
+    
+    float fscale = 1.0f / (10.25f - 10.0f);
     float fscaleOverscaledepth = fscale / 0.25f;
     
     vec3 camera2point = worldPos.xyz - worldCam;
     float lengthCamera = length(worldCam);
     
     camera2point = camera2point / length(camera2point);
-
+    
     //calculate the sample ray;
     float sampleLength = length(camera2point) / numSamples;
     float scaledLength = sampleLength * fscale;
@@ -410,18 +410,17 @@ vec3 getSkyColor() {
     vec3 samplepoint = worldCam + sampleRay * 0.5;
     
     //Loop through the sample rays;
-    vec3 backColor = vec3(0.678, 0.847, 0.902);
     
     for(int i = 0; i < 5; i++) {
         
         float sampleLength = length(samplepoint);
-        float depth = exp(fscaleOverscaledepth * (lengthCamera - sampleLength));
+        float depth = exp(fscaleOverscaledepth * (10.0f - sampleLength));
         float sunAngle = dot(sunPositon, samplepoint) / sampleLength;
         float cameraAngle = dot(camera2point, samplepoint) / sampleLength;
         float scatterlight = depth * (scale(sunAngle) - scale(cameraAngle));
         
         //Calculate the attenuation phase;
-        float attenuate = exp(-scatterlight * 4 * PI * (K_rfactor + K_mfactor));
+        vec3 attenuate = exp(-scatterlight * 4 * PI * (waveLength * K_rfactor + K_mfactor));
         backColor = backColor + attenuate * depth * scaledLength;
         samplepoint = samplepoint + sampleRay;
     }
@@ -429,6 +428,9 @@ vec3 getSkyColor() {
     return backColor;
     
 }
+
+
+
 
 // Gejun's part end
 
@@ -472,17 +474,43 @@ void main() {
     // bteitler: direction of the infinitely far away directional light.  Changing this will change
     // the sunlight direction.
     vec3 light = normalize(vec3(0.0,1.0,0.8)); 
-             
-    // color
-
+    
+    
     // Gejun's part
+    
+    //Initialize the parameter;
+
+    float alpha = dot(dir, sunPositon) / length(sunPositon);
+    
+    
+    //Loop through the sample rays;
+   // vec3 backColor = vec3(0.678, 0.847, 0.902);
+    
     //Set waveLength;
     float redLength = pow(0.65f, 4.0f);
     float greenLength = pow(0.57f, 4.0f);
     float blueLength = pow(0.475f, 4.0f);
     vec3 waveLength = vec3(1 / redLength, 1 / greenLength, 1 / blueLength);
+    
+    
+    vec3 newcolor1 = getSkyColor(waveLength) * waveLength * K_rfactor * Sun_Intense;
+    vec3 newcolor2 = getSkyColor(waveLength) * K_mfactor * Sun_Intense;
 
-    vec3 skyColor = getSkyColor() * waveLength * K_rfactor;
+    //vec3 skyColor = getSkyColor() * waveLength * K_rfactor;
+    
+    //background color of the sky;(0.94, 0.97, 1)
+    
+    vec3 skyColor = newcolor1 * phase(alpha, 0) + newcolor2 * phase(alpha, -0.80f) + vec3(0, 1, 0);
+    
+    
+    //newcolor1 * phase(alpha, 0) + newcolor2 * phase(alpha, -0.80f);
+    skyColor.x = skyColor.y;
+    //skyColor.x = skyColor.y;
+    
+    
+    //vec3(spot * mie_Light + fmie * mie_Light + frayLeigh * rayLeigh_light);
+    
+    
     // Gejun's part end
 
     // bteitler: Mix (linear interpolate) a color calculated for the sky (based solely on ray direction) and a sea color 
@@ -494,7 +522,6 @@ void main() {
         pow(smoothstep(0.0,-0.05,dir.y), 0.3) // bteitler: Can be thought of as "fog" that gets thicker in the distance
     );
     
-
 
     // post
     
