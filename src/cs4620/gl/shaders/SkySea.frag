@@ -498,12 +498,16 @@ void main() {
 
     //vec3 skyColor = getSkyColor() * waveLength * K_rfactor;
     
-    //background color of the sky;(0.94, 0.97, 1)
     
-    vec3 Color1 = newcolor1 * phase(alpha, 0) + vec3(0.03, 0.20, 0.02);
+    //Controling the blue part color of the sky, the parameter is not sure;
+    vec3 Color1 = newcolor1 * phase(alpha, 0) + vec3(-0.08, 0.48, 0.0);
+    
+    //Controling the sun part of the sky, the parameter is not sure;
     vec3 Color2 = newcolor2 * phase(alpha, -0.80f);
     
-    vec3 skyColor = Color1 + Color2;
+    vec3 skyColor = Color1;
+    
+    //+ Color2;
     
     
     //newcolor1 * phase(alpha, 0) + newcolor2 * phase(alpha, -0.80f);
