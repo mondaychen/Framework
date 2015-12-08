@@ -500,7 +500,10 @@ void main() {
     
     //background color of the sky;(0.94, 0.97, 1)
     
-    vec3 skyColor = newcolor1 * phase(alpha, 0) + newcolor2 * phase(alpha, -0.80f) + vec3(0, 1, 0);
+    vec3 Color1 = newcolor1 * phase(alpha, 0) + vec3(0.03, 0.20, 0.02);
+    vec3 Color2 = newcolor2 * phase(alpha, -0.80f);
+    
+    vec3 skyColor = Color1 + Color2;
     
     
     //newcolor1 * phase(alpha, 0) + newcolor2 * phase(alpha, -0.80f);
