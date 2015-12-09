@@ -250,37 +250,6 @@ float map_detailed(vec3 p) {
     return p.y - h;
 }
 
-// bteitler:
-// p: point on ocean surface to get color for
-// n: normal on ocean surface at <p>
-// l: light (sun) direction
-// eye: ray direction from camera position for this pixel
-// dist: distance from camera to point <p> on ocean surface
-vec3 getSeaColor(vec3 p, vec3 n, vec3 l, vec3 eye, vec3 dist) {  
-    // bteitler: Fresnel is an exponential that gets bigger when the angle between ocean
-    // surface normal and eye ray is smaller
-    float fresnel = 1.0 - max(dot(n,-eye),0.0);
-    fresnel = pow(fresnel,3.0) * 0.65;
-        
-    // bteitler: Bounce eye ray off ocean towards sky, and get the color of the sky
-    vec3 reflected = getSkyColorSimple(reflect(eye,n));    
-    
-    // bteitler: refraction effect based on angle between light surface normal
-    vec3 refracted = SEA_BASE + diffuse(n,l,80.0) * SEA_WATER_COLOR * 0.12; 
-    
-    // bteitler: blend the refracted color with the reflected color based on our fresnel term
-    vec3 color = mix(refracted,reflected,fresnel);
-    
-    // bteitler: Apply a distance based attenuation factor which is stronger
-    // at peaks
-    float atten = max(1.0 - dot(dist,dist) * 0.001, 0.0);
-    color += SEA_WATER_COLOR * (p.y - SEA_HEIGHT) * 0.18 * atten;
-    
-    // bteitler: Apply specular highlight
-    color += vec3(specular(n,l,eye,60.0));
-    
-    return color;
-}
 
 // bteitler: Estimate the normal at a point <p> on the ocean surface using a slight more detailed
 // ocean mapping function (using more noise octaves).
@@ -391,14 +360,15 @@ float scale(float fCos)
 }
 
 
-vec3 getSkyColor(vec3 waveLength) {
+vec3 getSkyColor(vec3 waveLength, vec3 dir) {
     
     vec3 backColor = vec3(0.18867780436772762, 0.4978442963618773, 0.6616065586417131);
     
     float fscale = 1.0f / (10.25f - 10.0f);
     float fscaleOverscaledepth = fscale / 0.25f;
     
-    vec3 camera2point = worldPos.xyz - worldCam;
+    // vec3 camera2point = worldPos.xyz - worldCam;
+    vec3 camera2point = dir;
     float lengthCamera = length(worldCam);
     
     camera2point = camera2point / length(camera2point);
@@ -429,6 +399,76 @@ vec3 getSkyColor(vec3 waveLength) {
     
 }
 
+vec3 getSkyColorFull(vec3 dir) {
+    //Initialize the parameter;
+
+    float alpha = dot(dir, sunPositon) / length(sunPositon);
+    
+    
+    //Loop through the sample rays;
+   // vec3 backColor = vec3(0.678, 0.847, 0.902);
+    
+    //Set waveLength;
+    float redLength = pow(0.65f, 4.0f);
+    float greenLength = pow(0.57f, 4.0f);
+    float blueLength = pow(0.475f, 4.0f);
+    vec3 waveLength = vec3(1 / redLength, 1 / greenLength, 1 / blueLength);
+    
+    
+    vec3 newcolor1 = getSkyColor(waveLength, dir) * waveLength * K_rfactor * Sun_Intense;
+    vec3 newcolor2 = getSkyColor(waveLength, dir) * K_mfactor * Sun_Intense;
+
+    //vec3 skyColor = getSkyColor() * waveLength * K_rfactor;
+    
+    
+    //Controling the blue part color of the sky, the parameter is not sure;
+    vec3 Color1 = newcolor1 * phase(alpha, 0) + vec3(-0.08, 0.48, 0.0);
+    
+    //Controling the sun part of the sky, the parameter is not sure;
+    vec3 Color2 = newcolor2 * phase(alpha, -0.80f);
+    
+    vec3 skyColor = Color1 + Color2;
+    
+    //+ Color2;
+    
+    
+    //newcolor1 * phase(alpha, 0) + newcolor2 * phase(alpha, -0.80f);
+    skyColor.x = skyColor.y;
+    return skyColor;
+}
+
+
+// bteitler:
+// p: point on ocean surface to get color for
+// n: normal on ocean surface at <p>
+// l: light (sun) direction
+// eye: ray direction from camera position for this pixel
+// dist: distance from camera to point <p> on ocean surface
+vec3 getSeaColor(vec3 p, vec3 n, vec3 l, vec3 eye, vec3 dist) {  
+    // bteitler: Fresnel is an exponential that gets bigger when the angle between ocean
+    // surface normal and eye ray is smaller
+    float fresnel = 1.0 - max(dot(n,-eye),0.0);
+    fresnel = pow(fresnel,3.0) * 0.65;
+        
+    // bteitler: Bounce eye ray off ocean towards sky, and get the color of the sky
+    vec3 reflected = getSkyColorFull(reflect(eye,n));    
+    
+    // bteitler: refraction effect based on angle between light surface normal
+    vec3 refracted = SEA_BASE + diffuse(n,l,80.0) * SEA_WATER_COLOR * 0.12; 
+    
+    // bteitler: blend the refracted color with the reflected color based on our fresnel term
+    vec3 color = mix(refracted,reflected,fresnel);
+    
+    // bteitler: Apply a distance based attenuation factor which is stronger
+    // at peaks
+    float atten = max(1.0 - dot(dist,dist) * 0.001, 0.0);
+    color += SEA_WATER_COLOR * (p.y - SEA_HEIGHT) * 0.18 * atten;
+    
+    // bteitler: Apply specular highlight
+    color += vec3(specular(n,l,eye,60.0));
+    
+    return color;
+}
 
 
 
@@ -477,44 +517,12 @@ void main() {
     
     
     // Gejun's part
-    
-    //Initialize the parameter;
-
-    float alpha = dot(dir, sunPositon) / length(sunPositon);
+    vec3 skyColor = getSkyColorFull(dir);
     
     
-    //Loop through the sample rays;
-   // vec3 backColor = vec3(0.678, 0.847, 0.902);
-    
-    //Set waveLength;
-    float redLength = pow(0.65f, 4.0f);
-    float greenLength = pow(0.57f, 4.0f);
-    float blueLength = pow(0.475f, 4.0f);
-    vec3 waveLength = vec3(1 / redLength, 1 / greenLength, 1 / blueLength);
-    
-    
-    vec3 newcolor1 = getSkyColor(waveLength) * waveLength * K_rfactor * Sun_Intense;
-    vec3 newcolor2 = getSkyColor(waveLength) * K_mfactor * Sun_Intense;
-
-    //vec3 skyColor = getSkyColor() * waveLength * K_rfactor;
-    
-    
-    //Controling the blue part color of the sky, the parameter is not sure;
-    vec3 Color1 = newcolor1 * phase(alpha, 0) + vec3(-0.08, 0.48, 0.0);
-    
-    //Controling the sun part of the sky, the parameter is not sure;
-    vec3 Color2 = newcolor2 * phase(alpha, -0.80f);
-    
-    vec3 skyColor = Color1;
-    
-    //+ Color2;
-    
-    
-    //newcolor1 * phase(alpha, 0) + newcolor2 * phase(alpha, -0.80f);
-    skyColor.x = skyColor.y;
     //skyColor.x = skyColor.y;
-    
-    
+
+
     //vec3(spot * mie_Light + fmie * mie_Light + frayLeigh * rayLeigh_light);
     
     
