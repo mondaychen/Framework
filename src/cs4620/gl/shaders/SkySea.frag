@@ -484,8 +484,6 @@ void main() {
     uv.x *= iResolution.x / iResolution.y; // bteitler: Aspect ratio correction - if you don't do this your rays will be distorted
         
     // ray
-    vec3 ori = worldCam;
-
     vec3 dir = normalize(worldPos.xyz - worldCam);
 
     // bteitler: Distort the ray a bit for a fish eye effect (if you remove this line, it will remove
@@ -496,36 +494,29 @@ void main() {
 
     // bteitler: ray-march to the ocean surface (which can be thought of as a randomly generated height map)
     // and store in p
-    vec3 p;
-    heightMapTracing(ori,dir,p);
+    vec3 pointOnSea;
+    heightMapTracing(worldCam, dir, pointOnSea);
 
-    vec3 dist = p - ori; // bteitler: distance vector to ocean surface for this pixel's ray
+    vec3 dist = pointOnSea - worldCam; // bteitler: distance vector to ocean surface for this pixel's ray
 
     // bteitler: Calculate the normal on the ocean surface where we intersected (p), using
     // different "resolution" (in a sense) based on how far away the ray traveled.  Normals close to
     // the camera should be calculated with high resolution, and normals far from the camera should be calculated with low resolution
     // The reason to do this is that specular effects (or non linear normal based lighting effects) become fairly random at
     // far distances and low resolutions and can cause unpleasant shimmering during motion.
-    vec3 n = getNormal(p, 
+    vec3 normal = getNormal(pointOnSea,
              dot(dist,dist)   // bteitler: Think of this as inverse resolution, so far distances get bigger at an expnential rate
                 * EPSILON_NRM // bteitler: Just a resolution constant.. could easily be tweaked to artistic content
            );
 
     // bteitler: direction of the infinitely far away directional light.  Changing this will change
     // the sunlight direction.
-    vec3 light = normalize(vec3(0.0,1.0,0.8)); 
+    vec3 sunlight = normalize(worldCam - sunPositon);
     
     
     // Gejun's part
     vec3 skyColor = getSkyColorFull(dir);
-    
-    
-    //skyColor.x = skyColor.y;
-
-
     //vec3(spot * mie_Light + fmie * mie_Light + frayLeigh * rayLeigh_light);
-    
-    
     // Gejun's part end
 
     // bteitler: Mix (linear interpolate) a color calculated for the sky (based solely on ray direction) and a sea color 
@@ -533,7 +524,7 @@ void main() {
     // in the distance in an exponential manner.
     vec3 color = mix(
         skyColor, //getSkyColorSimple(dir),
-        getSeaColor(p,n,light,dir,dist),
+        getSeaColor(pointOnSea, normal, sunlight, dir, dist),
         pow(smoothstep(0.0,-0.05,dir.y), 0.3) // bteitler: Can be thought of as "fog" that gets thicker in the distance
     );
     
