@@ -21,7 +21,7 @@ const float K_rfactor = 0.0025f;
 const float K_mfactor = 0.0010f;
 
 //Turn the Sun_Intense into the vec3;
-const float Sun_Intense = 20.0f;
+const vec3 Sun_Intense = vec3(80.0f, 72.0f, 0.0);
 
 //const vec3 waveLength = ;
 
@@ -399,6 +399,7 @@ vec3 getSkyColor(vec3 waveLength, vec3 dir) {
     
 }
 
+
 vec3 getSkyColorFull(vec3 dir) {
     //Initialize the parameter;
 
@@ -415,25 +416,29 @@ vec3 getSkyColorFull(vec3 dir) {
     vec3 waveLength = vec3(1 / redLength, 1 / greenLength, 1 / blueLength);
     
     
-    vec3 newcolor1 = getSkyColor(waveLength, dir) * waveLength * K_rfactor * Sun_Intense;
+    vec3 newcolor1 = getSkyColor(waveLength, dir) * waveLength * K_rfactor * 20.0f;
+    
+    
     vec3 newcolor2 = getSkyColor(waveLength, dir) * K_mfactor * Sun_Intense;
 
     //vec3 skyColor = getSkyColor() * waveLength * K_rfactor;
     
     
     //Controling the blue part color of the sky, the parameter is not sure;
-    vec3 Color1 = newcolor1 * phase(alpha, 0) + vec3(-0.08, 0.48, 0.0);
+    vec3 Color1 = newcolor1 * phase(alpha, -0.20f) + vec3(0.35, 0.4, 0.0);
     
     //Controling the sun part of the sky, the parameter is not sure;
-    vec3 Color2 = newcolor2 * phase(alpha, -0.80f);
+    vec3 Color2 = newcolor2 * phase(alpha, -0.8f);
     
     vec3 skyColor = Color1 + Color2;
     
     //+ Color2;
     
+    //getSkyColorSimple(dir)
+    
     
     //newcolor1 * phase(alpha, 0) + newcolor2 * phase(alpha, -0.80f);
-    skyColor.x = skyColor.y;
+    //skyColor.a = skyColor.b;
     return skyColor;
 }
 

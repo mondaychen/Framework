@@ -32,7 +32,7 @@ void main() {
     //Modify the y-axis value to control the sun go up and down:
     //negative value_going up
     //postive value_going down
-    sunPositon = vec3(0.0, -200.0, 1000.0);
+    sunPositon = vec3(0.0, 0.0, 1000.0);
     
     //Setting the sundirection;
     sunDir =normalize(vec3(0.0, 0.0, 1.0));
