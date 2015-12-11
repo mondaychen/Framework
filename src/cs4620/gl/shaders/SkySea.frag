@@ -555,7 +555,7 @@ void main() {
     vec3 color = mix(
         skyColor, //getSkyColorSimple(dir),
         getSeaColor(pointOnSea, normal, sunlight, dir, dist),
-        pow(smoothstep(0.0,-0.05,dir.y), 0.3) // bteitler: Can be thought of as "fog" that gets thicker in the distance
+        pow(smoothstep(0.0,-0.05,dir.y), 0.5) // bteitler: Can be thought of as "fog" that gets thicker in the distance
     );
     
 

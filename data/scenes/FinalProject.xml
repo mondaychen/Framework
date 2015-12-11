@@ -19,7 +19,7 @@
         <name>SkyBox</name>
         <data>
             <mesh>SphereReversed</mesh>
-            <scale>10 10 10</scale>
+            <scale>100 100 100</scale>
             <translation>0 0 0</translation>
             <material>SkySeaMaterial</material>
         </data>
@@ -32,7 +32,7 @@
             <perspective>0.01 0.01</perspective>
             <exposure>1</exposure>
             <rotation>0 0 0</rotation>
-            <translation>0 5 0</translation>
+            <translation>0 10 0</translation>
         </data>
     </object>
 
