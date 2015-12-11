@@ -376,7 +376,6 @@ vec3 getSkyColor(vec3 waveLength, vec3 dir) {
     float fscaleOverscaledepth = fscale / 0.1f;
     
     vec3 camera2point = dir;
-    float lengthCamera = length(worldCam);
     
     camera2point = camera2point / length(camera2point);
     
@@ -465,7 +464,7 @@ vec3 getSkyColorFull(vec3 dir, out vec3 specularColor) {
     vec3 Color1 = newcolor1 * phase(alpha, 0);
     
     //Controling the sun part of the sky, the parameter is not sure;
-    vec3 Color2 = newcolor2 * getMiePhase(alpha, alpha * alpha, -0.780 * -0.780, -0.780);
+    vec3 Color2 = newcolor2 * getMiePhase(alpha, alpha * alpha, -0.990 * -0.990, -0.990);
     
     vec3 skyColor = Color2 + Color1;
 
