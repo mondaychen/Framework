@@ -21,7 +21,7 @@ const float K_rfactor = 0.0025f;
 const float K_mfactor = 0.0010f;
 
 //Turn the Sun_Intense into the vec3;
-const vec3 Sun_Intense = vec3(80.0f, 72.0f, 0.0);
+const float Sun_Intense = 20.0f;
 
 //const vec3 waveLength = ;
 
@@ -352,6 +352,12 @@ float phase(float q, float g) {
     return phasepart1 / phasepart2;
 }
 
+
+float getMiePhase(float cosAngle, float cosAngle2, float gMieConst2, float gMieConst) {
+    return 1.5 * ((1.0 - gMieConst2) / (2.0 + gMieConst2)) * (1.0 + cosAngle2) /
+    pow(1.0 + gMieConst2 - 2.0 * gMieConst * cosAngle, 1.5);
+}
+
 float scale(float fCos)
 {
     float fScaleDepth = 0.25f;
@@ -361,13 +367,12 @@ float scale(float fCos)
 
 
 vec3 getSkyColor(vec3 waveLength, vec3 dir) {
-    
-    vec3 backColor = vec3(0.18867780436772762, 0.4978442963618773, 0.6616065586417131);
+   
+    vec3 backColor = vec3(0, 0, 1);
     
     float fscale = 1.0f / (10.25f - 10.0f);
     float fscaleOverscaledepth = fscale / 0.25f;
     
-    // vec3 camera2point = worldPos.xyz - worldCam;
     vec3 camera2point = dir;
     float lengthCamera = length(worldCam);
     
@@ -397,6 +402,24 @@ vec3 getSkyColor(vec3 waveLength, vec3 dir) {
     
     return backColor;
     
+
+//    float sunD = dot(sunDir, nml) > 0.995 ? 1.0 : 0.0;
+//    vec3 sun = vec3(6.5, 3.5, 2.0);
+//    float skyPow = dot(nml, vec3(0.0, -1.0, 0.0));
+//    float centerPow = 0.0; //-dot(uv,uv);
+//    float horizonPow = pow(1.0-abs(skyPow), 3.0)*(5.0+centerPow);
+//    float sunPow = dot(nml, sunDir);
+//    float sp = max(sunPow, 0.0);
+//    float scattering = clamp(1.0 - abs(2.0*(-sunDir.y)), 0.0, 1.0);
+//    vec3 bgCol = max(0.0, skyPow)*2.0*vec3(0.8);
+//    bgCol += 0.5*vec3(0.8)*(horizonPow);
+//    bgCol += sun*(sunD+pow( sp, max(128.0, abs(sunDir.y)*512.0) ));
+//    bgCol += vec3(0.4,0.2,0.15)*(pow( sp, 8.0) + pow( sp, max(8.0, abs(sunDir.y)*128.0) ));
+//    bgCol *= mix(vec3(0.7, 0.85, 0.95), vec3(1.0, 0.45, 0.1), scattering);
+//    bgCol *= 1.0 - clamp(sunDir.y*3.0, 0.0, 0.6);
+//    
+//    return bgCol;
+    
 }
 
 
@@ -410,9 +433,9 @@ vec3 getSkyColorFull(vec3 dir) {
    // vec3 backColor = vec3(0.678, 0.847, 0.902);
     
     //Set waveLength;
-    float redLength = pow(0.65f, 4.0f);
-    float greenLength = pow(0.57f, 4.0f);
-    float blueLength = pow(0.475f, 4.0f);
+    float redLength = pow(0.25f, 4.0f);
+    float greenLength = pow(0.37f, 4.0f);
+    float blueLength = pow(0.53f, 4.0f);
     vec3 waveLength = vec3(1 / redLength, 1 / greenLength, 1 / blueLength);
     
     
@@ -425,12 +448,12 @@ vec3 getSkyColorFull(vec3 dir) {
     
     
     //Controling the blue part color of the sky, the parameter is not sure;
-    vec3 Color1 = newcolor1 * phase(alpha, -0.20f) + vec3(0.35, 0.4, 0.0);
+    vec3 Color1 = newcolor1 * phase(alpha, -0.05);
     
     //Controling the sun part of the sky, the parameter is not sure;
-    vec3 Color2 = newcolor2 * phase(alpha, -0.8f);
+    vec3 Color2 = newcolor2 * getMiePhase(alpha, alpha * alpha, -0.99 * -0.99, -0.99);
     
-    vec3 skyColor = Color1 + Color2;
+    vec3 skyColor = Color2;
     
     //+ Color2;
     
