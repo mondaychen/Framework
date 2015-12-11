@@ -203,7 +203,7 @@ float getMiePhase(float q, float q2, float g2, float g) {
     return phasepart1 / phasepart2;
 }
 
-
+//Function from the GPU Gem;
 float scale(float Cos)
 {
     float scaleDepth = 0.10f;
@@ -212,13 +212,13 @@ float scale(float Cos)
 }
 
 
-vec3 getSkyColor(vec3 waveLength, vec3 dir, vec3 position) {
+vec3 getSkyColor(vec3 waveLength, vec3 dir, vec3 position, float factor) {
    
     vec3 backColor = vec3(0, 0, 0);
     
     
     float fscale = 1.0f / (10.25f - length(worldCam));
-    float fscaleOverscaledepth = fscale / 0.23f;
+    float fscaleOverscaledepth = fscale / factor;
     
     vec3 camera2point = dir;
     float lengthCamera = length(worldCam);
@@ -236,7 +236,7 @@ vec3 getSkyColor(vec3 waveLength, vec3 dir, vec3 position) {
     for(int i = 0; i < 5; i++) {
         
         float sampleLength = length(samplepoint);
-        float depth = exp(fscaleOverscaledepth * (10.0f - sampleLength));
+        float depth = exp(fscaleOverscaledepth * (10.00f - sampleLength));
         
         float sunlength = length(position);
         float sunAngle = dot(position, samplepoint) / (sampleLength * sunlength);
@@ -268,12 +268,16 @@ vec3 getSkyColorFull(vec3 dir, out vec3 specularColor) {
     float blueLength = pow(0.45f, 4.0f);
     vec3 waveLength = vec3(1 / redLength, 1 / greenLength, 1 / blueLength);
     
-    vec3 fakesunPosition = vec3(0, 0, 1);
     
-    vec3 newcolor1 = getSkyColor(waveLength, dir, fakesunPosition) * waveLength * K_rfactor * Sun_Intense;
+    float theta = (time-1.5) / 10 + PI/2;
+    vec3 fakesunPosition = 1000 * vec3(0.0, -sin(theta), 1);
+    //vec3 fakesunPosition = vec3(sunPositon.x, -sunPositon.y, sunPositon.z);
     
     
-    vec3 newcolor2 = getSkyColor(waveLength, dir, sunPositon) * K_mfactor * Sun_Intense;
+    vec3 newcolor1 = getSkyColor(waveLength, dir, fakesunPosition, 0.25f) * waveLength * K_rfactor * Sun_Intense;
+    
+    
+    vec3 newcolor2 = getSkyColor(waveLength, dir, sunPositon, 0.10f) * K_mfactor * Sun_Intense;
 
     //vec3 skyColor = getSkyColor() * waveLength * K_rfactor;
     
