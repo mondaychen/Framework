@@ -423,7 +423,7 @@ vec3 getSkyColor(vec3 waveLength, vec3 dir) {
 }
 
 
-vec3 getSkyColorFull(vec3 dir) {
+vec3 getSkyColorFull(vec3 dir, out vec3 specularColor) {
     //Initialize the parameter;
 
     float alpha = dot(dir, sunPositon) / length(sunPositon);
@@ -454,6 +454,8 @@ vec3 getSkyColorFull(vec3 dir) {
     vec3 Color2 = newcolor2 * getMiePhase(alpha, alpha * alpha, -0.99 * -0.99, -0.99);
     
     vec3 skyColor = Color2;
+
+    specularColor = Color2;
     
     //+ Color2;
     
@@ -477,9 +479,11 @@ vec3 getSeaColor(vec3 p, vec3 n, vec3 l, vec3 eye, vec3 dist) {
     // surface normal and eye ray is smaller
     float fresnel = 1.0 - max(dot(n,-eye),0.0);
     fresnel = pow(fresnel,3.0) * 0.65;
+
+    vec3 specularColor;
         
     // bteitler: Bounce eye ray off ocean towards sky, and get the color of the sky
-    vec3 reflected = getSkyColorFull(reflect(eye,n));    
+    vec3 reflected = getSkyColorFull(reflect(eye,n), specularColor);    
     
     // bteitler: refraction effect based on angle between light surface normal
     vec3 refracted = SEA_BASE + diffuse(n,l,80.0) * SEA_WATER_COLOR * 0.12; 
@@ -493,7 +497,8 @@ vec3 getSeaColor(vec3 p, vec3 n, vec3 l, vec3 eye, vec3 dist) {
     color += SEA_WATER_COLOR * (p.y - SEA_HEIGHT) * 0.18 * atten;
     
     // bteitler: Apply specular highlight
-    color += vec3(specular(n,l,eye,60.0));
+    // color += vec3(specular(n,l,eye,60.0));
+    color += specularColor * specular(n,l,eye,60.0);
     
     return color;
 }
@@ -543,7 +548,8 @@ void main() {
     
     
     // Gejun's part
-    vec3 skyColor = getSkyColorFull(dir);
+    vec3 specularColor;
+    vec3 skyColor = getSkyColorFull(dir, specularColor);
     //vec3(spot * mie_Light + fmie * mie_Light + frayLeigh * rayLeigh_light);
     // Gejun's part end
 
