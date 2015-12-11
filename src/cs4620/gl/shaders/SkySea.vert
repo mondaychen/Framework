@@ -23,16 +23,16 @@ varying vec3 sunPositon;
 varying vec3 sunDir;
 
 const float SUN_RADIUS = 1000;
+const float PI = 3.1415926;
 
 void main() {
-
-    float key = 0; // time / 180 / 10
-    
     
     //Modify the y-axis value to control the sun go up and down:
     //negative value_going up
     //postive value_going down
-    sunPositon = vec3(0.0, 0.0, 1000.0);
+    float theta = - time / 10 + PI / 2;
+    sunPositon = SUN_RADIUS * vec3(0.0, sin(theta), cos(theta));
+    // sunPositon = vec3(0.0, 0.0, 1000.0);
     
     //Setting the sundirection;
     sunDir =normalize(vec3(0.0, 0.0, 1.0));
