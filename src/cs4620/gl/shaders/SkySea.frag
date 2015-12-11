@@ -435,9 +435,9 @@ vec3 getSkyColorFull(vec3 dir, out vec3 specularColor) {
    // vec3 backColor = vec3(0.678, 0.847, 0.902);
     
     //Set waveLength;
-    float redLength = pow(0.75f, 4.0f);
-    float greenLength = pow(0.75f, 4.0f);
-    float blueLength = pow(0.85f, 4.0f);
+    float redLength = pow(0.25f, 4.0f);
+    float greenLength = pow(0.35f, 4.0f);
+    float blueLength = pow(0.65f, 4.0f);
     vec3 waveLength = vec3(1 / redLength, 1 / greenLength, 1 / blueLength);
     
     
