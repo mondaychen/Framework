@@ -30,9 +30,10 @@ void main() {
     //Modify the y-axis value to control the sun go up and down:
     //negative value_going up
     //postive value_going down
-    float theta = - time / 10 + PI / 2;
-    // sunPositon = SUN_RADIUS * vec3(0.0, sin(theta), cos(theta));
-    sunPositon = vec3(0.0, 0.0, 1000.0);
+    float theta = time / 10 + PI / 2;
+    sunPositon = SUN_RADIUS * vec3(0.0, sin(theta), 1);
+   
+    //sunPositon = vec3(0.0, -150.0, 1000.0);
     
     //Setting the sundirection;
     sunDir =normalize(vec3(0.0, 0.0, 1.0));
