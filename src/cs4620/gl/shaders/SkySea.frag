@@ -360,20 +360,22 @@ float getMiePhase(float q, float q2, float g2, float g) {
     return phasepart1 / phasepart2;
 }
 
-float scale(float fCos)
+
+float scale(float Cos)
 {
-    float fScaleDepth = 0.25f;
-    float x = 1.0 - fCos;
-    return fScaleDepth * exp(-0.00287 + x*(0.459 + x*(3.83 + x*(-6.80 + x*5.25))));
+    float scaleDepth = 0.10f;
+    float x = 1.0 - Cos;
+    return scaleDepth * exp(-0.00287 + x*(0.459 + x*(3.83 + x*(-6.80 + x*5.25))));
 }
 
 
-vec3 getSkyColor(vec3 waveLength, vec3 dir) {
+vec3 getSkyColor(vec3 waveLength, vec3 dir, vec3 position) {
    
-    vec3 backColor = vec3(0);
+    vec3 backColor = vec3(0, 0, 0);
     
-    float fscale = 1.0f / (10.25f - 10.0f);
-    float fscaleOverscaledepth = fscale / 0.10f;
+    
+    float fscale = 1.0f / (10.25f - length(worldCam));
+    float fscaleOverscaledepth = fscale / 0.23f;
     
     vec3 camera2point = dir;
     float lengthCamera = length(worldCam);
@@ -392,8 +394,9 @@ vec3 getSkyColor(vec3 waveLength, vec3 dir) {
         
         float sampleLength = length(samplepoint);
         float depth = exp(fscaleOverscaledepth * (10.0f - sampleLength));
-        float sunlength = length(sunPositon);
-        float sunAngle = dot(sunPositon, samplepoint) / (sampleLength * sunlength);
+        
+        float sunlength = length(position);
+        float sunAngle = dot(position, samplepoint) / (sampleLength * sunlength);
         float cameraAngle = dot(camera2point, samplepoint) / sampleLength;
         float scatterlight = depth * (scale(sunAngle) - scale(cameraAngle));
         
@@ -428,9 +431,8 @@ vec3 getSkyColor(vec3 waveLength, vec3 dir) {
 
 vec3 getSkyColorFull(vec3 dir, out vec3 specularColor) {
     //Initialize the parameter;
-
-    float alpha = dot(dir, sunPositon) / length(sunPositon);
     
+    float alpha = dot(dir, sunPositon) / length(sunPositon);
     
     //Loop through the sample rays;
    // vec3 backColor = vec3(0.678, 0.847, 0.902);
@@ -438,20 +440,21 @@ vec3 getSkyColorFull(vec3 dir, out vec3 specularColor) {
     //Set waveLength;
     float redLength = pow(0.65f, 4.0f);
     float greenLength = pow(0.57f, 4.0f);
-    float blueLength = pow(0.475, 4.0f);
+    float blueLength = pow(0.45f, 4.0f);
     vec3 waveLength = vec3(1 / redLength, 1 / greenLength, 1 / blueLength);
     
+    vec3 fakesunPosition = vec3(0, 0, 1);
     
-    vec3 newcolor1 = getSkyColor(waveLength, dir) * waveLength * K_rfactor * 20.0f;
+    vec3 newcolor1 = getSkyColor(waveLength, dir, fakesunPosition) * waveLength * K_rfactor * Sun_Intense;
     
     
-    vec3 newcolor2 = getSkyColor(waveLength, dir) * K_mfactor * Sun_Intense;
+    vec3 newcolor2 = getSkyColor(waveLength, dir, sunPositon) * K_mfactor * Sun_Intense;
 
     //vec3 skyColor = getSkyColor() * waveLength * K_rfactor;
     
     
     //Controling the blue part color of the sky, the parameter is not sure;
-    vec3 Color1 = newcolor1 * phase(alpha, -0.04);
+    vec3 Color1 = newcolor1 * phase(alpha, 0);
     
     //Controling the sun part of the sky, the parameter is not sure;
     vec3 Color2 = newcolor2 * getMiePhase(alpha, alpha * alpha, -0.990* -0.990, -0.990);
