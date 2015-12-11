@@ -34,13 +34,16 @@ varying vec3 sunDir;
 
 
 // for Seascapge
-vec2 iResolution = vec2(800, 600);
-// from Seascapge
-const int NUM_STEPS = 8;
-const float EPSILON = 1e-3;
-float EPSILON_NRM   = 0.1 / iResolution.x;
+vec2 resolution = vec2(800, 600);
 
 // sea config
+
+
+const int NUM_STEPS = 8;
+const float EPSILON = 1e-3;
+float EPSILON_NRM   = 0.1 / resolution.x;
+
+
 const int ITER_GEOMETRY = 3;
 const int ITER_FRAGMENT = 5;
 const float SEA_HEIGHT = 0.6;
@@ -330,11 +333,11 @@ vec3 getSeaColor(vec3 p, vec3 n, vec3 l, vec3 eye, vec3 dist) {
 void main() {
     vec4 fragCoord = gl_FragCoord;
     
-    vec2 uv = fragCoord.xy / iResolution.xy;
+    vec2 uv = fragCoord.xy / resolution.xy;
 
     
     uv = uv * 2.0 - 1.0; // Shift pixel coordinates from 0 to 1 to between -1 and 1
-    uv.x *= iResolution.x / iResolution.y; // Aspect ratio correction - if you don't do this your rays will be distorted
+    uv.x *= resolution.x / resolution.y; // Aspect ratio correction - if you don't do this your rays will be distorted
         
     // ray
     vec3 dir = normalize(worldPos.xyz - worldCam);
